@@ -10,7 +10,7 @@ subprojects {
         mavenCentral()
     }
 
-    project.dependencies {
+    dependencies {
         implementation(
                 "com.google.guava:guava:$guavaVersion",
         )
@@ -23,7 +23,7 @@ subprojects {
         )
     }
 
-    project.test {
+    test {
         useJUnitPlatform()
         testLogging {
             events "passed", "skipped", "failed"
