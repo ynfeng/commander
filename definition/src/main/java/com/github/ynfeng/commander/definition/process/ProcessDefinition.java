@@ -23,7 +23,7 @@ public class ProcessDefinition {
         return version;
     }
 
-    public StartDefinition startNode() {
+    public StartDefinition start() {
         return start;
     }
 }

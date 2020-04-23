@@ -35,7 +35,7 @@ public class ProcessDefinitionBuilderTest {
             .start()
             .build();
 
-        assertThat(processDefinition.startNode(), instanceOf(StartDefinition.class));
+        assertThat(processDefinition.start(), instanceOf(StartDefinition.class));
     }
 
     @Test
@@ -45,8 +45,8 @@ public class ProcessDefinitionBuilderTest {
             .next(EndDefinition.create())
             .build();
 
-        assertThat(processDefinition.startNode().next(), instanceOf(EndDefinition.class));
-        assertThat(processDefinition.startNode().next().next(), is(NodeDefinition.EMPTY));
-        assertThat(processDefinition.startNode().next().next().next(), nullValue());
+        assertThat(processDefinition.start().next(), instanceOf(EndDefinition.class));
+        assertThat(processDefinition.start().next().next(), is(NodeDefinition.EMPTY));
+        assertThat(processDefinition.start().next().next().next(), nullValue());
     }
 }
