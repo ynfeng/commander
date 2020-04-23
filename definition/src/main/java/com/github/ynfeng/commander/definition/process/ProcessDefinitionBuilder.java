@@ -1,11 +1,15 @@
 package com.github.ynfeng.commander.definition.process;
 
+import com.github.ynfeng.commander.definition.node.EndDefinition;
+import com.github.ynfeng.commander.definition.node.NodeDefinition;
+import com.github.ynfeng.commander.definition.node.ParentNode;
 import com.github.ynfeng.commander.definition.node.StartDefinition;
 
 public class ProcessDefinitionBuilder {
     private final String name;
     private final int version;
     private StartDefinition start;
+    private ParentNode currentNode;
 
     private ProcessDefinitionBuilder(String name, int version) {
         this.name = name;
@@ -24,6 +28,12 @@ public class ProcessDefinitionBuilder {
 
     public ProcessDefinitionBuilder start() {
         start = new StartDefinition();
+        currentNode = start;
+        return this;
+    }
+
+    public ProcessDefinitionBuilder next(NodeDefinition nodeDefinition) {
+        currentNode.setNext(nodeDefinition);
         return this;
     }
 }
