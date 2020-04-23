@@ -1,0 +1,14 @@
+.gradle
+target
+build
+*.iml
+*.ipr
+*.iws
+out
+reports
+.DS_Store
+.idea
+.gradletasknamecache
+*.output
+.gmoco_pid
+gmoco.log

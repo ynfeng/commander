@@ -1,0 +1,36 @@
+subprojects {
+    apply plugin: 'java'
+    group = 'com.github.ynfeng'
+    version = '1.0.0'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    project.dependencies {
+        implementation(
+                "com.google.guava:guava:$guavaVersion",
+        )
+
+        testImplementation(
+                "org.junit.jupiter:junit-jupiter:$junitVersion",
+                "org.hamcrest:hamcrest-core:$hamcrestVersion",
+                "org.hamcrest:hamcrest-library:$hamcrestVersion",
+                "org.mockito:mockito-core:$mockitoVersion",
+        )
+    }
+
+    project.test {
+        useJUnitPlatform()
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
+    }
+}
+
+
+
+
