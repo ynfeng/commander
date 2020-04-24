@@ -32,8 +32,9 @@ public class ProcessDefinitionBuilder {
         return this;
     }
 
-    public ProcessDefinitionBuilder next(NodeDefinition nodeDefinition) {
-        currentNode.setNext(nodeDefinition);
+    public ProcessDefinitionBuilder end() {
+        EndDefinition endDefinition = EndDefinition.create();
+        currentNode.setNext(endDefinition);
         return this;
     }
 }

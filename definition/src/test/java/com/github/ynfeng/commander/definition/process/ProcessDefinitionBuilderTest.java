@@ -22,29 +22,15 @@ public class ProcessDefinitionBuilderTest {
     }
 
     @Test
-    public void should_build_with_name_and_version() {
-        ProcessDefinition processDefinition = processDefinitionBuilder.build();
+    public void should_build_empty_process_definition() {
+        ProcessDefinition processDefinition = processDefinitionBuilder
+            .start()
+            .end()
+            .build();
 
         assertThat(processDefinition.name(), is("foo"));
         assertThat(processDefinition.version(), is(1));
-    }
-
-    @Test
-    public void should_build_with_start_node() {
-        ProcessDefinition processDefinition = processDefinitionBuilder
-            .start()
-            .build();
-
         assertThat(processDefinition.start(), instanceOf(StartDefinition.class));
-    }
-
-    @Test
-    public void should_build_with_end_node() {
-        ProcessDefinition processDefinition = processDefinitionBuilder
-            .start()
-            .next(EndDefinition.create())
-            .build();
-
         assertThat(processDefinition.start().next(), instanceOf(EndDefinition.class));
         assertThat(processDefinition.start().next().next(), is(NodeDefinition.EMPTY));
         assertThat(processDefinition.start().next().next().next(), nullValue());
