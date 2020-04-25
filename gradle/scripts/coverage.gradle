@@ -8,6 +8,13 @@ project.extensions.create('coverage', CoverageExtension)
 
 apply plugin: 'jacoco'
 
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
 jacoco.toolVersion = "0.8.3"
 
 task coverageCheck(dependsOn: [test]) {
@@ -48,6 +55,8 @@ task coverageCheck(dependsOn: [test]) {
             }
 
             html(destdir: "$buildDir/reports/jacoco")
+
+            xml(destfile: "$buildDir/reports/jacoco/jacocoTestReport.xml")
 
             check(failOnViolation: true) {
                 rule(element: 'PACKAGE') {
