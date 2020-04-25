@@ -1,0 +1,26 @@
+class StyleExtension {
+    List<String> excludePackages
+    List<String> excludeClasses
+}
+
+project.extensions.create('style', StyleExtension)
+
+apply plugin: 'checkstyle'
+
+checkstyle {
+    configFile = file("$rootDir/gradle/config/checkstyle.xml")
+    toolVersion = '8.17'
+    sourceSets = [sourceSets.main]
+}
+
+checkstyleTest.enabled = false
+
+checkstyleMain.doFirst {
+    style.excludePackages.each() {
+        checkstyleMain.exclude "${'**/' + it.replaceAll('\\.', '/') + '/*'}"
+    }
+
+    style.excludeClasses.each() {
+        checkstyleMain.exclude "${'**/' + it.replaceAll('\\.', '/') + '.java'}"
+    }
+}
