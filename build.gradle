@@ -3,15 +3,10 @@ plugins {
 }
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'com.github.kt3k.coveralls'
     group = 'com.github.ynfeng'
     version = '1.0.0'
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-
-    coveralls {
-        jacocoReportPath 'build/reports/jacoco/jacocoTestReport.xml'
-    }
 
     repositories {
         jcenter()
@@ -51,6 +46,7 @@ subprojects {
 
     apply from: "$rootDir/gradle/scripts/coverage.gradle"
     apply from: "$rootDir/gradle/scripts/checkstyle.gradle"
+    apply from: "$rootDir/gradle/scripts/coveralls.gradle"
 }
 
 
