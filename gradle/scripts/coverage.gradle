@@ -28,7 +28,6 @@ task coverageCheck(dependsOn: [test]) {
             executiondata {
                 fileset(dir: "$buildDir/jacoco") {
                     include name: 'test.exec'
-                    include name: 'integrationTest.exec'
                 }
             }
 

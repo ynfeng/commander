@@ -1,5 +1,9 @@
+plugins {
+    id 'com.github.kt3k.coveralls' version '2.8.4'
+}
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'com.github.kt3k.coveralls'
     group = 'com.github.ynfeng'
     version = '1.0.0'
     sourceCompatibility = JavaVersion.VERSION_1_8
