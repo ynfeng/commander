@@ -40,6 +40,8 @@ subprojects {
             events "passed", "skipped", "failed"
         }
     }
+
+    apply from: "$rootDir/gradle/scripts/coverage.gradle"
 }
 
 
