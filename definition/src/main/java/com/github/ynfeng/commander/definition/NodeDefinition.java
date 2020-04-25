@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.definition.node;
+package com.github.ynfeng.commander.definition;
 
 public interface NodeDefinition {
     NodeDefinition EMPTY = new NodeDefinition() {

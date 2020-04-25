@@ -1,10 +1,5 @@
-package com.github.ynfeng.commander.definition.process;
+package com.github.ynfeng.commander.definition;
 
-import com.github.ynfeng.commander.definition.node.StartDefinition;
-import lombok.AccessLevel;
-import lombok.Setter;
-
-@Setter(AccessLevel.PROTECTED)
 public class ProcessDefinition {
     private final String name;
     private final int version;
@@ -25,5 +20,9 @@ public class ProcessDefinition {
 
     public StartDefinition start() {
         return start;
+    }
+
+    protected void start(StartDefinition startDefinition) {
+        start = startDefinition;
     }
 }

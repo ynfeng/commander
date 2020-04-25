@@ -1,29 +1,26 @@
-package com.github.ynfeng.commander.definition.process;
+package com.github.ynfeng.commander.definition;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.definition.node.EndDefinition;
-import com.github.ynfeng.commander.definition.node.NodeDefinition;
-import com.github.ynfeng.commander.definition.node.StartDefinition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class ProcessDefinitionBuilderTest {
+public class ProcessDefinitionBuildableTest {
 
-    private ProcessDefinitionBuilder processDefinitionBuilder;
+    private StartDefinitionBuilder startDefinitionBuilder;
 
     @BeforeEach
     public void setup() {
-        processDefinitionBuilder = ProcessDefinitionBuilder.create("foo", 1);
+        startDefinitionBuilder = ProcessDefinitionBuilder.create("foo", 1);
     }
 
     @Test
     public void should_build_empty_process_definition() {
-        ProcessDefinition processDefinition = processDefinitionBuilder
+        ProcessDefinition processDefinition = startDefinitionBuilder
             .start()
             .end()
             .build();

@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.definition.node;
+package com.github.ynfeng.commander.definition;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
