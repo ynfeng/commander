@@ -2,20 +2,22 @@ package com.github.ynfeng.commander.definition;
 
 public class StartDefinitionBuilder implements EndableBuilder {
     private StartDefinition start;
-    private final ProcessDefinition processDefinition;
 
-    protected StartDefinitionBuilder(ProcessDefinition processDefinition) {
-        this.processDefinition = processDefinition;
+    protected StartDefinitionBuilder() {
     }
 
     public StartDefinitionBuilder start() {
         start = new StartDefinition();
-        processDefinition.start(start);
+        ProcessDefinitionBuilderContext.processDefinition().start(start);
         return this;
     }
 
     @Override
     public EndDefinitionBuilder end() {
-        return new EndDefinitionBuilder(processDefinition, start);
+        return new EndDefinitionBuilder(start);
+    }
+
+    public EndableBuilder service(String refName, ServiceCoordinate serviceCoordinate) {
+        return new ServiceDefinitionBuilder(start, refName, serviceCoordinate);
     }
 }

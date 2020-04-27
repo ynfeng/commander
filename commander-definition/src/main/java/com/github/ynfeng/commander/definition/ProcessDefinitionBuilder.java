@@ -7,6 +7,7 @@ public class ProcessDefinitionBuilder {
 
     public static StartDefinitionBuilder create(String name, int version) {
         ProcessDefinition processDefinition = new ProcessDefinition(name, version);
-        return new StartDefinitionBuilder(processDefinition);
+        ProcessDefinitionBuilderContext.processDefinition(processDefinition);
+        return new StartDefinitionBuilder();
     }
 }

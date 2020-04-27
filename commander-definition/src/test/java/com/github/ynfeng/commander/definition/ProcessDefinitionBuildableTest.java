@@ -32,4 +32,21 @@ public class ProcessDefinitionBuildableTest {
         assertThat(processDefinition.start().next().next(), is(NodeDefinition.EMPTY));
         assertThat(processDefinition.start().next().next().next(), nullValue());
     }
+
+    @Test
+    public void should_build_with_service_process_definition() {
+        ProcessDefinition processDefinition = startDefinitionBuilder
+            .start()
+            .service("refName", ServiceCoordinate.of("aService", 1))
+            .end()
+            .build();
+
+        ServiceDefinition serviceDefinition = processDefinition.start().next();
+        ServiceCoordinate serviceCoordinate = serviceDefinition.serviceCoordinate();
+        assertThat(serviceDefinition, instanceOf(ServiceDefinition.class));
+        assertThat(serviceCoordinate.name(), is("aService"));
+        assertThat(serviceCoordinate.version(), is(1));
+        assertThat(serviceDefinition.refName(), is("refName"));
+        assertThat(serviceDefinition.next(), instanceOf(EndDefinition.class));
+    }
 }

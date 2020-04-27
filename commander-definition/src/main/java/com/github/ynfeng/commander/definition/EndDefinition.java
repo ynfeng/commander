@@ -10,7 +10,7 @@ public class EndDefinition implements NodeDefinition {
     }
 
     @Override
-    public NodeDefinition next() {
-        return NodeDefinition.EMPTY;
+    public <T extends NodeDefinition> T next() {
+        return (T) NodeDefinition.EMPTY;
     }
 }

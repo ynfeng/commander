@@ -5,7 +5,7 @@ public class ProcessDefinition {
     private final int version;
     private StartDefinition start;
 
-    public ProcessDefinition(String name, int version) {
+    protected ProcessDefinition(String name, int version) {
         this.name = name;
         this.version = version;
     }
