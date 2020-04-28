@@ -1,7 +1,12 @@
 package com.github.ynfeng.commander.definition;
 
 public interface NodeDefinition {
-    NodeDefinition EMPTY = new NodeDefinition() {
+    NodeDefinition NULL = new NodeDefinition() {
+        @Override
+        public void next(NodeDefinition nodeDefinition) {
+            throw new UnsupportedOperationException();
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public NodeDefinition next() {
@@ -10,4 +15,6 @@ public interface NodeDefinition {
     };
 
     <T extends NodeDefinition> T next();
+
+    void next(NodeDefinition nodeDefinition);
 }

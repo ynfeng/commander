@@ -1,17 +1,13 @@
 package com.github.ynfeng.commander.definition;
 
-public class ServiceDefinitionBuilder implements EndableBuilder {
+public class ServiceDefinitionBuilder extends NormalDefinitionBuilder {
     private final ServiceDefinition serviceDefinition;
 
-    protected ServiceDefinitionBuilder(ParentDefintion pre,
+    protected ServiceDefinitionBuilder(NodeDefinition pre,
                                        String refName,
                                        ServiceCoordinate serviceCoordinate) {
         serviceDefinition = new ServiceDefinition(refName, serviceCoordinate);
+        ProcessDefinitionBuilderContext.currentDefinition(serviceDefinition);
         pre.next(serviceDefinition);
-    }
-
-    @Override
-    public EndDefinitionBuilder end() {
-        return new EndDefinitionBuilder(serviceDefinition);
     }
 }

@@ -1,7 +1,7 @@
 package com.github.ynfeng.commander.definition;
 
 public class EndDefinitionBuilder implements Buildable {
-    protected EndDefinitionBuilder(ParentDefintion pre) {
+    protected EndDefinitionBuilder(NodeDefinition pre) {
         pre.next(EndDefinition.create());
     }
 

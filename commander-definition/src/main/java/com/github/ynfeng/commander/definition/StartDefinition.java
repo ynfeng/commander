@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.definition;
 
-public class StartDefinition implements ParentDefintion {
+public class StartDefinition implements NodeDefinition {
     private NodeDefinition next;
 
     @Override

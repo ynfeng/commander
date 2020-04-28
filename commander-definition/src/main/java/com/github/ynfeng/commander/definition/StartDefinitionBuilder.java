@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.definition;
 
-public class StartDefinitionBuilder implements EndableBuilder {
+public class StartDefinitionBuilder extends NormalDefinitionBuilder {
     private StartDefinition start;
 
     protected StartDefinitionBuilder() {
@@ -9,15 +9,7 @@ public class StartDefinitionBuilder implements EndableBuilder {
     public StartDefinitionBuilder start() {
         start = new StartDefinition();
         ProcessDefinitionBuilderContext.processDefinition().start(start);
+        ProcessDefinitionBuilderContext.currentDefinition(start);
         return this;
-    }
-
-    @Override
-    public EndDefinitionBuilder end() {
-        return new EndDefinitionBuilder(start);
-    }
-
-    public EndableBuilder service(String refName, ServiceCoordinate serviceCoordinate) {
-        return new ServiceDefinitionBuilder(start, refName, serviceCoordinate);
     }
 }

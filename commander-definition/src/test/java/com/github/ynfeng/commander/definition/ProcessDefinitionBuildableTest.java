@@ -29,7 +29,7 @@ public class ProcessDefinitionBuildableTest {
         assertThat(processDefinition.version(), is(1));
         assertThat(processDefinition.start(), instanceOf(StartDefinition.class));
         assertThat(processDefinition.start().next(), instanceOf(EndDefinition.class));
-        assertThat(processDefinition.start().next().next(), is(NodeDefinition.EMPTY));
+        assertThat(processDefinition.start().next().next(), is(NodeDefinition.NULL));
         assertThat(processDefinition.start().next().next().next(), nullValue());
     }
 
@@ -48,5 +48,19 @@ public class ProcessDefinitionBuildableTest {
         assertThat(serviceCoordinate.version(), is(1));
         assertThat(serviceDefinition.refName(), is("refName"));
         assertThat(serviceDefinition.next(), instanceOf(EndDefinition.class));
+    }
+
+    @Test
+    public void should_build_with_multiple_service_process_definition() {
+        ProcessDefinition processDefinition = startDefinitionBuilder
+            .start()
+            .service("refName", ServiceCoordinate.of("aService", 1))
+            .service("refName1", ServiceCoordinate.of("otherService", 1))
+            .end()
+            .build();
+
+        assertThat(processDefinition.start().next(), instanceOf(ServiceDefinition.class));
+        assertThat(processDefinition.start().next().next(), instanceOf(ServiceDefinition.class));
+        assertThat(processDefinition.start().next().next().next(), instanceOf(EndDefinition.class));
     }
 }

@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.definition;
 
-public class ServiceDefinition implements ParentDefintion {
+public class ServiceDefinition implements NodeDefinition {
     private final String refName;
     private final ServiceCoordinate serviceCoordinate;
     private NodeDefinition next;
