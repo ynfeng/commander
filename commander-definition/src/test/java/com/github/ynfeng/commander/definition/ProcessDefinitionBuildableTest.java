@@ -14,7 +14,7 @@ public class ProcessDefinitionBuildableTest {
     private StartDefinitionBuilder startDefinitionBuilder;
 
     @BeforeEach
-    public void setup() {
+    public void setUp() {
         startDefinitionBuilder = ProcessDefinitionBuilder.create("foo", 1);
     }
 
