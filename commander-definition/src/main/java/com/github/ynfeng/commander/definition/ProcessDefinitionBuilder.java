@@ -32,14 +32,14 @@ public class ProcessDefinitionBuilder {
         return serviceDefinition;
     }
 
-    public ProcessDefinition build() {
-        return processDefinition;
-    }
-
     public ProcessDefinitionBuilder link(String sourceRefName, String targetRefName) {
         NodeDefinition source = nodeDefinitions.get(sourceRefName);
         NodeDefinition target = nodeDefinitions.get(targetRefName);
         source.next(target);
         return this;
+    }
+
+    public ProcessDefinition build() {
+        return processDefinition;
     }
 }
