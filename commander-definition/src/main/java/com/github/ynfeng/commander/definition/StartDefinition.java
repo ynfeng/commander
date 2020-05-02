@@ -1,7 +1,11 @@
 package com.github.ynfeng.commander.definition;
 
-public class StartDefinition implements NodeDefinition {
+public class StartDefinition extends AbstractNodeDefinition {
     private NodeDefinition next;
+
+    public StartDefinition() {
+        super("start");
+    }
 
     @Override
     public void next(NodeDefinition nodeDefinition) {

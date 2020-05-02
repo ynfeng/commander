@@ -1,14 +1,12 @@
 package com.github.ynfeng.commander.definition;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+public class EndDefinition extends AbstractNodeDefinition {
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EndDefinition implements NodeDefinition {
-    protected static EndDefinition create() {
-        return new EndDefinition();
+    public EndDefinition(String refName) {
+        super(refName);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends NodeDefinition> T next() {
         return (T) NodeDefinition.NULL;

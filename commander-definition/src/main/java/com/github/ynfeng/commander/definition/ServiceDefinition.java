@@ -1,12 +1,11 @@
 package com.github.ynfeng.commander.definition;
 
-public class ServiceDefinition implements NodeDefinition {
-    private final String refName;
+public class ServiceDefinition extends AbstractNodeDefinition {
     private final ServiceCoordinate serviceCoordinate;
     private NodeDefinition next;
 
     protected ServiceDefinition(String refName, ServiceCoordinate serviceCoordinate) {
-        this.refName = refName;
+        super(refName);
         this.serviceCoordinate = serviceCoordinate;
     }
 
@@ -15,14 +14,11 @@ public class ServiceDefinition implements NodeDefinition {
         next = nodeDefinition;
     }
 
-    public String refName() {
-        return refName;
-    }
-
     public ServiceCoordinate serviceCoordinate() {
         return serviceCoordinate;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends NodeDefinition> T next() {
         return (T) next;

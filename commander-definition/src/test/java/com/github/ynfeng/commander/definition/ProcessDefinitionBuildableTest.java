@@ -4,26 +4,27 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
 public class ProcessDefinitionBuildableTest {
-
-    private StartDefinitionBuilder startDefinitionBuilder;
+    private ProcessDefinitionBuilder processDefinitionBuilder;
 
     @BeforeEach
     public void setUp() {
-        startDefinitionBuilder = ProcessDefinitionBuilder.create("foo", 1);
+        processDefinitionBuilder = ProcessDefinitionBuilder.create("foo", 1);
     }
 
     @Test
     public void should_build_empty_process_definition() {
-        ProcessDefinition processDefinition = startDefinitionBuilder
-            .start()
-            .end()
-            .build();
+        processDefinitionBuilder.createStart();
+        processDefinitionBuilder.createEnd("normalEnd");
+        processDefinitionBuilder.link("start", "normalEnd");
+
+        ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
         assertThat(processDefinition.name(), is("foo"));
         assertThat(processDefinition.version(), is(1));
@@ -34,30 +35,64 @@ public class ProcessDefinitionBuildableTest {
     }
 
     @Test
+    public void should_throw_exception_when_link_with_not_exists_source_node() {
+        processDefinitionBuilder.createEnd("end");
+        ProcessDefinitionException exception = assertThrows(ProcessDefinitionException.class, () -> {
+            processDefinitionBuilder.link("start", "end");
+        });
+
+        assertThat(exception.getMessage(), is("The \"start\" node definition not exists."));
+    }
+
+    @Test
+    public void should_throw_exception_when_link_with_not_exists_target_node() {
+        processDefinitionBuilder.createStart();
+        ProcessDefinitionException exception = assertThrows(ProcessDefinitionException.class, () -> {
+            processDefinitionBuilder.link("start", "end");
+        });
+
+        assertThat(exception.getMessage(), is("The \"end\" node definition not exists."));
+    }
+
+    @Test
+    public void should_throw_exception_when_duplicate_ref_name() {
+        ProcessDefinitionException exception = assertThrows(ProcessDefinitionException.class, () -> {
+            processDefinitionBuilder.createEnd("end");
+            processDefinitionBuilder.createEnd("end");
+        });
+
+        assertThat(exception.getMessage(), is("The ref name \"end\" was duplicated"));
+    }
+
+    @Test
     public void should_build_with_service_process_definition() {
-        ProcessDefinition processDefinition = startDefinitionBuilder
-            .start()
-            .service("refName", ServiceCoordinate.of("aService", 1))
-            .end()
-            .build();
+        processDefinitionBuilder.createStart();
+        processDefinitionBuilder.createEnd("end");
+        processDefinitionBuilder.createService("serviceRefName", ServiceCoordinate.of("aService", 1));
+        processDefinitionBuilder.link("start", "serviceRefName");
+        processDefinitionBuilder.link("serviceRefName", "end");
+        ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
         ServiceDefinition serviceDefinition = processDefinition.start().next();
         ServiceCoordinate serviceCoordinate = serviceDefinition.serviceCoordinate();
         assertThat(serviceDefinition, instanceOf(ServiceDefinition.class));
         assertThat(serviceCoordinate.name(), is("aService"));
         assertThat(serviceCoordinate.version(), is(1));
-        assertThat(serviceDefinition.refName(), is("refName"));
+        assertThat(serviceDefinition.refName(), is("serviceRefName"));
         assertThat(serviceDefinition.next(), instanceOf(EndDefinition.class));
     }
 
     @Test
     public void should_build_with_multiple_service_process_definition() {
-        ProcessDefinition processDefinition = startDefinitionBuilder
-            .start()
-            .service("refName", ServiceCoordinate.of("aService", 1))
-            .service("refName1", ServiceCoordinate.of("otherService", 1))
-            .end()
-            .build();
+        processDefinitionBuilder.createStart();
+        processDefinitionBuilder.createEnd("end");
+        processDefinitionBuilder.createService("refName", ServiceCoordinate.of("aService", 1));
+        processDefinitionBuilder.createService("refName1", ServiceCoordinate.of("otherService", 1));
+        processDefinitionBuilder
+            .link("start", "refName")
+            .link("refName", "refName1")
+            .link("refName1", "end");
+        ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
         assertThat(processDefinition.start().next(), instanceOf(ServiceDefinition.class));
         assertThat(processDefinition.start().next().next(), instanceOf(ServiceDefinition.class));

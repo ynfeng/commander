@@ -7,6 +7,11 @@ public interface NodeDefinition {
             throw new UnsupportedOperationException();
         }
 
+        @Override
+        public String refName() {
+            throw new UnsupportedOperationException();
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public NodeDefinition next() {
@@ -17,4 +22,6 @@ public interface NodeDefinition {
     <T extends NodeDefinition> T next();
 
     void next(NodeDefinition nodeDefinition);
+
+    String refName();
 }
