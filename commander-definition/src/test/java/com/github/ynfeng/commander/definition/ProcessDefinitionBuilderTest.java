@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.definition;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -156,6 +157,7 @@ public class ProcessDefinitionBuilderTest {
         assertThat(otherService.refName(), is("otherService"));
         assertThat(aService.next().refName(), is("aJoin"));
         assertThat(otherService.next().refName(), is("aJoin"));
+        assertThat(joinDefinition, sameInstance(otherService.next()));
         assertThat(joinDefinition.next().refName(), is("end"));
     }
 }
