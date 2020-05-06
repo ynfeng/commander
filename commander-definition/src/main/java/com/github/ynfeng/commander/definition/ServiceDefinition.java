@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.definition;
 
-public class ServiceDefinition extends AbstractNodeDefinition {
+public class ServiceDefinition extends NextableNodeDefinition {
     private final ServiceCoordinate serviceCoordinate;
 
     protected ServiceDefinition(String refName, ServiceCoordinate serviceCoordinate) {

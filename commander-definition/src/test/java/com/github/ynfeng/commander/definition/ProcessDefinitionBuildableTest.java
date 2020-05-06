@@ -2,7 +2,6 @@ package com.github.ynfeng.commander.definition;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -31,8 +30,6 @@ public class ProcessDefinitionBuildableTest {
         assertThat(processDefinition.version(), is(1));
         assertThat(processDefinition.start(), instanceOf(StartDefinition.class));
         assertThat(processDefinition.start().next(), instanceOf(EndDefinition.class));
-        assertThat(processDefinition.start().next().next(), is(NodeDefinition.NULL));
-        assertThat(processDefinition.start().next().next().next(), nullValue());
     }
 
     @Test
@@ -95,9 +92,12 @@ public class ProcessDefinitionBuildableTest {
             .link("refName1", "end");
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
-        assertThat(processDefinition.start().next(), instanceOf(ServiceDefinition.class));
-        assertThat(processDefinition.start().next().next(), instanceOf(ServiceDefinition.class));
-        assertThat(processDefinition.start().next().next().next(), instanceOf(EndDefinition.class));
+        ServiceDefinition refNameServiceDefinition = processDefinition.start().next();
+        ServiceDefinition refName1ServiceDefinition = refNameServiceDefinition.next();
+
+        assertThat(refNameServiceDefinition.refName(), is("refName"));
+        assertThat(refName1ServiceDefinition.refName(), is("refName1"));
+        assertThat(refName1ServiceDefinition.next(), instanceOf(EndDefinition.class));
     }
 
     @Test
@@ -115,7 +115,9 @@ public class ProcessDefinitionBuildableTest {
         processDefinitionBuilder.link("lastService", "end");
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
-        DecisionDefinition decisionDefinition = processDefinition.start().next().next();
+        ServiceDefinition aServiceDefinition = processDefinition.start().next();
+        DecisionDefinition decisionDefinition = aServiceDefinition.next();
+
         ConditionBranches branches = decisionDefinition.branches();
         Iterator<ConditionBranch> branchesIterator = branches.iterator();
         ConditionBranch branch = branchesIterator.next();
