@@ -121,10 +121,10 @@ public class ProcessDefinitionBuildableTest {
         ConditionBranches branches = decisionDefinition.branches();
         Iterator<ConditionBranch> branchesIterator = branches.iterator();
         ConditionBranch branch = branchesIterator.next();
-        assertThat(branches.size(), is(1));
-        assertThat(branch.expression(), is(Expression.of("aService.result.success == true")));
         ServiceDefinition otherService = branch.next();
         ServiceDefinition lastService = otherService.next();
+        assertThat(branches.size(), is(1));
+        assertThat(branch.expression(), is(Expression.of("aService.result.success == true")));
         assertThat(otherService.refName(), is("otherService"));
         assertThat(lastService.refName(), is("lastService"));
         assertThat(lastService.next(), instanceOf(EndDefinition.class));
