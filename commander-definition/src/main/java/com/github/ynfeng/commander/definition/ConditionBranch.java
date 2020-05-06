@@ -13,6 +13,7 @@ public class ConditionBranch {
         return expression;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends NodeDefinition> T next() {
         return (T) fistNode;
     }

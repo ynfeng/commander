@@ -7,6 +7,7 @@ public class ForkBranch {
         this.firstNode = firstNode;
     }
 
+    @SuppressWarnings("unchecked")
     public <T extends NodeDefinition> T next() {
         return (T) firstNode;
     }
