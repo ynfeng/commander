@@ -6,6 +6,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.Iterator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -65,7 +66,7 @@ public class ProcessDefinitionBuildableTest {
     }
 
     @Test
-    public void should_build_with_service_process_definition() {
+    public void should_build_with_service_definition() {
         processDefinitionBuilder.createStart();
         processDefinitionBuilder.createEnd("end");
         processDefinitionBuilder.createService("serviceRefName", ServiceCoordinate.of("aService", 1));
@@ -83,7 +84,7 @@ public class ProcessDefinitionBuildableTest {
     }
 
     @Test
-    public void should_build_with_multiple_service_process_definition() {
+    public void should_build_with_multiple_service_definition() {
         processDefinitionBuilder.createStart();
         processDefinitionBuilder.createEnd("end");
         processDefinitionBuilder.createService("refName", ServiceCoordinate.of("aService", 1));
@@ -97,5 +98,33 @@ public class ProcessDefinitionBuildableTest {
         assertThat(processDefinition.start().next(), instanceOf(ServiceDefinition.class));
         assertThat(processDefinition.start().next().next(), instanceOf(ServiceDefinition.class));
         assertThat(processDefinition.start().next().next().next(), instanceOf(EndDefinition.class));
+    }
+
+    @Test
+    public void should_build_with_decision_definition() {
+        processDefinitionBuilder.createStart();
+        processDefinitionBuilder.createEnd("end");
+        processDefinitionBuilder.createService("aService", ServiceCoordinate.of("aService", 1));
+        processDefinitionBuilder.createService("lastService", ServiceCoordinate.of("lastService", 1));
+        processDefinitionBuilder.createDecision("aDecision")
+            .condition(Expression.of("aService.result.success == true"),
+                processDefinitionBuilder.createService("otherService", ServiceCoordinate.of("otherService", 1)));
+        processDefinitionBuilder.link("start", "aService");
+        processDefinitionBuilder.link("aService", "aDecision");
+        processDefinitionBuilder.link("otherService", "lastService");
+        processDefinitionBuilder.link("lastService", "end");
+        ProcessDefinition processDefinition = processDefinitionBuilder.build();
+
+        DecisionDefinition decisionDefinition = processDefinition.start().next().next();
+        ConditionBranches branches = decisionDefinition.branches();
+        Iterator<ConditionBranch> branchesIterator = branches.iterator();
+        ConditionBranch branch = branchesIterator.next();
+        assertThat(branches.size(), is(1));
+        assertThat(branch.expression(), is(Expression.of("aService.result.success == true")));
+        ServiceDefinition otherService = branch.next();
+        ServiceDefinition lastService = otherService.next();
+        assertThat(otherService.refName(), is("otherService"));
+        assertThat(lastService.refName(), is("lastService"));
+        assertThat(lastService.next(), instanceOf(EndDefinition.class));
     }
 }

@@ -39,6 +39,12 @@ public class ProcessDefinitionBuilder {
         return this;
     }
 
+    public DecisionDefinition createDecision(String refName) {
+        DecisionDefinition decisionDefinition = new DecisionDefinition(refName);
+        nodeDefinitions.add(decisionDefinition);
+        return decisionDefinition;
+    }
+
     public ProcessDefinition build() {
         return processDefinition;
     }

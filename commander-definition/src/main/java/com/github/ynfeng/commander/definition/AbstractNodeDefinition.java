@@ -11,4 +11,5 @@ public abstract class AbstractNodeDefinition implements NodeDefinition {
     public String refName() {
         return refName;
     }
+
 }
