@@ -48,4 +48,16 @@ public class ProcessDefinitionBuilder {
     public ProcessDefinition build() {
         return processDefinition;
     }
+
+    public ForkDefinition createFork(String refName) {
+        ForkDefinition forkDefinition = new ForkDefinition(refName);
+        nodeDefinitions.add(forkDefinition);
+        return forkDefinition;
+    }
+
+    public JoinDefinition createJoin(String refName) {
+        JoinDefinition joinDefinition = new JoinDefinition(refName, nodeDefinitions);
+        nodeDefinitions.add(joinDefinition);
+        return joinDefinition;
+    }
 }

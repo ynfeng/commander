@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class ProcessDefinitionBuildableTest {
+public class ProcessDefinitionBuilderTest {
     private ProcessDefinitionBuilder processDefinitionBuilder;
 
     @BeforeEach
@@ -28,8 +28,8 @@ public class ProcessDefinitionBuildableTest {
 
         assertThat(processDefinition.name(), is("foo"));
         assertThat(processDefinition.version(), is(1));
-        assertThat(processDefinition.start(), instanceOf(StartDefinition.class));
-        assertThat(processDefinition.start().next(), instanceOf(EndDefinition.class));
+        assertThat(processDefinition.start().refName(), is("start"));
+        assertThat(processDefinition.start().next().refName(), is("normalEnd"));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ProcessDefinitionBuildableTest {
         assertThat(serviceCoordinate.name(), is("aService"));
         assertThat(serviceCoordinate.version(), is(1));
         assertThat(serviceDefinition.refName(), is("serviceRefName"));
-        assertThat(serviceDefinition.next(), instanceOf(EndDefinition.class));
+        assertThat(serviceDefinition.next().refName(), is("end"));
     }
 
     @Test
@@ -97,7 +97,7 @@ public class ProcessDefinitionBuildableTest {
 
         assertThat(refNameServiceDefinition.refName(), is("refName"));
         assertThat(refName1ServiceDefinition.refName(), is("refName1"));
-        assertThat(refName1ServiceDefinition.next(), instanceOf(EndDefinition.class));
+        assertThat(refName1ServiceDefinition.next().refName(), is("end"));
     }
 
     @Test
@@ -127,6 +127,35 @@ public class ProcessDefinitionBuildableTest {
         assertThat(branch.expression(), is(Expression.of("aService.result.success == true")));
         assertThat(otherService.refName(), is("otherService"));
         assertThat(lastService.refName(), is("lastService"));
-        assertThat(lastService.next(), instanceOf(EndDefinition.class));
+        assertThat(lastService.next().refName(), is("end"));
+    }
+
+    @Test
+    public void should_build_with_fork_and_join_definition() {
+        processDefinitionBuilder.createStart();
+        processDefinitionBuilder.createEnd("end");
+        processDefinitionBuilder.createFork("aFork")
+            .branch(processDefinitionBuilder.createService("aService", ServiceCoordinate.of("aService", 1)))
+            .branch(processDefinitionBuilder.createService("otherService", ServiceCoordinate.of("otherService", 1)));
+        processDefinitionBuilder.createJoin("aJoin").on("aService", "otherService");
+
+        processDefinitionBuilder.link("start", "aFork");
+        processDefinitionBuilder.link("aJoin", "end");
+        ProcessDefinition processDefinition = processDefinitionBuilder.build();
+
+        ForkDefinition fork = processDefinition.start().next();
+        ForkBranchs forkBranchs = fork.branchs();
+        Iterator<ForkBranch> forkBranchIterator = forkBranchs.iterator();
+        ForkBranch branch1 = forkBranchIterator.next();
+        ForkBranch branch2 = forkBranchIterator.next();
+        ServiceDefinition aService = branch1.next();
+        ServiceDefinition otherService = branch2.next();
+        JoinDefinition joinDefinition = aService.next();
+
+        assertThat(aService.refName(), is("aService"));
+        assertThat(otherService.refName(), is("otherService"));
+        assertThat(aService.next().refName(), is("aJoin"));
+        assertThat(otherService.next().refName(), is("aJoin"));
+        assertThat(joinDefinition.next().refName(), is("end"));
     }
 }
