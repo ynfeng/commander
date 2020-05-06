@@ -24,7 +24,6 @@ public class ProcessDefinitionBuilderTest {
         processDefinitionBuilder.createStart();
         processDefinitionBuilder.createEnd("normalEnd");
         processDefinitionBuilder.link("start", "normalEnd");
-
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
         assertThat(processDefinition.name(), is("foo"));
@@ -95,7 +94,6 @@ public class ProcessDefinitionBuilderTest {
 
         ServiceDefinition refNameServiceDefinition = processDefinition.start().next();
         ServiceDefinition refName1ServiceDefinition = refNameServiceDefinition.next();
-
         assertThat(refNameServiceDefinition.refName(), is("refName"));
         assertThat(refName1ServiceDefinition.refName(), is("refName1"));
         assertThat(refName1ServiceDefinition.next().refName(), is("end"));
@@ -118,7 +116,6 @@ public class ProcessDefinitionBuilderTest {
 
         ServiceDefinition aServiceDefinition = processDefinition.start().next();
         DecisionDefinition decisionDefinition = aServiceDefinition.next();
-
         ConditionBranches branches = decisionDefinition.branches();
         Iterator<ConditionBranch> branchesIterator = branches.iterator();
         ConditionBranch branch = branchesIterator.next();
@@ -139,7 +136,6 @@ public class ProcessDefinitionBuilderTest {
             .branch(processDefinitionBuilder.createService("aService", ServiceCoordinate.of("aService", 1)))
             .branch(processDefinitionBuilder.createService("otherService", ServiceCoordinate.of("otherService", 1)));
         processDefinitionBuilder.createJoin("aJoin").on("aService", "otherService");
-
         processDefinitionBuilder.link("start", "aFork");
         processDefinitionBuilder.link("aJoin", "end");
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
@@ -152,7 +148,6 @@ public class ProcessDefinitionBuilderTest {
         ServiceDefinition aService = branch1.next();
         ServiceDefinition otherService = branch2.next();
         JoinDefinition joinDefinition = aService.next();
-
         assertThat(aService.refName(), is("aService"));
         assertThat(otherService.refName(), is("otherService"));
         assertThat(aService.next().refName(), is("aJoin"));
