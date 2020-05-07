@@ -1,12 +1,13 @@
-package com.github.ynfeng.commander.core.engine;
+package com.github.ynfeng.commander.core.context;
 
+import com.github.ynfeng.commander.core.engine.ProcessId;
 import com.google.common.collect.Maps;
 import java.util.Map;
 
 public final class ProcessContexts {
     private final Map<ProcessId, ProcessContext> contexts = Maps.newHashMap();
 
-    protected ProcessContexts() {
+    public ProcessContexts() {
 
     }
 

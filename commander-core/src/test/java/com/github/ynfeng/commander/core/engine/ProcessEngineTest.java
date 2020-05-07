@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
 
+import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinitionBuilder;
 import com.github.ynfeng.commander.definition.ServiceCoordinate;
