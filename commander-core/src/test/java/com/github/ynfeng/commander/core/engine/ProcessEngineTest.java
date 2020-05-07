@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
 
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
-import com.github.ynfeng.commander.core.definition.ServiceCoordinate;
+import com.github.ynfeng.commander.definition.ProcessDefinitionBuilder;
+import com.github.ynfeng.commander.definition.ServiceCoordinate;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

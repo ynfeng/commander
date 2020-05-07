@@ -1,6 +1,6 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
-
+import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
 import com.google.common.collect.Lists;
 import java.util.List;
 

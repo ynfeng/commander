@@ -1,4 +1,7 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
+
+import com.github.ynfeng.commander.core.definition.AbstractNodeDefinition;
+import com.github.ynfeng.commander.core.definition.NodeDefinition;
 
 public class DecisionDefinition extends AbstractNodeDefinition {
     private final ConditionBranches branches = new ConditionBranches();

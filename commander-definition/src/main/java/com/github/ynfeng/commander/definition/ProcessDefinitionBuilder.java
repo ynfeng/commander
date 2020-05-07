@@ -1,5 +1,8 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
+import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
+import com.github.ynfeng.commander.core.definition.NodeDefinition;
+import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 
 public class ProcessDefinitionBuilder {
     private final ProcessDefinition processDefinition;
