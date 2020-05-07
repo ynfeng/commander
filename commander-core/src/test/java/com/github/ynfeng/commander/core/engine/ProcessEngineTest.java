@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.sameInstance;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinitionBuilder;
-import com.github.ynfeng.commander.definition.ServiceCoordinate;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,9 +27,7 @@ public class ProcessEngineTest {
         ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
         builder.createStart();
         builder.createEnd("end");
-        builder.createService("testService", ServiceCoordinate.of("testService", 1));
-        builder.link("start", "testService");
-        builder.link("testService", "end");
+        builder.link("start", "end");
         ProcessDefinition processDefinition = builder.build();
 
         processEngine.startProcess(processDefinition);
@@ -43,9 +40,7 @@ public class ProcessEngineTest {
         ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
         builder.createStart();
         builder.createEnd("end");
-        builder.createService("testService", ServiceCoordinate.of("testService", 1));
-        builder.link("start", "testService");
-        builder.link("testService", "end");
+        builder.link("start", "end");
         ProcessDefinition processDefinition = builder.build();
 
         ProcessId processId = processEngine.startProcess(processDefinition);
