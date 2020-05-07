@@ -15,8 +15,8 @@ public class JoinDefinition extends NextableNodeDefinition {
 
     public void on(String... refNames) {
         for (String refName : refNames) {
-            Nextable nextable = definitions.get(refName);
-            nextable.next(this);
+            NextableNodeDefinition node = definitions.get(refName);
+            node.next(this);
             ons.add(refName);
         }
     }

@@ -33,7 +33,7 @@ public class ProcessDefinitionBuilder {
     }
 
     public ProcessDefinitionBuilder link(String sourceRefName, String targetRefName) {
-        Nextable source = nodeDefinitions.get(sourceRefName);
+        NextableNodeDefinition source = nodeDefinitions.get(sourceRefName);
         NodeDefinition target = nodeDefinitions.get(targetRefName);
         source.next(target);
         return this;
