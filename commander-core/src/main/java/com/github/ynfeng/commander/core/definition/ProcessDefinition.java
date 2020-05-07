@@ -18,7 +18,7 @@ public class ProcessDefinition {
         return version;
     }
 
-    public StartDefinition start() {
+    public NextableNodeDefinition start() {
         return start;
     }
 
