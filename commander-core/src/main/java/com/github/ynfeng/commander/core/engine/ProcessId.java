@@ -3,7 +3,7 @@ package com.github.ynfeng.commander.core.engine;
 import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(of = "idVal")
-public class ProcessId {
+public final class ProcessId {
     private String idVal;
 
     private ProcessId(String idVal) {
