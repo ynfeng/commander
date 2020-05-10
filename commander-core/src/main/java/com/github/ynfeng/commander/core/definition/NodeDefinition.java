@@ -5,7 +5,7 @@ public interface NodeDefinition {
     NodeDefinition NULL = new NodeDefinition() {
         @Override
         public String refName() {
-            throw new UnsupportedOperationException();
+           return "Empty node";
         }
     };
 

@@ -1,5 +1,5 @@
 rootProject.name = 'commander'
 
 include 'commander-core'
-include 'commander-definition'
+include 'commander-extend'
 

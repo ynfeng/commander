@@ -1,5 +1,0 @@
-dependencies {
-    testImplementation(
-            project(':commander-definition')
-    )
-}

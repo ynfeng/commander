@@ -1,20 +1,23 @@
-package com.github.ynfeng.commander.core.engine;
+package com.github.ynfeng.commander.executor;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.sameInstance;
 
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessIdGenerator;
+import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.github.ynfeng.commander.core.engine.ProcessEngine;
+import com.github.ynfeng.commander.definition.ProcessDefinitionBuilder;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ProcessEngineTest {
+class StartNodeExecutorTest {
+
     private ProcessIdGenerator processIdGenerator;
     private ProcessEngine processEngine;
 
@@ -27,22 +30,16 @@ public class ProcessEngineTest {
     }
 
     @Test
-    public void should_generate_process_id_when_start_process() {
-        ProcessDefinition processDefinition = new ProcessDefinition("test",1);
-
-        processEngine.startProcess(processDefinition);
-        Mockito.verify(processIdGenerator).nextId();
-    }
-
-    @Test
-    public void should_create_process_context_when_start_process() {
-        ProcessDefinition processDefinition = new ProcessDefinition("test",1);
+    public void should_execute_start_node() {
+        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
+        builder.createStart();
+        ProcessDefinition processDefinition = builder.build();
 
         ProcessId processId = processEngine.startProcess(processDefinition);
         ProcessContext processContext = processEngine.processContext(processId);
 
-        assertThat(processContext, notNullValue());
-        assertThat(processContext.processId(), sameInstance(processId));
-        assertThat(processContext.processDefinition(), sameInstance(processDefinition));
+        assertThat(processContext.status(), is(ProcessStatus.RUNNING));
+        assertThat(processContext.executedNodes().get(0), is("start"));
     }
+
 }

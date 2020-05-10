@@ -1,18 +1,23 @@
 package com.github.ynfeng.commander.core.context;
 
 
+import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.engine.ProcessId;
-import com.github.ynfeng.commander.core.engine.ProcessInstance;
+import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.List;
 
 public final class ProcessContext {
     private final ProcessId processId;
     private final ProcessDefinition processDefinition;
-    private ProcessInstance processInstance;
+    private final List<String> executedNodes = Lists.newArrayList();
+    private ProcessStatus processStatus;
+    private NodeDefinition currentNode = NodeDefinition.NULL;
 
     public ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
         this.processId = processId;
         this.processDefinition = processDefinition;
+        processStatus = ProcessStatus.CREATED;
     }
 
     public ProcessId processId() {
@@ -23,12 +28,32 @@ public final class ProcessContext {
         return processDefinition;
     }
 
-    public ProcessInstance processInstance() {
-        return processInstance;
+    public ProcessStatus status() {
+        return processStatus;
     }
 
-    public void attachProcessInstance(ProcessInstance processInstance) {
-        this.processInstance = processInstance;
+    public void start() {
+        currentNode = processDefinition.firstNode();
+    }
 
+    @SuppressWarnings("unchecked")
+    public <T extends NodeDefinition> T currentNode() {
+        return (T) currentNode;
+    }
+
+    public void addExecutedNode(String refName) {
+        executedNodes.add(refName);
+    }
+
+    public List<String> executedNodes() {
+        return Collections.unmodifiableList(executedNodes);
+    }
+
+    public <T extends NodeDefinition> void nextNode(T next) {
+        currentNode = next;
+    }
+
+    public void running() {
+        processStatus = ProcessStatus.RUNNING;
     }
 }

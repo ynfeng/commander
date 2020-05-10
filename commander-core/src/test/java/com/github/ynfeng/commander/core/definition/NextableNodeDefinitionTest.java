@@ -16,5 +16,4 @@ class NextableNodeDefinitionTest {
 
         assertThat(nextable.next().refName(), is("aNode"));
     }
-
 }

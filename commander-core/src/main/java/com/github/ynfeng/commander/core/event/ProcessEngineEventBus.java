@@ -1,6 +1,5 @@
 package com.github.ynfeng.commander.core.event;
 
-import com.github.ynfeng.commander.core.listener.EventListener;
 import com.google.common.collect.Lists;
 import java.util.List;
 

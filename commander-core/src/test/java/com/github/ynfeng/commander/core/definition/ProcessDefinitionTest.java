@@ -10,12 +10,12 @@ class ProcessDefinitionTest {
     @Test
     public void should_create() {
         ProcessDefinition processDefinition = new ProcessDefinition("aProcess",1);
-        processDefinition.start(new NextableNodeDefinition("aStartNode") {
+        processDefinition.firstNode(new NextableNodeDefinition("aStartNode") {
         });
 
         assertThat(processDefinition.name(), is("aProcess"));
         assertThat(processDefinition.version(), is(1));
-        assertThat(processDefinition.start().refName(), is("aStartNode"));
+        assertThat(processDefinition.firstNode().refName(), is("aStartNode"));
     }
 
 }
