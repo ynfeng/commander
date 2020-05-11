@@ -41,9 +41,6 @@ public final class ProcessContext {
         return (T) currentNode;
     }
 
-    public void addExecutedNode(String refName) {
-        executedNodes.add(refName);
-    }
 
     public List<String> executedNodes() {
         return Collections.unmodifiableList(executedNodes);
@@ -55,5 +52,18 @@ public final class ProcessContext {
 
     public void running() {
         processStatus = ProcessStatus.RUNNING;
+    }
+
+    public void complete() {
+        processStatus = ProcessStatus.COMPLETED;
+        addExecutedNode(currentNode.refName());
+    }
+
+    public void completeCurrentNode() {
+        addExecutedNode(currentNode.refName());
+    }
+
+    private void addExecutedNode(String refName) {
+        executedNodes.add(refName);
     }
 }

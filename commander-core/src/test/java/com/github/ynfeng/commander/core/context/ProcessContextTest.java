@@ -29,16 +29,24 @@ class ProcessContextTest {
     }
 
     @Test
-    public void should_add_exeucted_node(){
-        processContext.addExecutedNode("start");
-
-        assertThat(processContext.executedNodes().get(0), is("start"));
-    }
-
-    @Test
     public void should_next_node(){
         processContext.nextNode(NodeDefinition.NULL);
 
         assertThat(processContext.currentNode(), is(NodeDefinition.NULL));
+    }
+
+    @Test
+    public void should_complete(){
+        processContext.complete();
+
+        assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
+        assertThat(processContext.executedNodes().get(0), is("Empty node"));
+    }
+
+    @Test
+    public void should_complete_current_node(){
+        processContext.completeCurrentNode();
+
+        assertThat(processContext.executedNodes().get(0), is("Empty node"));
     }
 }

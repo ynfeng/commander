@@ -12,9 +12,9 @@ public class StartNodeExecutor implements NodeExecutor {
     @Override
     public void execute(ProcessContext context) {
         StartDefinition startDefinition = context.currentNode();
-        context.addExecutedNode(startDefinition.refName());
-        context.nextNode(startDefinition.next());
         context.running();
+        context.completeCurrentNode();
+        context.nextNode(startDefinition.next());
         EngineContext.publishEvent(NodeExecuteCompleteEvent.create(context));
     }
 

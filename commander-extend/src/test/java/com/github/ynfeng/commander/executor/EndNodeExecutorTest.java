@@ -10,19 +10,22 @@ import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinitionBuilder;
 import org.junit.jupiter.api.Test;
 
-class StartNodeExecutorTest extends ProcessEngineTestSupport {
+public class EndNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
-    public void should_execute_start_node() {
+    public void should_execute_end_node() {
         ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
+        builder.createEnd("end");
         builder.createStart();
+        builder.link("start", "end");
+
         ProcessDefinition processDefinition = builder.build();
 
         ProcessId processId = processEngine.startProcess(processDefinition);
         ProcessContext processContext = processEngine.processContext(processId);
 
-        assertThat(processContext.status(), is(ProcessStatus.RUNNING));
+        assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
         assertThat(processContext.executedNodes().get(0), is("start"));
+        assertThat(processContext.executedNodes().get(1), is("end"));
     }
-
 }
