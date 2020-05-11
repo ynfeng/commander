@@ -2,19 +2,13 @@ package com.github.ynfeng.commander.core.event;
 
 import com.github.ynfeng.commander.core.context.ProcessContext;
 
-public class ProcessContextCreatedEvent implements EngineEvent {
-    private final ProcessContext processContext;
+public class ProcessContextCreatedEvent extends AbstractEngineEvent{
 
     private ProcessContextCreatedEvent(ProcessContext processContext) {
-        this.processContext = processContext;
+        super(processContext);
     }
 
     public static ProcessContextCreatedEvent create(ProcessContext processContext) {
         return new ProcessContextCreatedEvent(processContext);
-    }
-
-    @Override
-    public ProcessContext context() {
-        return processContext;
     }
 }
