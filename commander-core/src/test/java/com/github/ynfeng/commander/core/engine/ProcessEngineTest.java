@@ -8,6 +8,7 @@ import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessIdGenerator;
+import com.github.ynfeng.commander.core.definition.FakeNodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ public class ProcessEngineTest {
     @Test
     public void should_create_process_context_when_start_process() {
         ProcessDefinition processDefinition = new ProcessDefinition("test",1);
-
+        processDefinition.firstNode(new FakeNodeDefinition("fake"));
         ProcessId processId = processEngine.startProcess(processDefinition);
         ProcessContext processContext = processEngine.processContext(processId);
 

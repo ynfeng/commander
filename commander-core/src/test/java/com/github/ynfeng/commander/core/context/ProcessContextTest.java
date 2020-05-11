@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.core.context;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.ynfeng.commander.core.definition.FakeNodeDefinition;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,9 +13,12 @@ class ProcessContextTest {
     private ProcessContext processContext;
 
     @BeforeEach
-    public void setUp(){
-        processContext = new ProcessContext(ProcessId.of("id"), new ProcessDefinition("test", 1));
+    public void setUp() {
+        ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
+        processDefinition.firstNode(new FakeNodeDefinition("fake"));
+        processContext = new ProcessContext(ProcessId.of("id"), processDefinition);
     }
+
 
     @Test
     public void should_be_created_status() {
@@ -22,31 +26,31 @@ class ProcessContextTest {
     }
 
     @Test
-    public void should_running(){
+    public void should_running() {
         processContext.running();
 
         assertThat(processContext.status(), is(ProcessStatus.RUNNING));
     }
 
     @Test
-    public void should_next_node(){
+    public void should_next_node() {
         processContext.nextNode(NodeDefinition.NULL);
 
         assertThat(processContext.currentNode(), is(NodeDefinition.NULL));
     }
 
     @Test
-    public void should_complete(){
+    public void should_complete() {
         processContext.complete();
 
         assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
-        assertThat(processContext.executedNodes().get(0), is("Empty node"));
+        assertThat(processContext.executedNodes().get(0), is("fake"));
     }
 
     @Test
-    public void should_complete_current_node(){
+    public void should_complete_current_node() {
         processContext.completeCurrentNode();
 
-        assertThat(processContext.executedNodes().get(0), is("Empty node"));
+        assertThat(processContext.executedNodes().get(0), is("fake"));
     }
 }

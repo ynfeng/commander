@@ -12,6 +12,6 @@ public class DefaultNodeExecutor implements NodeExecutor {
 
     @Override
     public boolean canExecute(NodeDefinition nodeDefinition) {
-        return Objects.isNull(nodeDefinition);
+        return Objects.isNull(nodeDefinition) || nodeDefinition == NodeDefinition.NULL;
     }
 }

@@ -5,7 +5,7 @@ public interface NodeDefinition {
     NodeDefinition NULL = new NodeDefinition() {
         @Override
         public String refName() {
-           return "Empty node";
+           return null;
         }
     };
 

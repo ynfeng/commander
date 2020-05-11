@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.core.context;
 
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
@@ -12,12 +13,13 @@ public final class ProcessContext {
     private final ProcessDefinition processDefinition;
     private final List<String> executedNodes = Lists.newArrayList();
     private ProcessStatus processStatus;
-    private NodeDefinition currentNode = NodeDefinition.NULL;
+    private NodeDefinition currentNode;
 
     public ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
         this.processId = processId;
         this.processDefinition = processDefinition;
         processStatus = ProcessStatus.CREATED;
+        currentNode = processDefinition.firstNode();
     }
 
     public ProcessId processId() {
@@ -30,10 +32,6 @@ public final class ProcessContext {
 
     public ProcessStatus status() {
         return processStatus;
-    }
-
-    public void start() {
-        currentNode = processDefinition.firstNode();
     }
 
     @SuppressWarnings("unchecked")
@@ -64,6 +62,8 @@ public final class ProcessContext {
     }
 
     private void addExecutedNode(String refName) {
-        executedNodes.add(refName);
+        if (!Strings.isNullOrEmpty(refName)) {
+            executedNodes.add(refName);
+        }
     }
 }
