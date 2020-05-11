@@ -3,9 +3,9 @@ package com.github.ynfeng.commander.core.event;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 
 public class AbstractEngineEvent implements EngineEvent {
-    protected ProcessContext processContext;
+    private final ProcessContext processContext;
 
-    public AbstractEngineEvent(ProcessContext processContext) {
+    protected AbstractEngineEvent(ProcessContext processContext) {
         this.processContext = processContext;
     }
 
