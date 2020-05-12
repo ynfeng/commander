@@ -55,6 +55,7 @@ public final class ProcessContext {
     public void complete() {
         processStatus = ProcessStatus.COMPLETED;
         addExecutedNode(currentNode.refName());
+        nextNode(NodeDefinition.NULL);
     }
 
     public void completeCurrentNode() {

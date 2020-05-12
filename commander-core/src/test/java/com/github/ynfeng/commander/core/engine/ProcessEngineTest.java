@@ -29,7 +29,7 @@ public class ProcessEngineTest {
 
     @Test
     public void should_generate_process_id_when_start_process() {
-        ProcessDefinition processDefinition = new ProcessDefinition("test",1);
+        ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
 
         processEngine.startProcess(processDefinition);
         Mockito.verify(processIdGenerator).nextId();
@@ -37,7 +37,7 @@ public class ProcessEngineTest {
 
     @Test
     public void should_create_process_context_when_start_process() {
-        ProcessDefinition processDefinition = new ProcessDefinition("test",1);
+        ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new FakeNodeDefinition("fake"));
         ProcessId processId = processEngine.startProcess(processDefinition);
         ProcessContext processContext = processEngine.processContext(processId);

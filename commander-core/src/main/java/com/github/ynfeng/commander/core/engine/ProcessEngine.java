@@ -6,7 +6,7 @@ import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.event.ProcessContextCreatedEvent;
+import com.github.ynfeng.commander.core.event.ProcessStartEvent;
 
 public final class ProcessEngine {
     private final ProcessContexts processContexts = new ProcessContexts();
@@ -23,7 +23,7 @@ public final class ProcessEngine {
     public ProcessId startProcess(ProcessDefinition processDefinition) {
         ProcessContext processContext = processContextFactory.createContext(processDefinition);
         processContexts.add(processContext);
-        EngineContext.publishEvent(ProcessContextCreatedEvent.create(processContext));
+        EngineContext.publishEvent(ProcessStartEvent.create(processContext));
         return processContext.processId();
     }
 
