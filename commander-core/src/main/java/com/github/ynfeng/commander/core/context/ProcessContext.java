@@ -3,6 +3,9 @@ package com.github.ynfeng.commander.core.context;
 
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.github.ynfeng.commander.core.engine.EngineContext;
+import com.github.ynfeng.commander.core.event.NodeExecuteCompleteEvent;
+import com.github.ynfeng.commander.core.event.ProcessExecuteCompleteEvent;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import java.util.Collections;
@@ -52,14 +55,15 @@ public final class ProcessContext {
         processStatus = ProcessStatus.RUNNING;
     }
 
-    public void complete() {
+    public void done() {
         processStatus = ProcessStatus.COMPLETED;
-        addExecutedNode(currentNode.refName());
-        nextNode(NodeDefinition.NULL);
+        EngineContext.publishEvent(ProcessExecuteCompleteEvent.create(this));
     }
 
-    public void completeCurrentNode() {
+    public void completeCurrentNode(NodeDefinition next) {
         addExecutedNode(currentNode.refName());
+        nextNode(next);
+        EngineContext.publishEvent(NodeExecuteCompleteEvent.create(this));
     }
 
     private void addExecutedNode(String refName) {

@@ -41,15 +41,14 @@ class ProcessContextTest {
 
     @Test
     public void should_complete() {
-        processContext.complete();
+        processContext.done();
 
         assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
-        assertThat(processContext.executedNodes().get(0), is("fake"));
     }
 
     @Test
     public void should_complete_current_node() {
-        processContext.completeCurrentNode();
+        processContext.completeCurrentNode(NodeDefinition.NULL);
 
         assertThat(processContext.executedNodes().get(0), is("fake"));
     }
