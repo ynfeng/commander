@@ -24,6 +24,7 @@ class EngineContextTest {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new FakeNodeDefinition("fake"));
         processContext = new ProcessContext(ProcessId.of("id"), processDefinition);
+        EngineContext.destory();
     }
 
     @Test

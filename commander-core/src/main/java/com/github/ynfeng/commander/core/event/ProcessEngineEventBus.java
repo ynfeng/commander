@@ -17,4 +17,8 @@ public class ProcessEngineEventBus implements EventBus {
     public void registerListener(EventListener listener) {
         listeners.add(listener);
     }
+
+    public void unRegisterAllEventListener() {
+        listeners.clear();
+    }
 }

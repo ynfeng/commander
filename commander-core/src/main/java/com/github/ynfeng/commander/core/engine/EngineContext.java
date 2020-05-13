@@ -19,4 +19,8 @@ public final class EngineContext {
     public static void publishEvent(EngineEvent engineEvent) {
         INSTANCE.eventBus.publishEvent(engineEvent);
     }
+
+    public static void destory() {
+        INSTANCE.eventBus.unRegisterAllEventListener();
+    }
 }
