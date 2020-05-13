@@ -38,7 +38,7 @@ public final class ProcessContext {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends NodeDefinition> T currentNode() {
+    public <T extends NodeDefinition> T readyNode() {
         return (T) currentNode;
     }
 

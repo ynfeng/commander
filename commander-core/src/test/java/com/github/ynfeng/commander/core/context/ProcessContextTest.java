@@ -3,9 +3,9 @@ package com.github.ynfeng.commander.core.context;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.core.definition.FakeNodeDefinition;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.github.ynfeng.commander.core.definition.StartDefinition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +15,7 @@ class ProcessContextTest {
     @BeforeEach
     public void setUp() {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
-        processDefinition.firstNode(new FakeNodeDefinition("fake"));
+        processDefinition.firstNode(new StartDefinition());
         processContext = new ProcessContext(ProcessId.of("id"), processDefinition);
     }
 
@@ -43,6 +43,6 @@ class ProcessContextTest {
     public void should_complete_current_node() {
         processContext.completeCurrentNode(NodeDefinition.NULL);
 
-        assertThat(processContext.executedNodes().get(0), is("fake"));
+        assertThat(processContext.executedNodes().get(0), is("start"));
     }
 }

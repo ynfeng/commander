@@ -5,8 +5,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
-import com.github.ynfeng.commander.core.definition.FakeNodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.github.ynfeng.commander.core.definition.StartDefinition;
 import com.github.ynfeng.commander.core.event.Event;
 import com.github.ynfeng.commander.core.event.EventListener;
 import com.github.ynfeng.commander.core.event.NodeExecuteCompleteEvent;
@@ -22,7 +22,7 @@ class EngineContextTest {
     @BeforeEach
     public void setUp() {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
-        processDefinition.firstNode(new FakeNodeDefinition("fake"));
+        processDefinition.firstNode(new StartDefinition());
         processContext = new ProcessContext(ProcessId.of("id"), processDefinition);
         EngineContext.destory();
     }

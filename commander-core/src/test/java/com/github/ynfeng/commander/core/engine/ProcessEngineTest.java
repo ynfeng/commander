@@ -5,35 +5,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 
+import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
-import com.github.ynfeng.commander.core.context.ProcessIdGenerator;
-import com.github.ynfeng.commander.core.definition.FakeNodeDefinition;
+import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
+import com.github.ynfeng.commander.core.definition.StartDefinition;
+import com.github.ynfeng.commander.core.executor.NodeExecutors;
+import com.github.ynfeng.commander.core.executor.StartNodeExecutor;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ProcessEngineTest {
-    private ProcessIdGenerator processIdGenerator;
-    private ProcessEngine processEngine;
-
-    @BeforeEach
-    public void setUp() {
-        processIdGenerator = Mockito.mock(ProcessIdGenerator.class);
-        Mockito.when(processIdGenerator.nextId()).thenReturn(ProcessId.of(UUID.randomUUID().toString()));
-        ProcessContextFactory processContextFactory = new ProcessContextFactory(processIdGenerator);
-
-        processEngine = ProcessEngine.builder()
-            .processContextFactory(processContextFactory)
-            .executorLauncher(new ExecutorLauncher())
-            .build();
-
-        processEngine.startUp();
-    }
+public class ProcessEngineTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_generate_process_id_when_start_process() {
@@ -46,7 +32,8 @@ public class ProcessEngineTest {
     @Test
     public void should_create_process_context_when_start_process() {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
-        processDefinition.firstNode(new FakeNodeDefinition("fake"));
+        processDefinition.firstNode(new StartDefinition());
+
         ProcessId processId = processEngine.startProcess(processDefinition);
         ProcessContext processContext = processEngine.processContext(processId);
 
@@ -75,5 +62,24 @@ public class ProcessEngineTest {
         });
 
         assertThat(exception.getMessage(), is("java.lang.NullPointerException: ExecutorLauncher not set."));
+    }
+
+    @Test
+    public void should_throw_execption_when_execute_not_support_node() {
+        ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
+        processDefinition.firstNode(new NextableNodeDefinition("dummy") {
+        });
+
+        ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
+            processEngine.startProcess(processDefinition);
+        });
+
+        assertThat(exception.getMessage(), is("Can't find any executor for dummy"));
+    }
+
+    @Override
+    protected void mockExtraExecutors(NodeExecutors nodeExecutors) {
+        Mockito.when(nodeExecutors.getExecutor(any(StartDefinition.class)))
+            .thenReturn(new StartNodeExecutor());
     }
 }
