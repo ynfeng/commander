@@ -65,7 +65,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
     }
 
     @Test
-    public void should_throw_execption_when_execute_not_support_node() {
+    public void should_throw_execption_when_execute_not_supported_node() {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new NextableNodeDefinition("dummy") {
         });
@@ -73,7 +73,6 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
         ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
             processEngine.startProcess(processDefinition);
         });
-
         assertThat(exception.getMessage(), is("Can't find any executor for dummy"));
     }
 
