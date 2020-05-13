@@ -59,7 +59,7 @@ class EngineContextTest {
                 return event instanceof NodeExecuteCompleteEvent;
             }
         });
-        EngineContext.publishEvent(ProcessStartEvent.create(processContext));
+        EngineContext.publishEvent(NodeExecuteCompleteEvent.create(processContext));
 
         assertThat(exceptedEvent.get(), instanceOf(NodeExecuteCompleteEvent.class));
     }
