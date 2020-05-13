@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class NodeDefinitionTest {
 
     @Test
-    public void should_get_ref_name() {
+    public void ref_name_should_null_given_null_node() {
         assertThat(NodeDefinition.NULL.refName(), nullValue());
     }
 

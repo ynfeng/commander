@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
-public class ProcessEngineTestSupport {
+public abstract class ProcessEngineTestSupport {
     protected ProcessIdGenerator processIdGenerator;
     protected ProcessEngine processEngine;
 

@@ -21,26 +21,19 @@ class ProcessContextTest {
 
 
     @Test
-    public void should_be_created_status() {
+    public void should_be_created_status_when_process_context_create() {
         assertThat(processContext.status(), is(ProcessStatus.CREATED));
     }
 
     @Test
-    public void should_running() {
+    public void should_running_status() {
         processContext.running();
 
         assertThat(processContext.status(), is(ProcessStatus.RUNNING));
     }
 
     @Test
-    public void should_next_node() {
-        processContext.nextNode(NodeDefinition.NULL);
-
-        assertThat(processContext.currentNode(), is(NodeDefinition.NULL));
-    }
-
-    @Test
-    public void should_complete() {
+    public void should_complete_preocess() {
         processContext.done();
 
         assertThat(processContext.status(), is(ProcessStatus.COMPLETED));

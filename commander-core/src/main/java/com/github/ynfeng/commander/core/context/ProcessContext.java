@@ -47,7 +47,7 @@ public final class ProcessContext {
         return Collections.unmodifiableList(executedNodes);
     }
 
-    public <T extends NodeDefinition> void nextNode(T next) {
+    private <T extends NodeDefinition> void nextNode(T next) {
         currentNode = next;
     }
 
