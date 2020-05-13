@@ -22,6 +22,10 @@ public final class ExecutorLauncher implements EventListener {
     @Override
     public void onEvent(Event event) {
         ProcessContext context = ((EngineEvent) event).context();
+        launchExecutor(context);
+    }
+
+    private void launchExecutor(ProcessContext context) {
         NodeExecutor nodeExecutor = nodeExecutors.getExecutor(context.currentNode());
         nodeExecutor.execute(context);
     }
