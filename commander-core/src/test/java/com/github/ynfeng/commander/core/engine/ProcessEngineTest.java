@@ -1,8 +1,10 @@
 package com.github.ynfeng.commander.core.engine;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
@@ -23,7 +25,13 @@ public class ProcessEngineTest {
     public void setUp() {
         processIdGenerator = Mockito.mock(ProcessIdGenerator.class);
         Mockito.when(processIdGenerator.nextId()).thenReturn(ProcessId.of(UUID.randomUUID().toString()));
-        processEngine = new ProcessEngine(new ProcessContextFactory(processIdGenerator));
+        ProcessContextFactory processContextFactory = new ProcessContextFactory(processIdGenerator);
+
+        processEngine = ProcessEngine.builder()
+            .processContextFactory(processContextFactory)
+            .executorLauncher(new ExecutorLauncher())
+            .build();
+
         processEngine.startUp();
     }
 
@@ -45,5 +53,27 @@ public class ProcessEngineTest {
         assertThat(processContext, notNullValue());
         assertThat(processContext.processId(), sameInstance(processId));
         assertThat(processContext.processDefinition(), sameInstance(processDefinition));
+    }
+
+    @Test
+    public void should_throw_exception_when_startup_with_out_process_context_factory() {
+        ProcessEngine processEngine = ProcessEngine.builder().build();
+        ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
+            processEngine.startUp();
+        });
+
+        assertThat(exception.getMessage(), is("java.lang.NullPointerException: ProcessContextFactory not set."));
+    }
+
+    @Test
+    public void should_throw_exception_when_startup_with_out_executor_launcher() {
+        ProcessEngine processEngine = ProcessEngine.builder()
+            .processContextFactory(new ProcessContextFactory(null))
+            .build();
+        ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
+            processEngine.startUp();
+        });
+
+        assertThat(exception.getMessage(), is("java.lang.NullPointerException: ExecutorLauncher not set."));
     }
 }

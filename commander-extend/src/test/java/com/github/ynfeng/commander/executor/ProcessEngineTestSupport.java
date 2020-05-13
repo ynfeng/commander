@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.executor;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessIdGenerator;
+import com.github.ynfeng.commander.core.engine.ExecutorLauncher;
 import com.github.ynfeng.commander.core.engine.ProcessEngine;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,12 @@ public abstract class ProcessEngineTestSupport {
     public void setUp() {
         processIdGenerator = Mockito.mock(ProcessIdGenerator.class);
         Mockito.when(processIdGenerator.nextId()).thenReturn(ProcessId.of(UUID.randomUUID().toString()));
-        processEngine = new ProcessEngine(new ProcessContextFactory(processIdGenerator));
+        ProcessContextFactory processContextFactory = new ProcessContextFactory(processIdGenerator);
+        processEngine = ProcessEngine.builder()
+            .processContextFactory(processContextFactory)
+            .executorLauncher(new ExecutorLauncher())
+            .build();
+
         processEngine.startUp();
     }
 }
