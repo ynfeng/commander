@@ -41,7 +41,7 @@ class ProcessContextTest {
 
     @Test
     public void should_complete_current_node() {
-        processContext.completeCurrentNode(NodeDefinition.NULL);
+        processContext.completeReadyNode(NodeDefinition.NULL);
 
         assertThat(processContext.executedNodes().get(0), is("start"));
     }

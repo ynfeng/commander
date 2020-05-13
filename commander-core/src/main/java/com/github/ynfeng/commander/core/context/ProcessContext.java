@@ -60,7 +60,7 @@ public final class ProcessContext {
         EngineContext.publishEvent(ProcessExecuteCompleteEvent.create(this));
     }
 
-    public void completeCurrentNode(NodeDefinition next) {
+    public void completeReadyNode(NodeDefinition next) {
         addExecutedNode(currentNode.refName());
         nextNode(next);
         EngineContext.publishEvent(NodeExecuteCompleteEvent.create(this));

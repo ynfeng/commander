@@ -8,7 +8,7 @@ public class EndNodeExecutor implements NodeExecutor {
 
     @Override
     public void execute(ProcessContext context) {
-        context.completeCurrentNode(NodeDefinition.NULL);
+        context.completeReadyNode(NodeDefinition.NULL);
         context.done();
     }
 

@@ -9,7 +9,7 @@ public class ServiceNodeExecutor implements NodeExecutor {
     @Override
     public void execute(ProcessContext context) {
         ServiceDefinition serviceDefinition = context.readyNode();
-        context.completeCurrentNode(serviceDefinition.next());
+        context.completeReadyNode(serviceDefinition.next());
     }
 
     @Override
