@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 
 public final class ProcessContexts {
-    private final Map<ProcessId, ProcessContext> contexts = Maps.newHashMap();
+    private final Map<ProcessId, ProcessContext> contexts = Maps.newConcurrentMap();
 
     public ProcessContexts() {
 
