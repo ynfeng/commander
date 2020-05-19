@@ -10,7 +10,7 @@ public class StartNodeExecutor implements NodeExecutor {
     public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
         StartDefinition startDefinition = (StartDefinition) nodeDefinition;
         context.running();
-        context.completeReadyNode(startDefinition.next());
+        context.completeNode(startDefinition.next());
     }
 
     @Override

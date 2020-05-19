@@ -12,7 +12,7 @@ public final class ProcessContext {
     private final ProcessId processId;
     private final ProcessDefinition processDefinition;
     private ProcessStatus processStatus;
-    private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue();
+    private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
 
     public ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
         this.processId = processId;
@@ -38,7 +38,7 @@ public final class ProcessContext {
         return (T) readyQueue.poll();
     }
 
-    private <T extends NodeDefinition> void nextNode(T next) {
+    private <T extends NodeDefinition> void addReadyNode(T next) {
         readyQueue.offer(next);
     }
 
@@ -51,8 +51,8 @@ public final class ProcessContext {
         EngineContext.publishEvent(ProcessExecuteCompleteEvent.create(this));
     }
 
-    public void completeReadyNode(NodeDefinition next) {
-        nextNode(next);
+    public void completeNode(NodeDefinition next) {
+        addReadyNode(next);
         EngineContext.publishEvent(NodeExecuteCompleteEvent.create(this));
     }
 }
