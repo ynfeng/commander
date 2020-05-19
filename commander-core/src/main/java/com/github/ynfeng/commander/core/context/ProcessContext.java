@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public final class ProcessContext {
     private final ProcessId processId;
     private final ProcessDefinition processDefinition;
-    private ProcessStatus processStatus;
+    private volatile ProcessStatus processStatus;
     private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
 
     public ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
