@@ -3,7 +3,6 @@ package com.github.ynfeng.commander.core.context;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,12 +36,5 @@ class ProcessContextTest {
         processContext.done();
 
         assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
-    }
-
-    @Test
-    public void should_complete_current_node() {
-        processContext.completeReadyNode(NodeDefinition.NULL);
-
-        assertThat(processContext.executedNodes().get(0), is("start"));
     }
 }

@@ -4,11 +4,12 @@ package com.github.ynfeng.commander.core.definition;
 public class ProcessDefinition {
     private final String name;
     private final int version;
-    private NextableNodeDefinition firstNode;
+    private NodeDefinition firstNode;
 
     public ProcessDefinition(String name, int version) {
         this.name = name;
         this.version = version;
+        firstNode = NodeDefinition.NULL;
     }
 
     public String name() {
@@ -19,7 +20,7 @@ public class ProcessDefinition {
         return version;
     }
 
-    public NextableNodeDefinition firstNode() {
+    public NodeDefinition firstNode() {
         return firstNode;
     }
 

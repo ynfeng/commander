@@ -1,7 +1,7 @@
 package com.github.ynfeng.commander.core.definition;
 
 public abstract class NextableNodeDefinition extends AbstractNodeDefinition implements Nextable {
-    private NodeDefinition next;
+    private NodeDefinition next = NodeDefinition.NULL;
 
     protected NextableNodeDefinition(String refName) {
         super(refName);

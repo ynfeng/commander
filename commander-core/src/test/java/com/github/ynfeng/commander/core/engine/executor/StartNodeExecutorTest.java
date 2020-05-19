@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.executor;
+package com.github.ynfeng.commander.core.engine.executor;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,7 +26,6 @@ class StartNodeExecutorTest extends ProcessEngineTestSupport {
         ProcessContext processContext = processEngine.processContext(processId);
 
         assertThat(processContext.status(), is(ProcessStatus.RUNNING));
-        assertThat(processContext.executedNodes().get(0), is("start"));
     }
 
     @Override

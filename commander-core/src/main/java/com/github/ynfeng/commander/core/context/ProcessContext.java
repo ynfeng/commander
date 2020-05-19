@@ -6,23 +6,19 @@ import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.engine.EngineContext;
 import com.github.ynfeng.commander.core.event.NodeExecuteCompleteEvent;
 import com.github.ynfeng.commander.core.event.ProcessExecuteCompleteEvent;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import java.util.Collections;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ProcessContext {
     private final ProcessId processId;
     private final ProcessDefinition processDefinition;
-    private final List<String> executedNodes = Lists.newArrayList();
     private ProcessStatus processStatus;
-    private NodeDefinition currentNode;
+    private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue();
 
     public ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
         this.processId = processId;
         this.processDefinition = processDefinition;
         processStatus = ProcessStatus.CREATED;
-        currentNode = processDefinition.firstNode();
+        readyQueue.offer(processDefinition.firstNode());
     }
 
     public ProcessId processId() {
@@ -39,16 +35,11 @@ public final class ProcessContext {
 
     @SuppressWarnings("unchecked")
     public <T extends NodeDefinition> T readyNode() {
-        return (T) currentNode;
-    }
-
-
-    public List<String> executedNodes() {
-        return Collections.unmodifiableList(executedNodes);
+        return (T) readyQueue.poll();
     }
 
     private <T extends NodeDefinition> void nextNode(T next) {
-        currentNode = next;
+        readyQueue.offer(next);
     }
 
     public void running() {
@@ -61,14 +52,7 @@ public final class ProcessContext {
     }
 
     public void completeReadyNode(NodeDefinition next) {
-        addExecutedNode(currentNode.refName());
         nextNode(next);
         EngineContext.publishEvent(NodeExecuteCompleteEvent.create(this));
-    }
-
-    private void addExecutedNode(String refName) {
-        if (!Strings.isNullOrEmpty(refName)) {
-            executedNodes.add(refName);
-        }
     }
 }

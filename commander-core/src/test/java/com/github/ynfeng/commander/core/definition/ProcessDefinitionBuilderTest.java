@@ -29,7 +29,7 @@ public class ProcessDefinitionBuilderTest {
         assertThat(processDefinition.name(), is("foo"));
         assertThat(processDefinition.version(), is(1));
         assertThat(processDefinition.firstNode().refName(), is("start"));
-        assertThat(processDefinition.firstNode().next().refName(), is("normalEnd"));
+        assertThat(((StartDefinition) processDefinition.firstNode()).next().refName(), is("normalEnd"));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class ProcessDefinitionBuilderTest {
         processDefinitionBuilder.link("serviceRefName", "end");
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
-        ServiceDefinition serviceDefinition = processDefinition.firstNode().next();
+        ServiceDefinition serviceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
         ServiceCoordinate serviceCoordinate = serviceDefinition.serviceCoordinate();
         assertThat(serviceDefinition, instanceOf(ServiceDefinition.class));
         assertThat(serviceCoordinate.name(), is("aService"));
@@ -92,7 +92,7 @@ public class ProcessDefinitionBuilderTest {
             .link("refName1", "end");
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
-        ServiceDefinition refNameServiceDefinition = processDefinition.firstNode().next();
+        ServiceDefinition refNameServiceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
         ServiceDefinition refName1ServiceDefinition = refNameServiceDefinition.next();
         assertThat(refNameServiceDefinition.refName(), is("refName"));
         assertThat(refName1ServiceDefinition.refName(), is("refName1"));
@@ -114,7 +114,7 @@ public class ProcessDefinitionBuilderTest {
         processDefinitionBuilder.link("lastService", "end");
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
-        ServiceDefinition aServiceDefinition = processDefinition.firstNode().next();
+        ServiceDefinition aServiceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
         DecisionDefinition decisionDefinition = aServiceDefinition.next();
         ConditionBranches branches = decisionDefinition.branches();
         Iterator<ConditionBranch> branchesIterator = branches.iterator();
@@ -140,7 +140,7 @@ public class ProcessDefinitionBuilderTest {
         processDefinitionBuilder.link("aJoin", "end");
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
-        ForkDefinition fork = processDefinition.firstNode().next();
+        ForkDefinition fork = ((StartDefinition) processDefinition.firstNode()).next();
         ForkBranchs forkBranchs = fork.branchs();
         Iterator<ForkBranch> forkBranchIterator = forkBranchs.iterator();
         ForkBranch branch1 = forkBranchIterator.next();

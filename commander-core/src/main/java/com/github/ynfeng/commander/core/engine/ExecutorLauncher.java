@@ -2,11 +2,12 @@ package com.github.ynfeng.commander.core.engine;
 
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
+import com.github.ynfeng.commander.core.engine.executor.NodeExecutor;
+import com.github.ynfeng.commander.core.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.core.event.EngineEvent;
 import com.github.ynfeng.commander.core.event.Event;
 import com.github.ynfeng.commander.core.event.EventListener;
-import com.github.ynfeng.commander.core.executor.NodeExecutor;
-import com.github.ynfeng.commander.core.executor.NodeExecutors;
+import java.util.Objects;
 
 public final class ExecutorLauncher implements EventListener {
     private final NodeExecutors nodeExecutors;
@@ -27,11 +28,22 @@ public final class ExecutorLauncher implements EventListener {
 
     private void launchExecutor(ProcessContext context) {
         NodeDefinition readyNode = context.readyNode();
-        NodeExecutor nodeExecutor = nodeExecutors.getExecutor(readyNode);
-        if (nodeExecutor == null) {
-            throw new ProcessEngineException("Can't find any executor for " + readyNode.refName());
+        while (isExecutable(readyNode)) {
+            NodeExecutor nodeExecutor = nodeExecutors.getExecutor(readyNode);
+            checkExecutorNotNull(nodeExecutor, readyNode.refName());
+            nodeExecutor.execute(context, readyNode);
+            readyNode = context.readyNode();
         }
-        nodeExecutor.execute(context);
+    }
+
+    private static void checkExecutorNotNull(NodeExecutor nodeExecutor, String refName) {
+        if (nodeExecutor == null) {
+            throw new ProcessEngineException("Can't find any executor for " + refName);
+        }
+    }
+
+    private static boolean isExecutable(NodeDefinition readyNode) {
+        return !(NodeDefinition.NULL == readyNode || Objects.isNull(readyNode));
     }
 
     @Override
