@@ -1,3 +1,0 @@
-com.github.ynfeng.commander.core.engine.executor.StartNodeExecutor
-com.github.ynfeng.commander.core.engine.executor.EndNodeExecutor
-com.github.ynfeng.commander.core.engine.executor.ServiceNodeExecutor
