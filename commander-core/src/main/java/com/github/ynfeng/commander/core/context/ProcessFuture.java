@@ -3,24 +3,24 @@ package com.github.ynfeng.commander.core.context;
 import com.github.ynfeng.commander.core.engine.ProcessEngineException;
 import java.util.concurrent.Future;
 
-public class ProcessStartFuture {
+public class ProcessFuture {
     private final Future<?> future;
     private final ProcessId processId;
 
-    private ProcessStartFuture(ProcessId processId, Future<?> future) {
+    private ProcessFuture(ProcessId processId, Future<?> future) {
         this.processId = processId;
         this.future = future;
     }
 
-    public static ProcessStartFuture create(ProcessId processId, Future<?> future) {
-        return new ProcessStartFuture(processId, future);
+    public static ProcessFuture create(ProcessId processId, Future<?> future) {
+        return new ProcessFuture(processId, future);
     }
 
     public ProcessId processId() {
         return processId;
     }
 
-    public ProcessStartFuture waitComplete() {
+    public ProcessFuture waitComplete() {
         try {
             future.get();
             return this;

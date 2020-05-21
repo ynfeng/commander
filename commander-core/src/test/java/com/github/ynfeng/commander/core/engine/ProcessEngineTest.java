@@ -12,7 +12,7 @@ import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
-import com.github.ynfeng.commander.core.context.ProcessStartFuture;
+import com.github.ynfeng.commander.core.context.ProcessFuture;
 import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
@@ -40,7 +40,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new StartDefinition());
 
-        ProcessStartFuture processStartFuture = processEngine.startProcess(processDefinition);
+        ProcessFuture processStartFuture = processEngine.startProcess(processDefinition);
         ProcessId processId = processStartFuture.processId();
         ProcessContext processContext = processEngine.processContext(processId);
 

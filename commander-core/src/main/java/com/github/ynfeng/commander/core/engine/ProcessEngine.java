@@ -7,7 +7,7 @@ import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
 import com.github.ynfeng.commander.core.context.ProcessId;
-import com.github.ynfeng.commander.core.context.ProcessStartFuture;
+import com.github.ynfeng.commander.core.context.ProcessFuture;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.event.ProcessStartEvent;
 import java.util.concurrent.ExecutorService;
@@ -31,10 +31,10 @@ public final class ProcessEngine {
         }
     }
 
-    public ProcessStartFuture startProcess(ProcessDefinition processDefinition) {
+    public ProcessFuture startProcess(ProcessDefinition processDefinition) {
         ProcessContext processContext = createContext(processDefinition);
         final Future<?> future = publishProcessStartEvent(processContext);
-        return ProcessStartFuture.create(processContext.processId(), future);
+        return ProcessFuture.create(processContext.processId(), future);
     }
 
     private ProcessContext createContext(ProcessDefinition processDefinition) {
