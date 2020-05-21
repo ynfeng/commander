@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(of = "idVal")
 public final class ProcessId {
-    private String idVal;
+    private final String idVal;
 
     private ProcessId(String idVal) {
         this.idVal = idVal;

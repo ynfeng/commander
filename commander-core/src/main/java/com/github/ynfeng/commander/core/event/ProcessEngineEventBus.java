@@ -12,6 +12,7 @@ public class ProcessEngineEventBus implements EventBus {
             .forEach(listener -> listener.onEvent(event));
     }
 
+    @Override
     public void registerListener(EventListener listener) {
         listeners.add(listener);
     }
