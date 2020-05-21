@@ -30,7 +30,7 @@ public class ServiceNodeExecutorTest extends ProcessEngineTestSupport {
 
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessId processId = processEngine.startProcessAndWaitComplete(processDefinition);
+        ProcessId processId = processEngine.startProcess(processDefinition).waitComplete().processId();
         ProcessContext processContext = processEngine.processContext(processId);
 
         assertThat(processContext.status(), is(ProcessStatus.COMPLETED));

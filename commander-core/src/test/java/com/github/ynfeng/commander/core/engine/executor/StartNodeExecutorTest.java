@@ -22,7 +22,7 @@ class StartNodeExecutorTest extends ProcessEngineTestSupport {
         builder.createStart();
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessId processId = processEngine.startProcessAndWaitComplete(processDefinition);
+        ProcessId processId = processEngine.startProcess(processDefinition).waitComplete().processId();
         ProcessContext processContext = processEngine.processContext(processId);
 
         assertThat(processContext.status(), is(ProcessStatus.RUNNING));
