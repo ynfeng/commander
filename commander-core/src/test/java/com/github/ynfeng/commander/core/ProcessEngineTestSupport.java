@@ -8,6 +8,7 @@ import com.github.ynfeng.commander.core.engine.ExecutorLauncher;
 import com.github.ynfeng.commander.core.engine.ProcessEngine;
 import com.github.ynfeng.commander.core.engine.executor.NodeExecutors;
 import java.util.UUID;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -30,6 +31,7 @@ public abstract class ProcessEngineTestSupport {
         processEngine = ProcessEngine.builder()
             .processContextFactory(processContextFactory)
             .executorLauncher(new ExecutorLauncher(nodeExecutors))
+            .executorService(Executors.newWorkStealingPool())
             .build();
         processEngine.startUp();
     }

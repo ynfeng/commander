@@ -26,7 +26,7 @@ public class EndNodeExecutorTest extends ProcessEngineTestSupport {
 
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessId processId = processEngine.startProcess(processDefinition);
+        ProcessId processId = processEngine.startProcessAndWaitComplete(processDefinition);
         ProcessContext processContext = processEngine.processContext(processId);
 
         assertThat(processContext.status(), is(ProcessStatus.COMPLETED));

@@ -5,7 +5,7 @@ public class ProcessEngineException extends RuntimeException {
         super(msg);
     }
 
-    public ProcessEngineException(Exception e) {
+    public ProcessEngineException(Throwable e) {
         super(e);
     }
 }

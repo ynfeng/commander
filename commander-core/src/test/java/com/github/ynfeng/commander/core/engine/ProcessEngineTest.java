@@ -1,5 +1,6 @@
 package com.github.ynfeng.commander.core.engine;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
@@ -12,9 +13,13 @@ import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
+import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
+import com.github.ynfeng.commander.core.definition.TestableDefinition;
+import com.github.ynfeng.commander.core.engine.executor.NodeExecutor;
 import com.github.ynfeng.commander.core.engine.executor.NodeExecutors;
+import com.github.ynfeng.commander.core.engine.executor.SPINodeExecutors;
 import com.github.ynfeng.commander.core.engine.executor.StartNodeExecutor;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -65,20 +70,58 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
     }
 
     @Test
+    public void should_throw_exception_when_startup_with_out_executor_service() {
+        ProcessEngine processEngine = ProcessEngine.builder()
+            .processContextFactory(new ProcessContextFactory(null))
+            .executorLauncher(new ExecutorLauncher(new SPINodeExecutors()))
+            .build();
+
+        ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
+            processEngine.startUp();
+        });
+
+        assertThat(exception.getMessage(), is("java.lang.NullPointerException: Executor service not set."));
+    }
+
+    @Test
     public void should_throw_execption_when_execute_not_supported_node() {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new NextableNodeDefinition("dummy") {
         });
 
         ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
-            processEngine.startProcess(processDefinition);
+            processEngine.startProcessAndWaitComplete(processDefinition);
         });
-        assertThat(exception.getMessage(), is("Can't find any executor for dummy"));
+        assertThat(exception.getMessage(), is("com.github.ynfeng.commander.core.engine.ProcessEngineException: Can't find any executor for dummy"));
+    }
+
+    @Test
+    public void should_warp_exception_when_executor_throws_exception(){
+        ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
+        processDefinition.firstNode(new TestableDefinition("testable"));
+
+        ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
+            processEngine.startProcessAndWaitComplete(processDefinition);
+        });
+        assertThat(exception.getCause(), instanceOf(NullPointerException.class));
     }
 
     @Override
     protected void mockExtraExecutors(NodeExecutors nodeExecutors) {
         Mockito.when(nodeExecutors.getExecutor(any(StartDefinition.class)))
             .thenReturn(new StartNodeExecutor());
+
+        Mockito.when(nodeExecutors.getExecutor(any(TestableDefinition.class)))
+            .thenReturn(new NodeExecutor() {
+                @Override
+                public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
+                    throw new NullPointerException();
+                }
+
+                @Override
+                public boolean canExecute(NodeDefinition nodeDefinition) {
+                    return nodeDefinition instanceof TestableDefinition;
+                }
+            });
     }
 }
