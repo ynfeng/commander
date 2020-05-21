@@ -5,19 +5,19 @@ import java.util.concurrent.Future;
 
 public class ProcessFuture {
     private final Future<?> future;
-    private final ProcessId processId;
+    private final ProcessContext processContext;
 
-    private ProcessFuture(ProcessId processId, Future<?> future) {
-        this.processId = processId;
+    private ProcessFuture(ProcessContext processContext, Future<?> future) {
+        this.processContext = processContext;
         this.future = future;
     }
 
-    public static ProcessFuture create(ProcessId processId, Future<?> future) {
-        return new ProcessFuture(processId, future);
+    public static ProcessFuture create(ProcessContext processContext, Future<?> future) {
+        return new ProcessFuture(processContext, future);
     }
 
     public ProcessId processId() {
-        return processId;
+        return processContext.processId();
     }
 
     public ProcessFuture waitComplete() {

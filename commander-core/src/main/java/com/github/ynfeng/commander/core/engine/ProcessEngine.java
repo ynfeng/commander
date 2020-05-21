@@ -34,7 +34,7 @@ public final class ProcessEngine {
     public ProcessFuture startProcess(ProcessDefinition processDefinition) {
         ProcessContext processContext = createContext(processDefinition);
         final Future<?> future = publishProcessStartEvent(processContext);
-        return ProcessFuture.create(processContext.processId(), future);
+        return ProcessFuture.create(processContext, future);
     }
 
     private ProcessContext createContext(ProcessDefinition processDefinition) {
