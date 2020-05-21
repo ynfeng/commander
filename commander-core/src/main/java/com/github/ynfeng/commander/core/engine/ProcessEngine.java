@@ -3,15 +3,15 @@ package com.github.ynfeng.commander.core.engine;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.github.ynfeng.commander.core.context.EngineContext;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
-import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessFuture;
+import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.event.ProcessStartEvent;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 import lombok.Builder;
 
 @Builder
@@ -33,8 +33,8 @@ public final class ProcessEngine {
 
     public ProcessFuture startProcess(ProcessDefinition processDefinition) {
         ProcessContext processContext = createContext(processDefinition);
-        final Future<?> future = publishProcessStartEvent(processContext);
-        return ProcessFuture.create(processContext, future);
+        publishProcessStartEvent(processContext);
+        return ProcessFuture.create(processContext);
     }
 
     private ProcessContext createContext(ProcessDefinition processDefinition) {
@@ -43,8 +43,8 @@ public final class ProcessEngine {
         return processContext;
     }
 
-    private Future<?> publishProcessStartEvent(ProcessContext processContext) {
-        return executorService.submit(() -> {
+    private void publishProcessStartEvent(ProcessContext processContext) {
+        executorService.execute(() -> {
             EngineContext.publishEvent(ProcessStartEvent.create(processContext));
         });
     }

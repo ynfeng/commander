@@ -3,16 +3,17 @@ package com.github.ynfeng.commander.core.context;
 
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.engine.EngineContext;
 import com.github.ynfeng.commander.core.event.NodeExecuteCompleteEvent;
 import com.github.ynfeng.commander.core.event.ProcessExecuteCompleteEvent;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public final class ProcessContext {
+public class ProcessContext {
     private final ProcessId processId;
     private final ProcessDefinition processDefinition;
     private volatile ProcessStatus processStatus;
     private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
+    private Throwable executeException;
 
     public ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
         this.processId = processId;
@@ -46,7 +47,7 @@ public final class ProcessContext {
         processStatus = ProcessStatus.RUNNING;
     }
 
-    public void done() {
+    public void complete() {
         processStatus = ProcessStatus.COMPLETED;
         EngineContext.publishEvent(ProcessExecuteCompleteEvent.create(this));
     }
@@ -54,5 +55,18 @@ public final class ProcessContext {
     public void completeNode(NodeDefinition next) {
         addReadyNode(next);
         EngineContext.publishEvent(NodeExecuteCompleteEvent.create(this));
+    }
+
+    public void executeException(Throwable t) {
+        executeException = t;
+    }
+
+
+    public boolean hasException() {
+        return Objects.nonNull(executeException);
+    }
+
+    public Throwable executeException() {
+        return executeException;
     }
 }

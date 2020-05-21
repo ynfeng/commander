@@ -1,5 +1,6 @@
 package com.github.ynfeng.commander.core.engine;
 
+import com.github.ynfeng.commander.core.context.EngineContext;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.engine.executor.NodeExecutor;
@@ -17,7 +18,7 @@ public final class ExecutorLauncher implements EventListener {
     }
 
     public void startUp() {
-        EngineContext.registerListener(this);
+        EngineContext.registerEventListener(this);
     }
 
     @Override
@@ -27,12 +28,17 @@ public final class ExecutorLauncher implements EventListener {
     }
 
     private void launchExecutor(ProcessContext context) {
-        NodeDefinition readyNode = context.readyNode();
-        while (isExecutable(readyNode)) {
-            NodeExecutor nodeExecutor = nodeExecutors.getExecutor(readyNode);
-            checkExecutorNotNull(nodeExecutor, readyNode.refName());
-            nodeExecutor.execute(context, readyNode);
-            readyNode = context.readyNode();
+        try {
+            NodeDefinition readyNode = context.readyNode();
+            while (isExecutable(readyNode)) {
+                NodeExecutor nodeExecutor = nodeExecutors.getExecutor(readyNode);
+                checkExecutorNotNull(nodeExecutor, readyNode.refName());
+                nodeExecutor.execute(context, readyNode);
+                readyNode = context.readyNode();
+            }
+        } catch (Exception e) {
+            context.executeException(e);
+            context.complete();
         }
     }
 

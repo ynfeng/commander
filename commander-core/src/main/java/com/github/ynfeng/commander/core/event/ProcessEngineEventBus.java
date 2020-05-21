@@ -1,10 +1,9 @@
 package com.github.ynfeng.commander.core.event;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class ProcessEngineEventBus implements EventBus {
-    private final List<EventListener> listeners = Lists.newArrayList();
+    private final ConcurrentLinkedQueue<EventListener> listeners = new ConcurrentLinkedQueue<>();
 
     @Override
     public void publishEvent(Event event) {
@@ -13,12 +12,19 @@ public class ProcessEngineEventBus implements EventBus {
             .forEach(listener -> listener.onEvent(event));
     }
 
-    @Override
     public void registerListener(EventListener listener) {
         listeners.add(listener);
     }
 
-    public void unRegisterAllEventListener() {
+    public void removeAllListeners() {
         listeners.clear();
+    }
+
+    public void removeListener(EventListener eventListener) {
+        listeners.remove(eventListener);
+    }
+
+    public int numOfListeners() {
+        return listeners.size();
     }
 }

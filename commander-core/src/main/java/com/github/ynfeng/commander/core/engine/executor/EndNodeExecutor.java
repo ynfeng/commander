@@ -9,7 +9,7 @@ public class EndNodeExecutor implements NodeExecutor {
     @Override
     public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
         context.completeNode(NodeDefinition.NULL);
-        context.done();
+        context.complete();
     }
 
     @Override

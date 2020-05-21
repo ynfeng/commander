@@ -18,7 +18,7 @@ import org.mockito.Mockito;
 public class EndNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
-    public void should_execute_end_node() {
+    public void should_execute_end_node() throws InterruptedException {
         ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
         builder.createEnd("end");
         builder.createStart();

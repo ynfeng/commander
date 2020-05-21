@@ -33,7 +33,7 @@ class ProcessContextTest {
 
     @Test
     public void should_complete_preocess() {
-        processContext.done();
+        processContext.complete();
 
         assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
     }

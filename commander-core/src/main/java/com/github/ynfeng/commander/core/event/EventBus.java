@@ -4,4 +4,5 @@ public interface EventBus {
     void publishEvent(Event event);
 
     void registerListener(EventListener eventListener);
+
 }

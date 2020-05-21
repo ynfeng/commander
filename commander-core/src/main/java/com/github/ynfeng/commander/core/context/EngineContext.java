@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.engine;
+package com.github.ynfeng.commander.core.context;
 
 import com.github.ynfeng.commander.core.event.EngineEvent;
 import com.github.ynfeng.commander.core.event.EventListener;
@@ -12,7 +12,7 @@ public final class EngineContext {
 
     }
 
-    public static void registerListener(EventListener eventListener) {
+    public static void registerEventListener(EventListener eventListener) {
         INSTANCE.eventBus.registerListener(eventListener);
     }
 
@@ -21,6 +21,14 @@ public final class EngineContext {
     }
 
     public static void destory() {
-        INSTANCE.eventBus.unRegisterAllEventListener();
+        INSTANCE.eventBus.removeAllListeners();
+    }
+
+    public static void removeEventListener(EventListener eventListener) {
+        INSTANCE.eventBus.removeListener(eventListener);
+    }
+
+    public static int numOfEventListeners() {
+        return INSTANCE.eventBus.numOfListeners();
     }
 }

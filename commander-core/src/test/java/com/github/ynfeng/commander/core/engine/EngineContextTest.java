@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.core.engine;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.ynfeng.commander.core.context.EngineContext;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
@@ -30,7 +31,7 @@ class EngineContextTest {
     @Test
     public void should_publish_process_start_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineContext.registerListener(new EventListener() {
+        EngineContext.registerEventListener(new EventListener() {
             @Override
             public void onEvent(Event event) {
                 exceptedEvent.set(event);
@@ -49,7 +50,7 @@ class EngineContextTest {
     @Test
     public void should_publish_node_execute_complted_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineContext.registerListener(new EventListener() {
+        EngineContext.registerEventListener(new EventListener() {
             @Override
             public void onEvent(Event event) {
                 exceptedEvent.set(event);
@@ -68,7 +69,7 @@ class EngineContextTest {
     @Test
     public void should_publish_process_execute_complete_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineContext.registerListener(new EventListener() {
+        EngineContext.registerEventListener(new EventListener() {
             @Override
             public void onEvent(Event event) {
                 exceptedEvent.set(event);

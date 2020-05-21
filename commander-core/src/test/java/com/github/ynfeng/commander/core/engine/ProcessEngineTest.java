@@ -11,8 +11,8 @@ import static org.mockito.ArgumentMatchers.any;
 import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
-import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessFuture;
+import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
@@ -94,7 +94,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
         ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
             processEngine.startProcess(processDefinition).waitComplete();
         });
-        assertThat(exception.getMessage(), is("com.github.ynfeng.commander.core.engine.ProcessEngineException: Can't find any executor for dummy"));
+        assertThat(exception.getMessage(), is("Can't find any executor for dummy"));
     }
 
     @Test
