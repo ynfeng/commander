@@ -34,7 +34,6 @@ public class ProcessFuture {
         return this;
     }
 
-    @SuppressWarnings("WaitNotInLoop")
     private void tryToWait(int timeout, TimeUnit timeUnit) throws InterruptedException {
         synchronized (this) {
             if (processContext.status() == ProcessStatus.COMPLETED) {
@@ -46,6 +45,7 @@ public class ProcessFuture {
         throwProcessEngineExceptionIfNecessary();
     }
 
+    @SuppressWarnings("WaitNotInLoop")
     private void doWait(int timeout, TimeUnit timeUnit) throws InterruptedException {
         registerProcessCompleteEventListener();
         wait(timeUnit.toMillis(timeout));
