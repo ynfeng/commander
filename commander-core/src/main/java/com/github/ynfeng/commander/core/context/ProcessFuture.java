@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessFuture {
     private final ProcessContext processContext;
-    private final Object monitor = new Object();
     private ProcessCompleteEventListener eventListener;
 
     private ProcessFuture(ProcessContext processContext) {
@@ -27,27 +26,34 @@ public class ProcessFuture {
         return waitComplete(365, TimeUnit.DAYS);
     }
 
-    @SuppressWarnings("WaitNotInLoop")
     public ProcessFuture waitComplete(int timeout, TimeUnit timeUnit) throws InterruptedException {
-        if (processContext.status() != ProcessStatus.COMPLETED) {
-            registerProcessCompleteEventListener();
-            if (processContext.status() == ProcessStatus.COMPLETED) {
-                EngineContext.removeEventListener(eventListener);
-                return this;
-            }
-            synchronized (monitor) {
-                monitor.wait(timeUnit.toMillis(timeout));
-            }
-            EngineContext.removeEventListener(eventListener);
-            throwProcessEngineExceptionIfNecessary();
+        if (processContext.status() == ProcessStatus.COMPLETED) {
+            return this;
         }
+        tryToWait(timeout, timeUnit);
         return this;
     }
 
-    private ProcessCompleteEventListener registerProcessCompleteEventListener() {
+    @SuppressWarnings("WaitNotInLoop")
+    private void tryToWait(int timeout, TimeUnit timeUnit) throws InterruptedException {
+        synchronized (this) {
+            if (processContext.status() == ProcessStatus.COMPLETED) {
+                return;
+            }
+            doWait(timeout, timeUnit);
+        }
+        EngineContext.removeEventListener(eventListener);
+        throwProcessEngineExceptionIfNecessary();
+    }
+
+    private void doWait(int timeout, TimeUnit timeUnit) throws InterruptedException {
+        registerProcessCompleteEventListener();
+        wait(timeUnit.toMillis(timeout));
+    }
+
+    private void registerProcessCompleteEventListener() {
         eventListener = new ProcessCompleteEventListener();
         EngineContext.registerEventListener(eventListener);
-        return eventListener;
     }
 
     private void throwProcessEngineExceptionIfNecessary() {
@@ -66,8 +72,8 @@ public class ProcessFuture {
             ProcessExecuteCompleteEvent processExecuteCompleteEvent = (ProcessExecuteCompleteEvent) event;
             ProcessId processsId = processExecuteCompleteEvent.context().processId();
             if (processsId.equals(processId())) {
-                synchronized (monitor) {
-                    monitor.notifyAll();
+                synchronized (ProcessFuture.this) {
+                    ProcessFuture.this.notifyAll();
                 }
             }
         }

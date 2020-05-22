@@ -30,18 +30,23 @@ public final class ExecutorLauncher implements EventListener {
 
     private void launchExecutor(ProcessContext context) {
         try {
-            NodeDefinition readyNode = context.readyNode();
-            while (isExecutable(readyNode)) {
-                NodeExecutor nodeExecutor = nodeExecutors.getExecutor(readyNode);
-                checkExecutorNotNull(nodeExecutor, readyNode.refName());
-                nodeExecutor.execute(context, readyNode);
-                readyNode = context.readyNode();
-            }
+            doLaunch(context);
         } catch (Exception e) {
             context.executeException(e);
             context.complete();
         }
     }
+
+    private void doLaunch(ProcessContext context) {
+        NodeDefinition readyNode = context.readyNode();
+        while (isExecutable(readyNode)) {
+            NodeExecutor nodeExecutor = nodeExecutors.getExecutor(readyNode);
+            checkExecutorNotNull(nodeExecutor, readyNode.refName());
+            nodeExecutor.execute(context, readyNode);
+            readyNode = context.readyNode();
+        }
+    }
+
 
     private static void checkExecutorNotNull(NodeExecutor nodeExecutor, String refName) {
         if (nodeExecutor == null) {
