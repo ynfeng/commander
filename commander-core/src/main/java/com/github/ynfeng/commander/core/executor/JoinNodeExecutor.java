@@ -12,14 +12,14 @@ public class JoinNodeExecutor implements NodeExecutor {
         JoinDefinition joinDefinition = (JoinDefinition) nodeDefinition;
         List<String> ons = joinDefinition.ons();
         List<String> executedNodes = context.executedNodes();
-        if (isNotExecuted(nodeDefinition, executedNodes) && executedNodes.containsAll(ons)) {
+        if (isNotExecuted(nodeDefinition.refName(), executedNodes) && executedNodes.containsAll(ons)) {
             context.addReadyNode(joinDefinition.next());
             context.completeNode(nodeDefinition);
         }
     }
 
-    private boolean isNotExecuted(NodeDefinition nodeDefinition, List<String> executedNodes) {
-        return !executedNodes.contains(nodeDefinition.refName());
+    private boolean isNotExecuted(String refName, List<String> executedNodes) {
+        return !executedNodes.contains(refName);
     }
 
     @Override
