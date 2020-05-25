@@ -1,11 +1,11 @@
 package com.github.ynfeng.commander.core;
 
-import com.github.ynfeng.commander.core.context.EngineContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessIdGenerator;
 import com.github.ynfeng.commander.core.engine.ExecutorLauncher;
 import com.github.ynfeng.commander.core.engine.ProcessEngine;
+import com.github.ynfeng.commander.core.event.ProcessEngineEventBus;
 import com.github.ynfeng.commander.core.executor.NodeExecutors;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -45,6 +45,6 @@ public abstract class ProcessEngineTestSupport {
 
     @AfterEach
     public void tearDown() {
-        EngineContext.destory();
+        ProcessEngineEventBus.getInstance().removeAllListeners();
     }
 }

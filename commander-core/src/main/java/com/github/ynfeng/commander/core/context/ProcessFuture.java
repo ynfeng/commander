@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.core.context;
 
 import com.github.ynfeng.commander.core.event.Event;
 import com.github.ynfeng.commander.core.event.EventListener;
+import com.github.ynfeng.commander.core.event.ProcessEngineEventBus;
 import com.github.ynfeng.commander.core.event.ProcessExecuteCompleteEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +42,7 @@ public class ProcessFuture {
             }
             doWait(timeout, timeUnit);
         }
-        EngineContext.removeEventListener(eventListener);
+        ProcessEngineEventBus.getInstance().removeListener(eventListener);
         throwProcessEngineExceptionIfNecessary();
     }
 
@@ -53,7 +54,7 @@ public class ProcessFuture {
 
     private void registerProcessCompleteEventListener() {
         eventListener = new ProcessCompleteEventListener();
-        EngineContext.registerEventListener(eventListener);
+        ProcessEngineEventBus.getInstance().registerListener(eventListener);
     }
 
     private void throwProcessEngineExceptionIfNecessary() {

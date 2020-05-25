@@ -3,7 +3,6 @@ package com.github.ynfeng.commander.core.engine;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.core.context.EngineContext;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
@@ -11,6 +10,7 @@ import com.github.ynfeng.commander.core.definition.StartDefinition;
 import com.github.ynfeng.commander.core.event.Event;
 import com.github.ynfeng.commander.core.event.EventListener;
 import com.github.ynfeng.commander.core.event.NodeExecuteCompleteEvent;
+import com.github.ynfeng.commander.core.event.ProcessEngineEventBus;
 import com.github.ynfeng.commander.core.event.ProcessExecuteCompleteEvent;
 import com.github.ynfeng.commander.core.event.ProcessStartEvent;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,13 +25,13 @@ class EngineContextTest {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new StartDefinition());
         processContext = new ProcessContext(ProcessId.of("id"), processDefinition);
-        EngineContext.destory();
+        ProcessEngineEventBus.getInstance().removeAllListeners();
     }
 
     @Test
     public void should_publish_process_start_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineContext.registerEventListener(new EventListener() {
+        ProcessEngineEventBus.getInstance().registerListener(new EventListener() {
             @Override
             public void onEvent(Event event) {
                 exceptedEvent.set(event);
@@ -42,7 +42,7 @@ class EngineContextTest {
                 return event instanceof ProcessStartEvent;
             }
         });
-        EngineContext.publishEvent(ProcessStartEvent.create(processContext));
+        ProcessEngineEventBus.getInstance().publishEvent(ProcessStartEvent.create(processContext));
 
         assertThat(exceptedEvent.get(), instanceOf(ProcessStartEvent.class));
     }
@@ -50,7 +50,7 @@ class EngineContextTest {
     @Test
     public void should_publish_node_execute_complted_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineContext.registerEventListener(new EventListener() {
+        ProcessEngineEventBus.getInstance().registerListener(new EventListener() {
             @Override
             public void onEvent(Event event) {
                 exceptedEvent.set(event);
@@ -61,7 +61,7 @@ class EngineContextTest {
                 return event instanceof NodeExecuteCompleteEvent;
             }
         });
-        EngineContext.publishEvent(NodeExecuteCompleteEvent.create(processContext));
+        ProcessEngineEventBus.getInstance().publishEvent(NodeExecuteCompleteEvent.create(processContext));
 
         assertThat(exceptedEvent.get(), instanceOf(NodeExecuteCompleteEvent.class));
     }
@@ -69,7 +69,7 @@ class EngineContextTest {
     @Test
     public void should_publish_process_execute_complete_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineContext.registerEventListener(new EventListener() {
+        ProcessEngineEventBus.getInstance().registerListener(new EventListener() {
             @Override
             public void onEvent(Event event) {
                 exceptedEvent.set(event);
@@ -80,7 +80,7 @@ class EngineContextTest {
                 return event instanceof ProcessExecuteCompleteEvent;
             }
         });
-        EngineContext.publishEvent(ProcessExecuteCompleteEvent.create(processContext));
+        ProcessEngineEventBus.getInstance().publishEvent(ProcessExecuteCompleteEvent.create(processContext));
 
         assertThat(exceptedEvent.get(), instanceOf(ProcessExecuteCompleteEvent.class));
     }

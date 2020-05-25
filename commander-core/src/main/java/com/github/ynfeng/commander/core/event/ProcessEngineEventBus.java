@@ -1,9 +1,16 @@
 package com.github.ynfeng.commander.core.event;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class ProcessEngineEventBus implements EventBus {
+    public static final ProcessEngineEventBus INSTANCE = new ProcessEngineEventBus();
     private final ConcurrentLinkedQueue<EventListener> listeners = new ConcurrentLinkedQueue<>();
+
+    public static ProcessEngineEventBus getInstance() {
+        return INSTANCE;
+    }
 
     @Override
     public void publishEvent(Event event) {
