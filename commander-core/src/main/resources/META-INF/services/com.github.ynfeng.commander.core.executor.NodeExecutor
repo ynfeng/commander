@@ -1,3 +1,4 @@
 com.github.ynfeng.commander.core.executor.StartNodeExecutor
 com.github.ynfeng.commander.core.executor.EndNodeExecutor
 com.github.ynfeng.commander.core.executor.ServiceNodeExecutor
+com.github.ynfeng.commander.core.executor.ForkNodeExecutor

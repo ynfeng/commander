@@ -4,15 +4,19 @@ package com.github.ynfeng.commander.core.context;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.event.EngineEventSubject;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 public class ProcessContext {
     private final ProcessId processId;
     private final ProcessDefinition processDefinition;
-    private volatile ProcessStatus processStatus;
     private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
+    private final ConcurrentLinkedQueue<String> executedNodes = new ConcurrentLinkedQueue<String>();
+    private volatile ProcessStatus processStatus;
     private Throwable executeException;
+
     private static final ThreadLocal<ProcessContext> CONTEXT_HOLDER = new ThreadLocal<>();
 
     private ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
@@ -62,12 +66,12 @@ public class ProcessContext {
         EngineEventSubject.getInstance().notifyProcessExecutedComplete();
     }
 
-    public void completeNode(NodeDefinition next) {
-        addReadyNode(next);
+    public void completeNode(NodeDefinition currentNode) {
+        executedNodes.add(currentNode.refName());
         EngineEventSubject.getInstance().notifyNodeExecutedComplete();
     }
 
-    private <T extends NodeDefinition> void addReadyNode(T next) {
+    public <T extends NodeDefinition> void addReadyNode(T next) {
         readyQueue.offer(next);
     }
 
@@ -81,5 +85,9 @@ public class ProcessContext {
 
     public Throwable executeException() {
         return executeException;
+    }
+
+    public List<String> executedNodes() {
+        return executedNodes.stream().collect(Collectors.toList());
     }
 }

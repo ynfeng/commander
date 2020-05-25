@@ -11,7 +11,8 @@ public class StartNodeExecutor implements NodeExecutor {
         StartDefinition startDefinition = (StartDefinition) nodeDefinition;
         ProcessContext context = ProcessContext.get();
         context.running();
-        context.completeNode(startDefinition.next());
+        context.addReadyNode(startDefinition.next());
+        context.completeNode(nodeDefinition);
     }
 
     @Override
