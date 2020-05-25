@@ -5,7 +5,7 @@ import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.event.EngineEvent;
 import com.github.ynfeng.commander.core.event.Event;
 import com.github.ynfeng.commander.core.event.EventListener;
-import com.github.ynfeng.commander.core.event.ProcessEngineEventBus;
+import com.github.ynfeng.commander.core.eventbus.ProcessEngineEventBus;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import com.github.ynfeng.commander.core.executor.NodeExecutor;
 import com.github.ynfeng.commander.core.executor.NodeExecutors;
