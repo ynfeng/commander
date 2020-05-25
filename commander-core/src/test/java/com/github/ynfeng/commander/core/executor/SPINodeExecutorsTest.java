@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.ForkDefinition;
+import com.github.ynfeng.commander.core.definition.JoinDefinition;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ServiceDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
@@ -35,30 +36,33 @@ class SPINodeExecutorsTest {
 
     @Test
     public void should_get_service_node_executor() {
-        NodeExecutor executor = nodeExecutors.getExecutor(Mockito.mock(ServiceDefinition.class));
-
-        assertThat(executor, instanceOf(ServiceNodeExecutor.class));
+        shouldGetExecuteNode(ServiceDefinition.class, ServiceNodeExecutor.class);
     }
 
     @Test
     public void should_get_start_node_executor() {
-        NodeExecutor executor = nodeExecutors.getExecutor(Mockito.mock(StartDefinition.class));
-
-        assertThat(executor, instanceOf(StartNodeExecutor.class));
+        shouldGetExecuteNode(StartDefinition.class, StartNodeExecutor.class);
     }
 
     @Test
     public void should_get_end_node_executor() {
-        NodeExecutor executor = nodeExecutors.getExecutor(Mockito.mock(EndDefinition.class));
-
-        assertThat(executor, instanceOf(EndNodeExecutor.class));
+        shouldGetExecuteNode(EndDefinition.class, EndNodeExecutor.class);
     }
 
     @Test
     public void should_get_fork_node_executor() {
-        NodeExecutor executor = nodeExecutors.getExecutor(Mockito.mock(ForkDefinition.class));
-
-        assertThat(executor, instanceOf(ForkNodeExecutor.class));
+        shouldGetExecuteNode(ForkDefinition.class, ForkNodeExecutor.class);
     }
 
+    @Test
+    public void should_get_join_node_executor() {
+        shouldGetExecuteNode(JoinDefinition.class, JoinNodeExecutor.class);
+    }
+
+    private void shouldGetExecuteNode(Class<? extends NodeDefinition> nodeDefinitionClass,
+                                      Class<? extends NodeExecutor> nodeExecutorClass) {
+        NodeExecutor executor = nodeExecutors.getExecutor(Mockito.mock(nodeDefinitionClass));
+
+        assertThat(executor, instanceOf(nodeExecutorClass));
+    }
 }

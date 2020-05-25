@@ -73,6 +73,7 @@ public class ProcessDefinitionBuilderTest {
 
         ServiceDefinition serviceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
         ServiceCoordinate serviceCoordinate = serviceDefinition.serviceCoordinate();
+
         assertThat(serviceDefinition, instanceOf(ServiceDefinition.class));
         assertThat(serviceCoordinate.name(), is("aService"));
         assertThat(serviceCoordinate.version(), is(1));
@@ -94,6 +95,7 @@ public class ProcessDefinitionBuilderTest {
 
         ServiceDefinition refNameServiceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
         ServiceDefinition refName1ServiceDefinition = refNameServiceDefinition.next();
+
         assertThat(refNameServiceDefinition.refName(), is("refName"));
         assertThat(refName1ServiceDefinition.refName(), is("refName1"));
         assertThat(refName1ServiceDefinition.next().refName(), is("end"));

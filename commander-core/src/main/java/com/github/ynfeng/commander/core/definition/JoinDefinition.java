@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.core.definition;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
 
 public class JoinDefinition extends NextableNodeDefinition {
@@ -18,5 +19,9 @@ public class JoinDefinition extends NextableNodeDefinition {
             node.next(this);
             ons.add(refName);
         }
+    }
+
+    public List<String> ons() {
+        return Collections.unmodifiableList(ons);
     }
 }
