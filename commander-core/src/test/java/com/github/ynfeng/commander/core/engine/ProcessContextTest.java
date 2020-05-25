@@ -1,8 +1,11 @@
-package com.github.ynfeng.commander.core.context;
+package com.github.ynfeng.commander.core.engine;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.ynfeng.commander.core.context.ProcessContext;
+import com.github.ynfeng.commander.core.context.ProcessId;
+import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +18,7 @@ class ProcessContextTest {
     public void setUp() {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new StartDefinition());
-        processContext = new ProcessContext(ProcessId.of("id"), processDefinition);
+        processContext = ProcessContext.create(ProcessId.of("id"), processDefinition);
     }
 
 

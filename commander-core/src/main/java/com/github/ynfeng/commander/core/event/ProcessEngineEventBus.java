@@ -1,18 +1,9 @@
-package com.github.ynfeng.commander.core.eventbus;
+package com.github.ynfeng.commander.core.event;
 
-import com.github.ynfeng.commander.core.event.Event;
-import com.github.ynfeng.commander.core.event.EventListener;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 public class ProcessEngineEventBus implements EventBus {
-    public static final ProcessEngineEventBus INSTANCE = new ProcessEngineEventBus();
     private final ConcurrentLinkedQueue<EventListener> listeners = new ConcurrentLinkedQueue<>();
-
-    public static ProcessEngineEventBus getInstance() {
-        return INSTANCE;
-    }
 
     @Override
     public void publishEvent(Event event) {
@@ -26,14 +17,17 @@ public class ProcessEngineEventBus implements EventBus {
         listeners.add(listener);
     }
 
+    @Override
     public void removeAllListeners() {
         listeners.clear();
     }
 
+    @Override
     public void removeListener(EventListener eventListener) {
         listeners.remove(eventListener);
     }
 
+    @Override
     public int numOfListeners() {
         return listeners.size();
     }

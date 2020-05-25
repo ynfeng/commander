@@ -11,6 +11,6 @@ public class ProcessContextFactory {
 
     public ProcessContext createContext(ProcessDefinition processDefinition) {
         ProcessId processId = processIdGenerator.nextId();
-        return new ProcessContext(processId, processDefinition);
+        return ProcessContext.create(processId, processDefinition);
     }
 }

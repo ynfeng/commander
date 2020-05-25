@@ -7,8 +7,9 @@ import com.github.ynfeng.commander.core.definition.StartDefinition;
 public class StartNodeExecutor implements NodeExecutor {
 
     @Override
-    public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
+    public void execute(NodeDefinition nodeDefinition) {
         StartDefinition startDefinition = (StartDefinition) nodeDefinition;
+        ProcessContext context = ProcessContext.get();
         context.running();
         context.completeNode(startDefinition.next());
     }

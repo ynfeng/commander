@@ -3,14 +3,12 @@ package com.github.ynfeng.commander.core.engine;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.github.ynfeng.commander.core.context.EngineEventSubject;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
-import com.github.ynfeng.commander.core.context.ProcessFuture;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.eventbus.ProcessEngineEventBus;
-import com.github.ynfeng.commander.core.event.ProcessStartEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import java.util.concurrent.ExecutorService;
 import lombok.Builder;
@@ -46,7 +44,8 @@ public final class ProcessEngine {
 
     private void publishProcessStartEvent(ProcessContext processContext) {
         executorService.execute(() -> {
-            ProcessEngineEventBus.getInstance().publishEvent(ProcessStartEvent.create(processContext));
+            ProcessContext.threadPropagation(processContext);
+            EngineEventSubject.getInstance().notifyProcessStartedEvent(processContext);
         });
     }
 

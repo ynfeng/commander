@@ -3,9 +3,6 @@ package com.github.ynfeng.commander.core.context;
 
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.event.NodeExecuteCompleteEvent;
-import com.github.ynfeng.commander.core.eventbus.ProcessEngineEventBus;
-import com.github.ynfeng.commander.core.event.ProcessExecuteCompleteEvent;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,12 +12,27 @@ public class ProcessContext {
     private volatile ProcessStatus processStatus;
     private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
     private Throwable executeException;
+    private static final ThreadLocal<ProcessContext> CONTEXT_HOLDER = new ThreadLocal<>();
 
-    public ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
+    private ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
         this.processId = processId;
         this.processDefinition = processDefinition;
         processStatus = ProcessStatus.CREATED;
         readyQueue.offer(processDefinition.firstNode());
+    }
+
+    public static ProcessContext create(ProcessId processId, ProcessDefinition processDefinition) {
+        ProcessContext processContext = new ProcessContext(processId, processDefinition);
+        CONTEXT_HOLDER.set(processContext);
+        return processContext;
+    }
+
+    public static ProcessContext get() {
+        return CONTEXT_HOLDER.get();
+    }
+
+    public static void threadPropagation(ProcessContext processContext) {
+        CONTEXT_HOLDER.set(processContext);
     }
 
     public ProcessId processId() {
@@ -40,28 +52,27 @@ public class ProcessContext {
         return (T) readyQueue.poll();
     }
 
-    private <T extends NodeDefinition> void addReadyNode(T next) {
-        readyQueue.offer(next);
-    }
-
     public void running() {
         processStatus = ProcessStatus.RUNNING;
     }
 
     public void complete() {
         processStatus = ProcessStatus.COMPLETED;
-        ProcessEngineEventBus.getInstance().publishEvent(ProcessExecuteCompleteEvent.create(this));
+        EngineEventSubject.getInstance().notifyProcessExecutedComplete(this);
     }
 
     public void completeNode(NodeDefinition next) {
         addReadyNode(next);
-        ProcessEngineEventBus.getInstance().publishEvent(NodeExecuteCompleteEvent.create(this));
+        EngineEventSubject.getInstance().notifyNodeExecutedComplete(this);
+    }
+
+    private <T extends NodeDefinition> void addReadyNode(T next) {
+        readyQueue.offer(next);
     }
 
     public void executeException(Throwable t) {
         executeException = t;
     }
-
 
     public boolean hasException() {
         return Objects.nonNull(executeException);

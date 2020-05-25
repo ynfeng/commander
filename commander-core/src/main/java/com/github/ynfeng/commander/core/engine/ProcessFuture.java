@@ -1,9 +1,12 @@
-package com.github.ynfeng.commander.core.context;
+package com.github.ynfeng.commander.core.engine;
 
+import com.github.ynfeng.commander.core.context.EngineEventSubject;
+import com.github.ynfeng.commander.core.context.ProcessContext;
+import com.github.ynfeng.commander.core.context.ProcessId;
+import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.event.Event;
 import com.github.ynfeng.commander.core.event.EventListener;
-import com.github.ynfeng.commander.core.eventbus.ProcessEngineEventBus;
-import com.github.ynfeng.commander.core.event.ProcessExecuteCompleteEvent;
+import com.github.ynfeng.commander.core.event.ProcessExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +45,7 @@ public class ProcessFuture {
             }
             doWait(timeout, timeUnit);
         }
-        ProcessEngineEventBus.getInstance().removeListener(eventListener);
+        EngineEventSubject.getInstance().removeListener(eventListener);
         throwProcessEngineExceptionIfNecessary();
     }
 
@@ -54,7 +57,7 @@ public class ProcessFuture {
 
     private void registerProcessCompleteEventListener() {
         eventListener = new ProcessCompleteEventListener();
-        ProcessEngineEventBus.getInstance().registerListener(eventListener);
+        EngineEventSubject.getInstance().registerListener(eventListener);
     }
 
     private void throwProcessEngineExceptionIfNecessary() {
@@ -70,8 +73,7 @@ public class ProcessFuture {
     class ProcessCompleteEventListener implements EventListener {
         @Override
         public void onEvent(Event event) {
-            ProcessExecuteCompleteEvent processExecuteCompleteEvent = (ProcessExecuteCompleteEvent) event;
-            ProcessId processsId = processExecuteCompleteEvent.context().processId();
+            ProcessId processsId = ProcessContext.get().processId();
             if (processsId.equals(processId())) {
                 synchronized (ProcessFuture.this) {
                     ProcessFuture.this.notifyAll();
@@ -81,7 +83,7 @@ public class ProcessFuture {
 
         @Override
         public boolean interestedOn(Event event) {
-            return event instanceof ProcessExecuteCompleteEvent;
+            return event instanceof ProcessExecuteCompletedEvent;
         }
     }
 

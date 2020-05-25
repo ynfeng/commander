@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
-import com.github.ynfeng.commander.core.context.ProcessFuture;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
@@ -117,7 +116,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
         Mockito.when(nodeExecutors.getExecutor(any(TestableDefinition.class)))
             .thenReturn(new NodeExecutor() {
                 @Override
-                public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
+                public void execute(NodeDefinition nodeDefinition) {
                     throw new NullPointerException();
                 }
 

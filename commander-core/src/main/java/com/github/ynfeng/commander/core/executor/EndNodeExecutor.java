@@ -7,7 +7,8 @@ import com.github.ynfeng.commander.core.definition.NodeDefinition;
 public class EndNodeExecutor implements NodeExecutor {
 
     @Override
-    public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
+    public void execute(NodeDefinition nodeDefinition) {
+        ProcessContext context = ProcessContext.get();
         context.completeNode(NodeDefinition.NULL);
         context.complete();
     }
