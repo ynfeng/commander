@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.engine;
+package com.github.ynfeng.commander.core.event;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class EngineContextTest {
+class EngineEventSubjectTest {
     private ProcessContext processContext;
 
     @BeforeEach
