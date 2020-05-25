@@ -1,11 +1,4 @@
-package com.github.ynfeng.commander.core.context;
-
-import com.github.ynfeng.commander.core.event.EventBus;
-import com.github.ynfeng.commander.core.event.EventListener;
-import com.github.ynfeng.commander.core.event.NodeExecuteCompletedEvent;
-import com.github.ynfeng.commander.core.event.ProcessEngineEventBus;
-import com.github.ynfeng.commander.core.event.ProcessExecuteCompletedEvent;
-import com.github.ynfeng.commander.core.event.ProcessStartedEvent;
+package com.github.ynfeng.commander.core.event;
 
 public class EngineEventSubject {
     private static final EngineEventSubject INSTANCE = new EngineEventSubject();
@@ -31,15 +24,15 @@ public class EngineEventSubject {
         return EVENT_BUS.numOfListeners();
     }
 
-    public void notifyProcessExecutedComplete(ProcessContext context) {
+    public void notifyProcessExecutedComplete() {
         EVENT_BUS.publishEvent(new ProcessExecuteCompletedEvent());
     }
 
-    public void notifyNodeExecutedComplete(ProcessContext context) {
+    public void notifyNodeExecutedComplete() {
         EVENT_BUS.publishEvent(new NodeExecuteCompletedEvent());
     }
 
-    public void notifyProcessStartedEvent(ProcessContext context) {
+    public void notifyProcessStartedEvent() {
         EVENT_BUS.publishEvent(new ProcessStartedEvent());
     }
 }

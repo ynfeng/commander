@@ -3,7 +3,7 @@ package com.github.ynfeng.commander.core.engine;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.core.context.EngineEventSubject;
+import com.github.ynfeng.commander.core.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
@@ -42,7 +42,7 @@ class EngineContextTest {
                 return event instanceof ProcessStartedEvent;
             }
         });
-        EngineEventSubject.getInstance().notifyProcessStartedEvent(processContext);
+        EngineEventSubject.getInstance().notifyProcessStartedEvent();
 
         assertThat(exceptedEvent.get(), instanceOf(ProcessStartedEvent.class));
     }
@@ -61,7 +61,7 @@ class EngineContextTest {
                 return event instanceof NodeExecuteCompletedEvent;
             }
         });
-        EngineEventSubject.getInstance().notifyNodeExecutedComplete(processContext);
+        EngineEventSubject.getInstance().notifyNodeExecutedComplete();
 
         assertThat(exceptedEvent.get(), instanceOf(NodeExecuteCompletedEvent.class));
     }
@@ -80,7 +80,7 @@ class EngineContextTest {
                 return event instanceof ProcessExecuteCompletedEvent;
             }
         });
-        EngineEventSubject.getInstance().notifyProcessExecutedComplete(processContext);
+        EngineEventSubject.getInstance().notifyProcessExecutedComplete();
 
         assertThat(exceptedEvent.get(), instanceOf(ProcessExecuteCompletedEvent.class));
     }

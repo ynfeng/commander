@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.core.context;
 
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.github.ynfeng.commander.core.event.EngineEventSubject;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -58,12 +59,12 @@ public class ProcessContext {
 
     public void complete() {
         processStatus = ProcessStatus.COMPLETED;
-        EngineEventSubject.getInstance().notifyProcessExecutedComplete(this);
+        EngineEventSubject.getInstance().notifyProcessExecutedComplete();
     }
 
     public void completeNode(NodeDefinition next) {
         addReadyNode(next);
-        EngineEventSubject.getInstance().notifyNodeExecutedComplete(this);
+        EngineEventSubject.getInstance().notifyNodeExecutedComplete();
     }
 
     private <T extends NodeDefinition> void addReadyNode(T next) {

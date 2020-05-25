@@ -3,7 +3,7 @@ package com.github.ynfeng.commander.core.engine;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.core.context.EngineEventSubject;
+import com.github.ynfeng.commander.core.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.google.common.base.Stopwatch;
