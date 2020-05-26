@@ -5,7 +5,7 @@ import java.util.ServiceLoader;
 import java.util.stream.StreamSupport;
 
 public class SPINodeExecutors implements NodeExecutors {
-    private ServiceLoader<NodeExecutor> nodeExecutors;
+    private final ServiceLoader<NodeExecutor> nodeExecutors;
 
     public SPINodeExecutors() {
         nodeExecutors = ServiceLoader.load(NodeExecutor.class);

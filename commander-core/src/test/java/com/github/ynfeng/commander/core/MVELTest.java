@@ -1,7 +1,7 @@
 package com.github.ynfeng.commander.core;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.google.common.collect.Maps;
 import java.util.Map;

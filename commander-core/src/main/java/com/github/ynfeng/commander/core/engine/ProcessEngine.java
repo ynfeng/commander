@@ -6,7 +6,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
-import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.event.Event;
@@ -51,10 +50,6 @@ public final class ProcessEngine {
             ProcessContext.threadPropagation(processContext);
             EngineEventSubject.getInstance().notifyProcessStartedEvent();
         });
-    }
-
-    public ProcessContext processContext(ProcessId processId) {
-        return processContexts.get(processId);
     }
 
     public int numOfRunningProcess() {
