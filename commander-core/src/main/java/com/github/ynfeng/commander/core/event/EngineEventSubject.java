@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.core.event;
 import com.google.common.eventbus.EventBus;
 import java.util.concurrent.atomic.AtomicInteger;
 
+@SuppressWarnings("UnstableApiUsage")
 public class EngineEventSubject {
     private static final EngineEventSubject INSTANCE = new EngineEventSubject();
     private final AtomicInteger numOfListener = new AtomicInteger(0);
