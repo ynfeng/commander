@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.core.context;
 
 
+import com.github.ynfeng.commander.core.Parameters;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.event.EngineEventSubject;
@@ -10,14 +11,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 public class ProcessContext {
+    private static final ThreadLocal<ProcessContext> CONTEXT_HOLDER = new ThreadLocal<>();
     private final ProcessId processId;
     private final ProcessDefinition processDefinition;
     private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
     private final ConcurrentLinkedQueue<String> executedNodes = new ConcurrentLinkedQueue<String>();
+    private Parameters input = new Parameters();
     private volatile ProcessStatus processStatus;
     private Throwable executeException;
-
-    private static final ThreadLocal<ProcessContext> CONTEXT_HOLDER = new ThreadLocal<>();
 
     private ProcessContext(ProcessId processId, ProcessDefinition processDefinition) {
         this.processId = processId;
@@ -85,5 +86,13 @@ public class ProcessContext {
 
     public List<String> executedNodes() {
         return executedNodes.stream().collect(Collectors.toList());
+    }
+
+    public Parameters input() {
+        return input;
+    }
+
+    public void input(Parameters parameters) {
+        input = parameters;
     }
 }

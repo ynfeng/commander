@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.core.definition;
 
 public class ForkDefinition extends AbstractNodeDefinition {
     private final ForkBranchs forkBranchs = new ForkBranchs();
+
     protected ForkDefinition(String refName) {
         super(refName);
     }

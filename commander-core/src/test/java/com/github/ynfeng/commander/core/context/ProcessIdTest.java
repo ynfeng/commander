@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 class ProcessIdTest {
     @Test
-    public void should_create_process_id(){
+    public void should_create_process_id() {
         ProcessId processId = ProcessId.of("anIdValue");
 
         assertThat(processId.toString(), is("anIdValue"));

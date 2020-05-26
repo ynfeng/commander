@@ -9,7 +9,7 @@ class ProcessDefinitionTest {
 
     @Test
     public void should_create() {
-        ProcessDefinition processDefinition = new ProcessDefinition("aProcess",1);
+        ProcessDefinition processDefinition = new ProcessDefinition("aProcess", 1);
         processDefinition.firstNode(new NextableNodeDefinition("aStartNode") {
         });
 

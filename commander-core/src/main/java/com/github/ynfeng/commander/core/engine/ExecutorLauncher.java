@@ -18,6 +18,16 @@ public final class ExecutorLauncher implements EventListener {
         this.nodeExecutors = nodeExecutors;
     }
 
+    private static void checkExecutorNotNull(NodeExecutor nodeExecutor, String refName) {
+        if (nodeExecutor == null) {
+            throw new ProcessEngineException("Can't find any executor for " + refName);
+        }
+    }
+
+    private static boolean isExecutable(NodeDefinition readyNode) {
+        return !(NodeDefinition.NULL == readyNode || Objects.isNull(readyNode));
+    }
+
     public void startUp() {
         EngineEventSubject.getInstance().registerListener(this);
     }
@@ -44,17 +54,6 @@ public final class ExecutorLauncher implements EventListener {
             nodeExecutor.execute(readyNode);
             readyNode = context.readyNode();
         }
-    }
-
-
-    private static void checkExecutorNotNull(NodeExecutor nodeExecutor, String refName) {
-        if (nodeExecutor == null) {
-            throw new ProcessEngineException("Can't find any executor for " + refName);
-        }
-    }
-
-    private static boolean isExecutable(NodeDefinition readyNode) {
-        return !(NodeDefinition.NULL == readyNode || Objects.isNull(readyNode));
     }
 
     @Override
