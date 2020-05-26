@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.core.definition;
 
 public class DecisionDefinition extends AbstractNodeDefinition {
     private final ConditionBranches branches = new ConditionBranches();
+    private ConditionBranch defaultBranch = ConditionBranch.EMPTY;
 
     protected DecisionDefinition(String refName) {
         super(refName);
@@ -14,5 +15,14 @@ public class DecisionDefinition extends AbstractNodeDefinition {
 
     public ConditionBranches branches() {
         return branches;
+    }
+
+    public DecisionDefinition defaultCondition(NodeDefinition nodeDefinition) {
+        defaultBranch = new ConditionBranch(Expression.EMPTY, nodeDefinition);
+        return this;
+    }
+
+    public ConditionBranch defaultCondition() {
+        return defaultBranch;
     }
 }

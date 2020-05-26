@@ -109,7 +109,8 @@ public class ProcessDefinitionBuilderTest {
         processDefinitionBuilder.createService("lastService", ServiceCoordinate.of("lastService", 1));
         processDefinitionBuilder.createDecision("aDecision")
             .condition(Expression.of("aService.result.success == true"),
-                processDefinitionBuilder.createService("otherService", ServiceCoordinate.of("otherService", 1)));
+                processDefinitionBuilder.createService("otherService", ServiceCoordinate.of("otherService", 1)))
+            .defaultCondition(processDefinitionBuilder.createService("defaultService", ServiceCoordinate.of("defaultService", 1)));
         processDefinitionBuilder.link("start", "aService");
         processDefinitionBuilder.link("aService", "aDecision");
         processDefinitionBuilder.link("otherService", "lastService");
@@ -123,6 +124,8 @@ public class ProcessDefinitionBuilderTest {
         ConditionBranch branch = branchesIterator.next();
         ServiceDefinition otherService = branch.next();
         ServiceDefinition lastService = otherService.next();
+
+        assertThat(decisionDefinition.defaultCondition().next().refName(), is("defaultService"));
         assertThat(branches.size(), is(1));
         assertThat(branch.expression(), is(Expression.of("aService.result.success == true")));
         assertThat(otherService.refName(), is("otherService"));

@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.core.definition;
 
 public class ConditionBranch {
+    public static final ConditionBranch EMPTY = new ConditionBranch(Expression.EMPTY, NodeDefinition.NULL);
     private final Expression expression;
     private final NodeDefinition fistNode;
 
