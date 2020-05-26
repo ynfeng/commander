@@ -25,10 +25,10 @@ public class MVELTest {
         Map<String, Object> vars = Maps.newHashMap();
         vars.put("foo", 9);
 
-        int number = (int) MVEL.eval("4", vars);
+        Object number = MVEL.eval("4", vars);
         assertThat(number, is(4));
 
-        String str = (String) MVEL.eval("'hello'", vars);
+        Object str = MVEL.eval("'hello'", vars);
         assertThat(str, is("hello"));
     }
 }
