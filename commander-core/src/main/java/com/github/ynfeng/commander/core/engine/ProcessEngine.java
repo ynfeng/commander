@@ -47,7 +47,7 @@ public final class ProcessEngine {
 
     private void publishProcessStartEvent(ProcessContext processContext) {
         executorService.execute(() -> {
-            ProcessContext.threadPropagation(processContext);
+            ProcessContext.threadPropagate(processContext);
             EngineEventSubject.getInstance().notifyProcessStartedEvent();
         });
     }

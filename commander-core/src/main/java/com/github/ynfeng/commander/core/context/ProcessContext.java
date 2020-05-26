@@ -37,7 +37,7 @@ public class ProcessContext {
         return CONTEXT_HOLDER.get();
     }
 
-    public static void threadPropagation(ProcessContext processContext) {
+    public static void threadPropagate(ProcessContext processContext) {
         CONTEXT_HOLDER.set(processContext);
     }
 
