@@ -16,6 +16,7 @@ subprojects {
     dependencies {
         implementation(
                 "com.google.guava:guava:$guavaVersion",
+                "org.mvel:mvel2:$mvelVersion"
         )
 
         testImplementation(
