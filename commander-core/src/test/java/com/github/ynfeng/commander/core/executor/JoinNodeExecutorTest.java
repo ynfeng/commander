@@ -16,6 +16,7 @@ import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
 import com.github.ynfeng.commander.core.definition.ServiceCoordinate;
 import com.github.ynfeng.commander.core.definition.ServiceDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
+import com.github.ynfeng.commander.core.engine.ProcessFuture;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,11 +36,10 @@ public class JoinNodeExecutorTest extends ProcessEngineTestSupport {
         builder.link("aJoin", "end");
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessId processId = processEngine.startProcess(processDefinition).waitComplete().processId();
-        ProcessContext processContext = processEngine.processContext(processId);
-        List<String> executedNodes = processContext.executedNodes();
+        ProcessFuture processFuture = processEngine.startProcess(processDefinition).waitComplete();
+        List<String> executedNodes = processFuture.executedNodes();
 
-        assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
+        assertThat(processFuture.status(), is(ProcessStatus.COMPLETED));
         assertThat(executedNodes.get(0), is("start"));
         assertThat(executedNodes.get(1), is("aFork"));
         assertThat(executedNodes.get(4), is("aJoin"));

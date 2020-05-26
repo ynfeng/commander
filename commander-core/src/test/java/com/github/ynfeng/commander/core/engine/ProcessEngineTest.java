@@ -12,12 +12,15 @@ import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
+import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
 import com.github.ynfeng.commander.core.definition.TestableDefinition;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
+import com.github.ynfeng.commander.core.executor.EndNodeExecutor;
 import com.github.ynfeng.commander.core.executor.NodeExecutor;
 import com.github.ynfeng.commander.core.executor.NodeExecutors;
 import com.github.ynfeng.commander.core.executor.SPINodeExecutors;
@@ -36,17 +39,17 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
     }
 
     @Test
-    public void should_create_process_context_when_start_process() {
-        ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
-        processDefinition.firstNode(new StartDefinition());
+    public void should_clear_porcess_context_when_process_completed() throws InterruptedException {
+        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
+        builder.createEnd("end");
+        builder.createStart();
+        builder.link("start", "end");
+        ProcessDefinition processDefinition = builder.build();
 
-        ProcessFuture processStartFuture = processEngine.startProcess(processDefinition);
-        ProcessId processId = processStartFuture.processId();
-        ProcessContext processContext = processEngine.processContext(processId);
+        processEngine.startProcess(processDefinition).waitComplete();
 
-        assertThat(processContext, notNullValue());
-        assertThat(processContext.processId(), sameInstance(processId));
-        assertThat(processContext.processDefinition(), sameInstance(processDefinition));
+        assertThat(processEngine.numOfRunningProcess(), is(0));
+
     }
 
     @Test
@@ -98,7 +101,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
     }
 
     @Test
-    public void should_warp_exception_when_executor_throws_exception(){
+    public void should_warp_exception_when_executor_throws_exception() {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new TestableDefinition("testable"));
 
@@ -112,6 +115,9 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
     protected void mockExtraExecutors(NodeExecutors nodeExecutors) {
         Mockito.when(nodeExecutors.getExecutor(any(StartDefinition.class)))
             .thenReturn(new StartNodeExecutor());
+
+        Mockito.when(nodeExecutors.getExecutor(any(EndDefinition.class)))
+            .thenReturn(new EndNodeExecutor());
 
         Mockito.when(nodeExecutors.getExecutor(any(TestableDefinition.class)))
             .thenReturn(new NodeExecutor() {

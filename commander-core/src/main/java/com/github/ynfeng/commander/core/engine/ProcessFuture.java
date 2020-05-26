@@ -8,6 +8,7 @@ import com.github.ynfeng.commander.core.event.Event;
 import com.github.ynfeng.commander.core.event.EventListener;
 import com.github.ynfeng.commander.core.event.ProcessExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class ProcessFuture {
@@ -68,6 +69,14 @@ public class ProcessFuture {
             }
             throw new ProcessEngineException(throwable);
         }
+    }
+
+    public List<String> executedNodes() {
+        return processContext.executedNodes();
+    }
+
+    public ProcessStatus status() {
+        return processContext.status();
     }
 
     class ProcessCompleteEventListener implements EventListener {

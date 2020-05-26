@@ -44,10 +44,6 @@ public class ProcessContext {
         return processId;
     }
 
-    public ProcessDefinition processDefinition() {
-        return processDefinition;
-    }
-
     public ProcessStatus status() {
         return processStatus;
     }

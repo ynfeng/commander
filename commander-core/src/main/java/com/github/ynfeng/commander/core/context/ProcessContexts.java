@@ -17,4 +17,12 @@ public final class ProcessContexts {
     public ProcessContext get(ProcessId processId) {
         return contexts.get(processId);
     }
+
+    public int size() {
+        return contexts.size();
+    }
+
+    public void remove(ProcessContext processContext) {
+        contexts.remove(processContext.processId());
+    }
 }

@@ -9,6 +9,9 @@ import com.github.ynfeng.commander.core.context.ProcessContexts;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.event.EngineEventSubject;
+import com.github.ynfeng.commander.core.event.Event;
+import com.github.ynfeng.commander.core.event.EventListener;
+import com.github.ynfeng.commander.core.event.ProcessExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import java.util.concurrent.ExecutorService;
 import lombok.Builder;
@@ -25,6 +28,7 @@ public final class ProcessEngine {
             checkNotNull(processContextFactory, "ProcessContextFactory not set.");
             checkNotNull(executorLauncher, "ExecutorLauncher not set.").startUp();
             checkNotNull(executorService, "Executor service not set.");
+            EngineEventSubject.getInstance().registerListener(new ProcessCompletedListener());
         } catch (Exception e) {
             throw new ProcessEngineException(e);
         }
@@ -51,5 +55,23 @@ public final class ProcessEngine {
 
     public ProcessContext processContext(ProcessId processId) {
         return processContexts.get(processId);
+    }
+
+    public int numOfRunningProcess() {
+        return processContexts.size();
+    }
+
+    class ProcessCompletedListener implements EventListener {
+
+        @Override
+        public void onEvent(Event event) {
+            ProcessContext processContext = ProcessContext.get();
+            processContexts.remove(processContext);
+        }
+
+        @Override
+        public boolean interestedOn(Event event) {
+            return event instanceof ProcessExecuteCompletedEvent;
+        }
     }
 }

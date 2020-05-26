@@ -12,6 +12,7 @@ import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
+import com.github.ynfeng.commander.core.engine.ProcessFuture;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -23,13 +24,11 @@ public class EndNodeExecutorTest extends ProcessEngineTestSupport {
         builder.createEnd("end");
         builder.createStart();
         builder.link("start", "end");
-
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessId processId = processEngine.startProcess(processDefinition).waitComplete().processId();
-        ProcessContext processContext = processEngine.processContext(processId);
+        ProcessFuture processFuture = processEngine.startProcess(processDefinition).waitComplete();
 
-        assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
+        assertThat(processFuture.status(), is(ProcessStatus.COMPLETED));
     }
 
     @Override

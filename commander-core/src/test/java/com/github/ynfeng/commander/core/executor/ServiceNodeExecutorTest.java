@@ -14,6 +14,7 @@ import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
 import com.github.ynfeng.commander.core.definition.ServiceCoordinate;
 import com.github.ynfeng.commander.core.definition.ServiceDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
+import com.github.ynfeng.commander.core.engine.ProcessFuture;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -27,13 +28,11 @@ public class ServiceNodeExecutorTest extends ProcessEngineTestSupport {
         builder.createEnd("end");
         builder.link("start", "aService");
         builder.link("aService", "end");
-
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessId processId = processEngine.startProcess(processDefinition).waitComplete().processId();
-        ProcessContext processContext = processEngine.processContext(processId);
+        ProcessFuture processFuture = processEngine.startProcess(processDefinition).waitComplete();
 
-        assertThat(processContext.status(), is(ProcessStatus.COMPLETED));
+        assertThat(processFuture.status(), is(ProcessStatus.COMPLETED));
     }
 
     @Override
