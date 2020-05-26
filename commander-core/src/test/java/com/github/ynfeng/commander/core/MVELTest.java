@@ -19,4 +19,16 @@ public class MVELTest {
 
         assertThat(greater, is(true));
     }
+
+    @Test
+    public void should_eval_immediate() {
+        Map<String, Object> vars = Maps.newHashMap();
+        vars.put("foo", 9);
+
+        int number = (int) MVEL.eval("4", vars);
+        assertThat(number, is(4));
+
+        String str = (String) MVEL.eval("'hello'", vars);
+        assertThat(str, is("hello"));
+    }
 }
