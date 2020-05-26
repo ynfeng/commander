@@ -4,10 +4,9 @@ import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.event.EngineEventSubject;
-import com.github.ynfeng.commander.core.event.Event;
-import com.github.ynfeng.commander.core.event.EventListener;
 import com.github.ynfeng.commander.core.event.ProcessExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
+import com.google.common.eventbus.Subscribe;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -79,20 +78,16 @@ public class ProcessFuture {
         return processContext.status();
     }
 
-    class ProcessCompleteEventListener implements EventListener {
-        @Override
-        public void onEvent(Event event) {
+    class ProcessCompleteEventListener {
+
+        @Subscribe
+        public void handleEvent(ProcessExecuteCompletedEvent event) {
             ProcessId processsId = ProcessContext.get().processId();
             if (processsId.equals(processId())) {
                 synchronized (ProcessFuture.this) {
                     ProcessFuture.this.notifyAll();
                 }
             }
-        }
-
-        @Override
-        public boolean interestedOn(Event event) {
-            return event instanceof ProcessExecuteCompletedEvent;
         }
     }
 

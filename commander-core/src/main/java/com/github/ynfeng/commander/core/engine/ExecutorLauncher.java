@@ -4,14 +4,13 @@ import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.event.EngineEvent;
 import com.github.ynfeng.commander.core.event.EngineEventSubject;
-import com.github.ynfeng.commander.core.event.Event;
-import com.github.ynfeng.commander.core.event.EventListener;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import com.github.ynfeng.commander.core.executor.NodeExecutor;
 import com.github.ynfeng.commander.core.executor.NodeExecutors;
+import com.google.common.eventbus.Subscribe;
 import java.util.Objects;
 
-public final class ExecutorLauncher implements EventListener {
+public final class ExecutorLauncher {
     private final NodeExecutors nodeExecutors;
 
     public ExecutorLauncher(NodeExecutors nodeExecutors) {
@@ -32,8 +31,8 @@ public final class ExecutorLauncher implements EventListener {
         EngineEventSubject.getInstance().registerListener(this);
     }
 
-    @Override
-    public void onEvent(Event event) {
+    @Subscribe
+    public void handleEvent(EngineEvent event) {
         launchExecutor(ProcessContext.get());
     }
 
@@ -54,10 +53,5 @@ public final class ExecutorLauncher implements EventListener {
             nodeExecutor.execute(readyNode);
             readyNode = context.readyNode();
         }
-    }
-
-    @Override
-    public boolean interestedOn(Event event) {
-        return event instanceof EngineEvent;
     }
 }

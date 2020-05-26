@@ -7,6 +7,7 @@ import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
+import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,15 +26,10 @@ class EngineEventSubjectTest {
     @Test
     public void should_publish_process_start_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineEventSubject.getInstance().registerListener(new EventListener() {
-            @Override
-            public void onEvent(Event event) {
+        EngineEventSubject.getInstance().registerListener(new Object() {
+            @Subscribe
+            public void handleEvent(ProcessStartedEvent event) {
                 exceptedEvent.set(event);
-            }
-
-            @Override
-            public boolean interestedOn(Event event) {
-                return event instanceof ProcessStartedEvent;
             }
         });
         EngineEventSubject.getInstance().notifyProcessStartedEvent();
@@ -44,15 +40,10 @@ class EngineEventSubjectTest {
     @Test
     public void should_publish_node_execute_complted_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineEventSubject.getInstance().registerListener(new EventListener() {
-            @Override
-            public void onEvent(Event event) {
+        EngineEventSubject.getInstance().registerListener(new Object() {
+            @Subscribe
+            public void handleEvent(NodeExecuteCompletedEvent event) {
                 exceptedEvent.set(event);
-            }
-
-            @Override
-            public boolean interestedOn(Event event) {
-                return event instanceof NodeExecuteCompletedEvent;
             }
         });
         EngineEventSubject.getInstance().notifyNodeExecutedComplete();
@@ -63,15 +54,10 @@ class EngineEventSubjectTest {
     @Test
     public void should_publish_process_execute_complete_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineEventSubject.getInstance().registerListener(new EventListener() {
-            @Override
-            public void onEvent(Event event) {
+        EngineEventSubject.getInstance().registerListener(new Object() {
+            @Subscribe
+            public void handleEvent(ProcessExecuteCompletedEvent event) {
                 exceptedEvent.set(event);
-            }
-
-            @Override
-            public boolean interestedOn(Event event) {
-                return event instanceof ProcessExecuteCompletedEvent;
             }
         });
         EngineEventSubject.getInstance().notifyProcessExecutedComplete();

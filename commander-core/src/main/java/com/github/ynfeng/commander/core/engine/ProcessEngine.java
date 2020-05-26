@@ -8,10 +8,9 @@ import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.event.EngineEventSubject;
-import com.github.ynfeng.commander.core.event.Event;
-import com.github.ynfeng.commander.core.event.EventListener;
 import com.github.ynfeng.commander.core.event.ProcessExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
+import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.ExecutorService;
 import lombok.Builder;
 
@@ -56,17 +55,12 @@ public final class ProcessEngine {
         return processContexts.size();
     }
 
-    class ProcessCompletedListener implements EventListener {
+    class ProcessCompletedListener {
 
-        @Override
-        public void onEvent(Event event) {
+        @Subscribe
+        public void handleEvent(ProcessExecuteCompletedEvent event) {
             ProcessContext processContext = ProcessContext.get();
             processContexts.remove(processContext);
-        }
-
-        @Override
-        public boolean interestedOn(Event event) {
-            return event instanceof ProcessExecuteCompletedEvent;
         }
     }
 }

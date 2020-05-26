@@ -1,38 +1,49 @@
 package com.github.ynfeng.commander.core.event;
 
+import com.google.common.eventbus.EventBus;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class EngineEventSubject {
     private static final EngineEventSubject INSTANCE = new EngineEventSubject();
-    private static final EventBus EVENT_BUS = new ProcessEngineEventBus();
+    private final AtomicInteger numOfListener = new AtomicInteger(0);
+    private EventBus eventBus = new EventBus();
+
+    private EngineEventSubject() {
+
+    }
 
     public static EngineEventSubject getInstance() {
         return INSTANCE;
     }
 
-    public void registerListener(EventListener listener) {
-        EVENT_BUS.registerListener(listener);
+    public void registerListener(Object listener) {
+        eventBus.register(listener);
+        numOfListener.getAndIncrement();
     }
 
     public void removeAllListeners() {
-        EVENT_BUS.removeAllListeners();
+        eventBus = new EventBus();
+        numOfListener.set(0);
     }
 
-    public void removeListener(EventListener eventListener) {
-        EVENT_BUS.removeListener(eventListener);
+    public void removeListener(Object eventListener) {
+        eventBus.unregister(eventListener);
+        numOfListener.decrementAndGet();
     }
 
     public int numOfListeners() {
-        return EVENT_BUS.numOfListeners();
+        return numOfListener.get();
     }
 
     public void notifyProcessExecutedComplete() {
-        EVENT_BUS.publishEvent(new ProcessExecuteCompletedEvent());
+        eventBus.post(new ProcessExecuteCompletedEvent());
     }
 
     public void notifyNodeExecutedComplete() {
-        EVENT_BUS.publishEvent(new NodeExecuteCompletedEvent());
+        eventBus.post(new NodeExecuteCompletedEvent());
     }
 
     public void notifyProcessStartedEvent() {
-        EVENT_BUS.publishEvent(new ProcessStartedEvent());
+        eventBus.post(new ProcessStartedEvent());
     }
 }
