@@ -14,10 +14,6 @@ public final class ProcessContexts {
         contexts.put(processContext.processId(), processContext);
     }
 
-    public ProcessContext get(ProcessId processId) {
-        return contexts.get(processId);
-    }
-
     public int size() {
         return contexts.size();
     }
