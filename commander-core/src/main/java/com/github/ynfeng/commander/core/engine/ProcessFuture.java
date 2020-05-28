@@ -105,7 +105,6 @@ public class ProcessFuture {
             ProcessId processsId = event.processContext().processId();
             if (processsId.equals(processId())) {
                 synchronized (ProcessFuture.this) {
-                    System.out.println("notify");
                     ProcessFuture.this.notifyAll();
                 }
             }

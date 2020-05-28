@@ -53,7 +53,6 @@ public final class ProcessEngine {
     }
 
     public int numOfRunningProcess() {
-        System.out.println("count:" + processContexts.size());
         return processContexts.size();
     }
 

@@ -45,7 +45,6 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
         ProcessDefinition processDefinition = builder.build();
 
         processEngine.startProcess(processDefinition).sync();
-        System.out.println("wake up");
         assertThat(processEngine.numOfRunningProcess(), is(0));
     }
 
