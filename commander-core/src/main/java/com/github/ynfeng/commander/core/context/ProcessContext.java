@@ -82,10 +82,6 @@ public class ProcessContext {
         input = parameters;
     }
 
-    public ProcessDefinition processDefinition() {
-        return processDefinition;
-    }
-
     public void falied(Throwable e) {
         executeException = e;
         processStatus = ProcessStatus.FAILED;
