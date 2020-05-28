@@ -24,7 +24,7 @@ public class EndNodeExecutorTest extends ProcessEngineTestSupport {
         builder.link("start", "end");
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessFuture processFuture = processEngine.startProcess(processDefinition).waitComplete();
+        ProcessFuture processFuture = processEngine.startProcess(processDefinition).sync();
 
         assertThat(processFuture.status(), is(ProcessStatus.COMPLETED));
     }

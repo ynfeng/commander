@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessFuture {
     private final ProcessContext processContext;
-    private ProcessCompleteEventListener eventListener;
+    private ProcessCompleteEventListener completeEventListener;
 
     private ProcessFuture(ProcessContext processContext) {
         this.processContext = processContext;
@@ -26,11 +26,11 @@ public class ProcessFuture {
         return processContext.processId();
     }
 
-    public ProcessFuture waitComplete() throws InterruptedException {
-        return waitComplete(365, TimeUnit.DAYS);
+    public ProcessFuture sync() throws InterruptedException {
+        return sync(Integer.MAX_VALUE, TimeUnit.DAYS);
     }
 
-    public ProcessFuture waitComplete(int timeout, TimeUnit timeUnit) throws InterruptedException {
+    public ProcessFuture sync(int timeout, TimeUnit timeUnit) throws InterruptedException {
         if (processContext.status() == ProcessStatus.COMPLETED) {
             return this;
         }
@@ -45,7 +45,7 @@ public class ProcessFuture {
             }
             doWait(timeout, timeUnit);
         }
-        EngineEventSubject.getInstance().removeListener(eventListener);
+        EngineEventSubject.getInstance().removeListener(completeEventListener);
         throwProcessEngineExceptionIfNecessary();
     }
 
@@ -56,8 +56,8 @@ public class ProcessFuture {
     }
 
     private void registerProcessCompleteEventListener() {
-        eventListener = new ProcessCompleteEventListener();
-        EngineEventSubject.getInstance().registerListener(eventListener);
+        completeEventListener = new ProcessCompleteEventListener();
+        EngineEventSubject.getInstance().registerListener(completeEventListener);
     }
 
     private void throwProcessEngineExceptionIfNecessary() {

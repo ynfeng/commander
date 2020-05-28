@@ -28,7 +28,7 @@ public class ServiceNodeExecutorTest extends ProcessEngineTestSupport {
         builder.link("aService", "end");
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessFuture processFuture = processEngine.startProcess(processDefinition).waitComplete();
+        ProcessFuture processFuture = processEngine.startProcess(processDefinition).sync();
 
         assertThat(processFuture.status(), is(ProcessStatus.COMPLETED));
     }

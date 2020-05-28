@@ -42,7 +42,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
         builder.link("start", "end");
         ProcessDefinition processDefinition = builder.build();
 
-        processEngine.startProcess(processDefinition).waitComplete();
+        processEngine.startProcess(processDefinition).sync();
 
         assertThat(processEngine.numOfRunningProcess(), is(0));
 
@@ -91,18 +91,18 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
         });
 
         ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
-            processEngine.startProcess(processDefinition).waitComplete();
+            processEngine.startProcess(processDefinition).sync();
         });
         assertThat(exception.getMessage(), is("Can't find any executor for dummy"));
     }
 
     @Test
-    public void should_warp_exception_when_executor_throws_exception() {
+    public void should_throw_exception_when_executor_throw_exception() {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new TestableDefinition("testable"));
 
         ProcessEngineException exception = assertThrows(ProcessEngineException.class, () -> {
-            processEngine.startProcess(processDefinition).waitComplete();
+            processEngine.startProcess(processDefinition).sync();
         });
         assertThat(exception.getCause(), instanceOf(NullPointerException.class));
     }

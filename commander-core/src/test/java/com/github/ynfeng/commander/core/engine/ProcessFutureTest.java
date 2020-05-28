@@ -38,7 +38,7 @@ class ProcessFutureTest {
         });
         ProcessFuture processFuture = ProcessFuture.create(processContext);
 
-        processFuture.waitComplete();
+        processFuture.sync();
 
         assertThat(EngineEventSubject.getInstance().numOfListeners(), is(0));
     }
@@ -50,7 +50,7 @@ class ProcessFutureTest {
         ProcessFuture processFuture = ProcessFuture.create(processContext);
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        processFuture.waitComplete();
+        processFuture.sync();
 
         assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), is(0L));
     }

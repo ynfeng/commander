@@ -34,7 +34,7 @@ public class JoinNodeExecutorTest extends ProcessEngineTestSupport {
         builder.link("aJoin", "end");
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessFuture processFuture = processEngine.startProcess(processDefinition).waitComplete();
+        ProcessFuture processFuture = processEngine.startProcess(processDefinition).sync();
         List<String> executedNodes = processFuture.executedNodes();
 
         assertThat(processFuture.status(), is(ProcessStatus.COMPLETED));

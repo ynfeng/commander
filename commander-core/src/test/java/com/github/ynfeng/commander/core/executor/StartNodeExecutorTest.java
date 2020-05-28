@@ -22,7 +22,7 @@ class StartNodeExecutorTest extends ProcessEngineTestSupport {
         builder.createStart();
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessFuture processFuture = processEngine.startProcess(processDefinition).waitComplete(500, TimeUnit.MILLISECONDS);
+        ProcessFuture processFuture = processEngine.startProcess(processDefinition).sync(500, TimeUnit.MILLISECONDS);
 
         assertThat(processFuture.status(), is(ProcessStatus.RUNNING));
     }
