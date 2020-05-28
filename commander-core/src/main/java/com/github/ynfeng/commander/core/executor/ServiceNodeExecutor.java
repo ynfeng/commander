@@ -7,9 +7,8 @@ import com.github.ynfeng.commander.core.definition.ServiceDefinition;
 public class ServiceNodeExecutor implements NodeExecutor {
 
     @Override
-    public void execute(NodeDefinition nodeDefinition) {
+    public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
         ServiceDefinition serviceDefinition = (ServiceDefinition) nodeDefinition;
-        ProcessContext context = ProcessContext.get();
         context.addReadyNode(serviceDefinition.next());
         context.completeNode(nodeDefinition);
     }

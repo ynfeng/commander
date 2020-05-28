@@ -7,8 +7,7 @@ import java.util.List;
 
 public class JoinNodeExecutor implements NodeExecutor {
     @Override
-    public void execute(NodeDefinition nodeDefinition) {
-        ProcessContext context = ProcessContext.get();
+    public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
         JoinDefinition joinDefinition = (JoinDefinition) nodeDefinition;
         List<String> ons = joinDefinition.ons();
         List<String> executedNodes = context.executedNodes();

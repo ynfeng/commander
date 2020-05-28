@@ -32,7 +32,7 @@ class EngineEventSubjectTest {
                 exceptedEvent.set(event);
             }
         });
-        EngineEventSubject.getInstance().notifyProcessStartedEvent();
+        EngineEventSubject.getInstance().notifyProcessStartedEvent(processContext);
 
         assertThat(exceptedEvent.get(), instanceOf(ProcessStartedEvent.class));
     }
@@ -46,7 +46,7 @@ class EngineEventSubjectTest {
                 exceptedEvent.set(event);
             }
         });
-        EngineEventSubject.getInstance().notifyNodeExecutedComplete();
+        EngineEventSubject.getInstance().notifyNodeExecutedComplete(processContext);
 
         assertThat(exceptedEvent.get(), instanceOf(NodeExecuteCompletedEvent.class));
     }
@@ -60,7 +60,7 @@ class EngineEventSubjectTest {
                 exceptedEvent.set(event);
             }
         });
-        EngineEventSubject.getInstance().notifyProcessExecutedComplete();
+        EngineEventSubject.getInstance().notifyProcessExecutedComplete(processContext);
 
         assertThat(exceptedEvent.get(), instanceOf(ProcessExecuteCompletedEvent.class));
     }

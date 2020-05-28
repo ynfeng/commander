@@ -1,5 +1,6 @@
 package com.github.ynfeng.commander.core.event;
 
+import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.google.common.eventbus.EventBus;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,15 +37,15 @@ public class EngineEventSubject {
         return numOfListener.get();
     }
 
-    public void notifyProcessExecutedComplete() {
-        eventBus.post(new ProcessExecuteCompletedEvent());
+    public void notifyProcessExecutedComplete(ProcessContext context) {
+        eventBus.post(new ProcessExecuteCompletedEvent(context));
     }
 
-    public void notifyNodeExecutedComplete() {
-        eventBus.post(new NodeExecuteCompletedEvent());
+    public void notifyNodeExecutedComplete(ProcessContext context) {
+        eventBus.post(new NodeExecuteCompletedEvent(context));
     }
 
-    public void notifyProcessStartedEvent() {
-        eventBus.post(new ProcessStartedEvent());
+    public void notifyProcessStartedEvent(ProcessContext context) {
+        eventBus.post(new ProcessStartedEvent(context));
     }
 }

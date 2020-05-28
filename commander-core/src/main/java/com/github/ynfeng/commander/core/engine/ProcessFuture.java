@@ -82,7 +82,7 @@ public class ProcessFuture {
 
         @Subscribe
         public void handleEvent(ProcessExecuteCompletedEvent event) {
-            ProcessId processsId = ProcessContext.get().processId();
+            ProcessId processsId = event.processContext().processId();
             if (processsId.equals(processId())) {
                 synchronized (ProcessFuture.this) {
                     ProcessFuture.this.notifyAll();

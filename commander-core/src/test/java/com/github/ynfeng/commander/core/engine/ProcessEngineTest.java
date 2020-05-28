@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
+import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
@@ -118,7 +119,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
         Mockito.when(nodeExecutors.getExecutor(any(TestableDefinition.class)))
             .thenReturn(new NodeExecutor() {
                 @Override
-                public void execute(NodeDefinition nodeDefinition) {
+                public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
                     throw new NullPointerException();
                 }
 

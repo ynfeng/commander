@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 public class ProcessContext {
-    private static final ThreadLocal<ProcessContext> CONTEXT_HOLDER = new ThreadLocal<>();
     private final ProcessId processId;
     private final ProcessDefinition processDefinition;
     private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
@@ -29,16 +28,7 @@ public class ProcessContext {
 
     public static ProcessContext create(ProcessId processId, ProcessDefinition processDefinition) {
         ProcessContext processContext = new ProcessContext(processId, processDefinition);
-        CONTEXT_HOLDER.set(processContext);
         return processContext;
-    }
-
-    public static ProcessContext get() {
-        return CONTEXT_HOLDER.get();
-    }
-
-    public static void threadPropagate(ProcessContext processContext) {
-        CONTEXT_HOLDER.set(processContext);
     }
 
     public ProcessId processId() {
@@ -60,12 +50,12 @@ public class ProcessContext {
 
     public void complete() {
         processStatus = ProcessStatus.COMPLETED;
-        EngineEventSubject.getInstance().notifyProcessExecutedComplete();
+        EngineEventSubject.getInstance().notifyProcessExecutedComplete(this);
     }
 
     public void completeNode(NodeDefinition currentNode) {
         executedNodes.add(currentNode.refName());
-        EngineEventSubject.getInstance().notifyNodeExecutedComplete();
+        EngineEventSubject.getInstance().notifyNodeExecutedComplete(this);
     }
 
     public <T extends NodeDefinition> void addReadyNode(T next) {

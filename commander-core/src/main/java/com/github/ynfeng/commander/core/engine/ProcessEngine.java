@@ -8,6 +8,7 @@ import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.event.EngineEventSubject;
+import com.github.ynfeng.commander.core.event.NodeExecuteEvent;
 import com.github.ynfeng.commander.core.event.ProcessExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import com.google.common.eventbus.Subscribe;
@@ -46,8 +47,7 @@ public final class ProcessEngine {
 
     private void publishProcessStartEvent(ProcessContext processContext) {
         executorService.execute(() -> {
-            ProcessContext.threadPropagate(processContext);
-            EngineEventSubject.getInstance().notifyProcessStartedEvent();
+            EngineEventSubject.getInstance().notifyProcessStartedEvent(processContext);
         });
     }
 
@@ -58,9 +58,10 @@ public final class ProcessEngine {
     class ProcessCompletedListener {
 
         @Subscribe
-        public void handleEvent(ProcessExecuteCompletedEvent event) {
-            ProcessContext processContext = ProcessContext.get();
-            processContexts.remove(processContext);
+        public void handleEvent(NodeExecuteEvent event) {
+            if (event instanceof ProcessExecuteCompletedEvent) {
+                processContexts.remove(event.processContext());
+            }
         }
     }
 }

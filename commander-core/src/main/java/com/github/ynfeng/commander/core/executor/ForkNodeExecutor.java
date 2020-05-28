@@ -9,8 +9,7 @@ import java.util.Iterator;
 public class ForkNodeExecutor implements NodeExecutor {
 
     @Override
-    public void execute(NodeDefinition nodeDefinition) {
-        ProcessContext context = ProcessContext.get();
+    public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
         ForkDefinition forkDefinition = (ForkDefinition) nodeDefinition;
         Iterator<ForkBranch> branchIterator = forkDefinition.branchs().iterator();
         while (branchIterator.hasNext()) {
