@@ -10,7 +10,7 @@ public class MVELExpressionEvaluator implements ExepressionEvaluator {
         return (T) MVEL.eval(expression, new EvalContextWrapper(context));
     }
 
-    class EvalContextWrapper {
+    static class EvalContextWrapper {
         private final ProcessContext context;
 
         EvalContextWrapper(ProcessContext context) {

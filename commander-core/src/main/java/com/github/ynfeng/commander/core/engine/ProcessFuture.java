@@ -4,7 +4,7 @@ import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
-import com.github.ynfeng.commander.core.context.event.ProcessExecuteCompletedEvent;
+import com.github.ynfeng.commander.core.context.event.ProcessContextClearedEvent;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import com.google.common.eventbus.Subscribe;
 import java.util.List;
@@ -31,22 +31,30 @@ public class ProcessFuture {
     }
 
     public ProcessFuture sync(int timeout, TimeUnit timeUnit) throws InterruptedException {
-        if (processContext.status() == ProcessStatus.COMPLETED) {
+        if (isProcessRunFinish()) {
             return this;
         }
-        tryToWait(timeout, timeUnit);
+        tryToWaitThrowException(timeout, timeUnit);
         return this;
     }
 
-    private void tryToWait(int timeout, TimeUnit timeUnit) throws InterruptedException {
+    private boolean isProcessRunFinish() {
+        return processContext.status() == ProcessStatus.COMPLETED || processContext.status() == ProcessStatus.FAILED;
+    }
+
+    private void tryToWaitThrowException(int timeout, TimeUnit timeUnit) throws InterruptedException {
+        tryToWaitNotThrowException(timeout, timeUnit);
+        throwProcessEngineExceptionIfNecessary();
+    }
+
+    private void tryToWaitNotThrowException(int timeout, TimeUnit timeUnit) throws InterruptedException {
         synchronized (this) {
-            if (processContext.status() == ProcessStatus.COMPLETED) {
+            if (isProcessRunFinish()) {
                 return;
             }
             doWait(timeout, timeUnit);
         }
         EngineEventSubject.getInstance().removeListener(completeEventListener);
-        throwProcessEngineExceptionIfNecessary();
     }
 
     @SuppressWarnings("WaitNotInLoop")
@@ -78,13 +86,26 @@ public class ProcessFuture {
         return processContext.status();
     }
 
+    public ProcessFuture syncNotThrowException() throws InterruptedException {
+        return syncNotThrowException(Integer.MAX_VALUE, TimeUnit.DAYS);
+    }
+
+    public ProcessFuture syncNotThrowException(int timeout, TimeUnit timeUnit) throws InterruptedException {
+        if (isProcessRunFinish()) {
+            return this;
+        }
+        tryToWaitNotThrowException(timeout, timeUnit);
+        return this;
+    }
+
     class ProcessCompleteEventListener {
 
         @Subscribe
-        public void handleEvent(ProcessExecuteCompletedEvent event) {
+        public void handleEvent(ProcessContextClearedEvent event) {
             ProcessId processsId = event.processContext().processId();
             if (processsId.equals(processId())) {
                 synchronized (ProcessFuture.this) {
+                    System.out.println("notify");
                     ProcessFuture.this.notifyAll();
                 }
             }

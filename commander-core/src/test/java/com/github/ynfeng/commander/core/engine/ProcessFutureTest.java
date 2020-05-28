@@ -54,4 +54,17 @@ class ProcessFutureTest {
 
         assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), is(0L));
     }
+
+    @Test
+    public void should_return_immediately_when_process_already_exception() throws InterruptedException {
+        ProcessContext processContext = Mockito.mock(ProcessContext.class);
+        Mockito.when(processContext.status()).thenReturn(ProcessStatus.FAILED);
+
+        ProcessFuture processFuture = ProcessFuture.create(processContext);
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        processFuture.syncNotThrowException();
+
+        assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), is(0L));
+    }
 }

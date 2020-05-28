@@ -11,6 +11,7 @@ public final class ProcessContexts {
     }
 
     public void add(ProcessContext processContext) {
+        System.out.println("add:" + processContext.processDefinition().name());
         contexts.put(processContext.processId(), processContext);
     }
 
@@ -19,6 +20,9 @@ public final class ProcessContexts {
     }
 
     public void remove(ProcessContext processContext) {
+        System.out.println("remove:" + processContext.processDefinition().name());
         contexts.remove(processContext.processId());
+        System.out.println("after remove:" + contexts.get(processContext.processId().toString()));
+        System.out.println(contexts.size());
     }
 }

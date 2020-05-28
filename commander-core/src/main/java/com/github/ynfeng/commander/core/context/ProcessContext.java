@@ -2,9 +2,9 @@ package com.github.ynfeng.commander.core.context;
 
 
 import com.github.ynfeng.commander.core.Parameters;
+import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -62,10 +62,6 @@ public class ProcessContext {
         readyQueue.offer(next);
     }
 
-    public void executeException(Throwable t) {
-        executeException = t;
-    }
-
     public boolean hasException() {
         return Objects.nonNull(executeException);
     }
@@ -84,5 +80,15 @@ public class ProcessContext {
 
     public void input(Parameters parameters) {
         input = parameters;
+    }
+
+    public ProcessDefinition processDefinition() {
+        return processDefinition;
+    }
+
+    public void falied(Throwable e) {
+        executeException = e;
+        processStatus = ProcessStatus.FAILED;
+        EngineEventSubject.getInstance().notifyProcessExecutedException(this);
     }
 }

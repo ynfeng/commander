@@ -6,10 +6,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
-import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.context.event.NodeExecuteEvent;
 import com.github.ynfeng.commander.core.context.event.ProcessExecuteCompletedEvent;
+import com.github.ynfeng.commander.core.context.event.ProcessExecuteFailedEvent;
+import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.ExecutorService;
@@ -52,6 +53,7 @@ public final class ProcessEngine {
     }
 
     public int numOfRunningProcess() {
+        System.out.println("count:" + processContexts.size());
         return processContexts.size();
     }
 
@@ -59,9 +61,14 @@ public final class ProcessEngine {
 
         @Subscribe
         public void handleEvent(NodeExecuteEvent event) {
-            if (event instanceof ProcessExecuteCompletedEvent) {
+            if (isRunFinish(event)) {
                 processContexts.remove(event.processContext());
+                EngineEventSubject.getInstance().notifyProcessContextCleared(event.processContext());
             }
+        }
+
+        private boolean isRunFinish(NodeExecuteEvent event) {
+            return event instanceof ProcessExecuteCompletedEvent || event instanceof ProcessExecuteFailedEvent;
         }
     }
 }

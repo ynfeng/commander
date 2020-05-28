@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
+import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.NextableNodeDefinition;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
@@ -37,16 +38,15 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_clear_porcess_context_when_process_completed() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
+        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("fooTest", 1);
         builder.createEnd("end");
         builder.createStart();
         builder.link("start", "end");
         ProcessDefinition processDefinition = builder.build();
 
         processEngine.startProcess(processDefinition).sync();
-
+        System.out.println("wake up");
         assertThat(processEngine.numOfRunningProcess(), is(0));
-
     }
 
     @Test
@@ -95,6 +95,18 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
             processEngine.startProcess(processDefinition).sync();
         });
         assertThat(exception.getMessage(), is("Can't find any executor for dummy"));
+    }
+
+    @Test
+    public void should_faild_status_when_execute_exeception() throws InterruptedException {
+        ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
+        processDefinition.firstNode(new NextableNodeDefinition("dummy") {
+        });
+
+        ProcessFuture processFuture = processEngine.startProcess(processDefinition);
+        processFuture.syncNotThrowException();
+
+        assertThat(processFuture.status(), is(ProcessStatus.FAILED));
     }
 
     @Test

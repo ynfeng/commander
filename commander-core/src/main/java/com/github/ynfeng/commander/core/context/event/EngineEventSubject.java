@@ -48,4 +48,12 @@ public class EngineEventSubject {
     public void notifyProcessStartedEvent(ProcessContext context) {
         eventBus.post(new ProcessStartedEvent(context));
     }
+
+    public void notifyProcessContextCleared(ProcessContext context) {
+        eventBus.post(new ProcessContextClearedEvent(context));
+    }
+
+    public void notifyProcessExecutedException(ProcessContext context) {
+        eventBus.post(new ProcessExecuteFailedEvent(context));
+    }
 }
