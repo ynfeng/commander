@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.core.engine;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.github.ynfeng.commander.core.Parameters;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
@@ -35,7 +36,12 @@ public final class ProcessEngine {
     }
 
     public ProcessFuture startProcess(ProcessDefinition processDefinition) {
+        return startProcess(processDefinition, new Parameters());
+    }
+
+    public ProcessFuture startProcess(ProcessDefinition processDefinition, Parameters parameters) {
         ProcessContext processContext = createContext(processDefinition);
+        processContext.input(parameters);
         publishProcessStartEvent(processContext);
         return ProcessFuture.create(processContext);
     }

@@ -15,7 +15,7 @@ public class ProcessContext {
     private final ProcessDefinition processDefinition;
     private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
     private final ConcurrentLinkedQueue<String> executedNodes = new ConcurrentLinkedQueue<String>();
-    private Parameters input = new Parameters();
+    private final Parameters input = new Parameters();
     private volatile ProcessStatus processStatus;
     private Throwable executeException;
 
@@ -75,11 +75,13 @@ public class ProcessContext {
     }
 
     public Parameters input() {
-        return input;
+        return Parameters.from(input);
     }
 
-    public void input(Parameters parameters) {
-        input = parameters;
+    public void input(Parameters params) {
+        params.entrySet().forEach(entry -> {
+            input.put(entry.getKey(), entry.getValue());
+        });
     }
 
     public void falied(Throwable e) {

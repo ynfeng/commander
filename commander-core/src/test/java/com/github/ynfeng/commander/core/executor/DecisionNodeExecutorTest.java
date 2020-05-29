@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
+import com.github.ynfeng.commander.core.Parameters;
 import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.DecisionDefinition;
@@ -29,7 +30,7 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
         builder.createService("bService", ServiceCoordinate.of("bService", 1));
         builder.createDecision("decision")
             .defaultCondition(defaultService)
-            .condition(Expression.of("1 == 1"), aService);
+            .condition(Expression.of("context.input['level'] == 1"), aService);
         builder.createStart();
         builder.createEnd("end");
         builder.link("start", "decision");
@@ -38,15 +39,16 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
         builder.link("bService", "end");
         ProcessDefinition processDefinition = builder.build();
 
-        ProcessFuture future = processEngine.startProcess(processDefinition).sync();
+        Parameters parameters = new Parameters();
+        parameters.put("level", "1");
+        ProcessFuture future = processEngine.startProcess(processDefinition, parameters).sync();
 
         List<String> executedNodes = future.executedNodes();
-
         assertThat(executedNodes.get(2), is("aService"));
         assertThat(executedNodes.get(3), is("bService"));
         assertThat(future.status(), is(ProcessStatus.COMPLETED));
     }
-    
+
     @Test
     public void should_execute_default_branch_when_no_suitable_condition() throws InterruptedException {
         ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
@@ -55,7 +57,7 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
         builder.createService("bService", ServiceCoordinate.of("bService", 1));
         builder.createDecision("decision")
             .defaultCondition(defaultService)
-            .condition(Expression.of("1 == 2"), aService);
+            .condition(Expression.of("context.input['level'] == 2"), aService);
         builder.createStart();
         builder.createEnd("end");
         builder.link("start", "decision");
@@ -64,10 +66,11 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
         builder.link("bService", "end");
         ProcessDefinition processDefinition = builder.build();
 
+        Parameters parameters = new Parameters();
+        parameters.put("level", "1");
         ProcessFuture future = processEngine.startProcess(processDefinition).sync();
 
         List<String> executedNodes = future.executedNodes();
-
         assertThat(executedNodes.get(2), is("defaultService"));
         assertThat(future.status(), is(ProcessStatus.COMPLETED));
     }

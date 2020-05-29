@@ -61,7 +61,7 @@ class SPINodeExecutorsTest {
     }
 
     @Test
-    public void should_get_decision_node_executor(){
+    public void should_get_decision_node_executor() {
         shouldGetExecuteNode(DecisionDefinition.class, DecisionNodeExecutor.class);
     }
 

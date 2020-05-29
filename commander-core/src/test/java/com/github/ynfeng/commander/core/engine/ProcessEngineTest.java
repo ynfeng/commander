@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
+import com.github.ynfeng.commander.core.Parameters;
 import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
@@ -117,6 +118,22 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
             processEngine.startProcess(processDefinition).sync();
         });
         assertThat(exception.getCause(), instanceOf(NullPointerException.class));
+    }
+
+    @Test
+    public void should_start_process_with_parameters() throws InterruptedException {
+        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("fooTest", 1);
+        builder.createEnd("end");
+        builder.createStart();
+        builder.link("start", "end");
+        ProcessDefinition processDefinition = builder.build();
+
+        Parameters parameters = new Parameters();
+        parameters.put("foo", "bar");
+
+        ProcessFuture future = processEngine.startProcess(processDefinition, parameters).sync();
+
+        assertThat(future.contextParameters().get("foo"), is("bar"));
     }
 
     @Override
