@@ -75,7 +75,7 @@ public class ProcessContext {
     }
 
     public Parameters input() {
-        return Parameters.from(input);
+        return Parameters.copy(input);
     }
 
     public void input(Parameters params) {
