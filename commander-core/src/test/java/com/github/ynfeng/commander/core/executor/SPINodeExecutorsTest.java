@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.ynfeng.commander.core.definition.DecisionDefinition;
 import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.ForkDefinition;
 import com.github.ynfeng.commander.core.definition.JoinDefinition;
@@ -57,6 +58,11 @@ class SPINodeExecutorsTest {
     @Test
     public void should_get_join_node_executor() {
         shouldGetExecuteNode(JoinDefinition.class, JoinNodeExecutor.class);
+    }
+
+    @Test
+    public void should_get_decision_node_executor(){
+        shouldGetExecuteNode(DecisionDefinition.class, DecisionNodeExecutor.class);
     }
 
     private void shouldGetExecuteNode(Class<? extends NodeDefinition> nodeDefinitionClass,

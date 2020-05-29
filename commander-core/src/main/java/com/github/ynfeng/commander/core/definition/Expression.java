@@ -4,7 +4,7 @@ import lombok.EqualsAndHashCode;
 
 @EqualsAndHashCode(of = "expressionValue")
 public class Expression {
-    public static final Expression EMPTY = Expression.of("");
+    public static final Expression EMPTY = of("");
     private final String expressionValue;
 
     private Expression(String expressionValue) {
@@ -13,5 +13,10 @@ public class Expression {
 
     public static Expression of(String expressionValue) {
         return new Expression(expressionValue);
+    }
+
+    @Override
+    public String toString() {
+        return expressionValue;
     }
 }
