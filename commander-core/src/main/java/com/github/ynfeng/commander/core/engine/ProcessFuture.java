@@ -98,6 +98,7 @@ public class ProcessFuture {
         return this;
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     class ProcessCompleteEventListener {
 
         @Subscribe
