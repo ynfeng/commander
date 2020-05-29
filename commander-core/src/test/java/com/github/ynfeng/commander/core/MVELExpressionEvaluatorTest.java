@@ -3,11 +3,13 @@ package com.github.ynfeng.commander.core;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
+import com.github.ynfeng.commander.core.exception.IllegalExpressionException;
 import com.github.ynfeng.commander.core.expression.MVELExpressionEvaluator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,5 +48,19 @@ class MVELExpressionEvaluatorTest {
         boolean condition = evaluator.eval("context.input['level'] < 2", context);
 
         assertThat(condition, is(false));
+    }
+
+    @Test
+    public void should_throw_exception_when_illegall_expression() {
+        Parameters parameters = new Parameters();
+        parameters.put("level", 3);
+        ProcessDefinition processDefinition = new ProcessDefinition("name", 1);
+        processDefinition.firstNode(new StartDefinition());
+        ProcessContext context = ProcessContext.create(ProcessId.of("id"), processDefinition);
+        context.input(parameters);
+
+        assertThrows(IllegalExpressionException.class, () -> {
+            evaluator.eval("context.level == 2", context);
+        });
     }
 }
