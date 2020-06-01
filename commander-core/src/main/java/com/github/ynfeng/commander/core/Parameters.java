@@ -10,4 +10,10 @@ public class Parameters extends ConcurrentHashMap<String, Object> {
         });
         return parameters;
     }
+
+    public void merge(Parameters params) {
+        params.entrySet().forEach(entry -> {
+            put(entry.getKey(), entry.getValue());
+        });
+    }
 }

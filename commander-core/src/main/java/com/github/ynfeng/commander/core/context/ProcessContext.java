@@ -79,9 +79,7 @@ public class ProcessContext {
     }
 
     public void input(Parameters params) {
-        params.entrySet().forEach(entry -> {
-            input.put(entry.getKey(), entry.getValue());
-        });
+        input.merge(params);
     }
 
     public void falied(Throwable e) {
