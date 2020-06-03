@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.core.engine;
 
-import com.github.ynfeng.commander.core.Parameters;
+import com.github.ynfeng.commander.core.Variables;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
@@ -99,7 +99,7 @@ public class ProcessFuture {
         return this;
     }
 
-    public Parameters contextParameters() {
+    public Variables contextVariables() {
         return processContext.input();
     }
 

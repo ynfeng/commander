@@ -24,12 +24,12 @@ class MVELExpressionEvaluatorTest {
 
     @Test
     public void should_condition_true() {
-        Parameters parameters = new Parameters();
-        parameters.put("level", 3);
+        Variables variables = new Variables();
+        variables.put("level", 3);
         ProcessDefinition processDefinition = new ProcessDefinition("name", 1);
         processDefinition.firstNode(new StartDefinition());
         ProcessContext context = ProcessContext.create(ProcessId.of("id"), processDefinition);
-        context.input(parameters);
+        context.input(variables);
 
         boolean condition = evaluator.eval("context.input['level'] == 3", context);
 
@@ -38,12 +38,12 @@ class MVELExpressionEvaluatorTest {
 
     @Test
     public void should_condition_false() {
-        Parameters parameters = new Parameters();
-        parameters.put("level", 3);
+        Variables variables = new Variables();
+        variables.put("level", 3);
         ProcessDefinition processDefinition = new ProcessDefinition("name", 1);
         processDefinition.firstNode(new StartDefinition());
         ProcessContext context = ProcessContext.create(ProcessId.of("id"), processDefinition);
-        context.input(parameters);
+        context.input(variables);
 
         boolean condition = evaluator.eval("context.input['level'] < 2", context);
 
@@ -52,12 +52,12 @@ class MVELExpressionEvaluatorTest {
 
     @Test
     public void should_throw_exception_when_illegall_expression() {
-        Parameters parameters = new Parameters();
-        parameters.put("level", 3);
+        Variables variables = new Variables();
+        variables.put("level", 3);
         ProcessDefinition processDefinition = new ProcessDefinition("name", 1);
         processDefinition.firstNode(new StartDefinition());
         ProcessContext context = ProcessContext.create(ProcessId.of("id"), processDefinition);
-        context.input(parameters);
+        context.input(variables);
 
         assertThrows(IllegalExpressionException.class, () -> {
             evaluator.eval("context.level == 2", context);

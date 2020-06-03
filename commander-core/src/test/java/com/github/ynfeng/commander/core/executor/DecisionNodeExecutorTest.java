@@ -4,7 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
-import com.github.ynfeng.commander.core.Parameters;
+import com.github.ynfeng.commander.core.Variables;
 import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.DecisionDefinition;
@@ -39,9 +39,9 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
         builder.link("bService", "end");
         ProcessDefinition processDefinition = builder.build();
 
-        Parameters parameters = new Parameters();
-        parameters.put("level", "1");
-        ProcessFuture future = processEngine.startProcess(processDefinition, parameters).sync();
+        Variables variables = new Variables();
+        variables.put("level", "1");
+        ProcessFuture future = processEngine.startProcess(processDefinition, variables).sync();
 
         List<String> executedNodes = future.executedNodes();
         assertThat(executedNodes.get(2), is("aService"));
@@ -66,8 +66,8 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
         builder.link("bService", "end");
         ProcessDefinition processDefinition = builder.build();
 
-        Parameters parameters = new Parameters();
-        parameters.put("level", "1");
+        Variables variables = new Variables();
+        variables.put("level", "1");
         ProcessFuture future = processEngine.startProcess(processDefinition).sync();
 
         List<String> executedNodes = future.executedNodes();

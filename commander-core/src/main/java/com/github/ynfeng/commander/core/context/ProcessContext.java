@@ -1,7 +1,7 @@
 package com.github.ynfeng.commander.core.context;
 
 
-import com.github.ynfeng.commander.core.Parameters;
+import com.github.ynfeng.commander.core.Variables;
 import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
@@ -15,7 +15,7 @@ public class ProcessContext {
     private final ProcessDefinition processDefinition;
     private final ConcurrentLinkedQueue<NodeDefinition> readyQueue = new ConcurrentLinkedQueue<NodeDefinition>();
     private final ConcurrentLinkedQueue<String> executedNodes = new ConcurrentLinkedQueue<String>();
-    private final Parameters input = new Parameters();
+    private final Variables input = new Variables();
     private volatile ProcessStatus processStatus;
     private Throwable executeException;
 
@@ -74,11 +74,11 @@ public class ProcessContext {
         return executedNodes.stream().collect(Collectors.toList());
     }
 
-    public Parameters input() {
-        return Parameters.copy(input);
+    public Variables input() {
+        return Variables.copy(input);
     }
 
-    public void input(Parameters params) {
+    public void input(Variables params) {
         input.merge(params);
     }
 
