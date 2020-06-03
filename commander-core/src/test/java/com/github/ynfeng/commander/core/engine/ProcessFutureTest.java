@@ -22,7 +22,6 @@ class ProcessFutureTest {
 
     @Test
     public void should_clear_listener_under_race_condition() throws InterruptedException {
-        times = 0;
         ProcessContext processContext = Mockito.mock(ProcessContext.class);
         Mockito.when(processContext.status()).thenAnswer(new Answer<ProcessStatus>() {
             @Override
