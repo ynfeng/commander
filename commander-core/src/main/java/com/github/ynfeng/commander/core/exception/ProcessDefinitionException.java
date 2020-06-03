@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.core.exception;
 
 public class ProcessDefinitionException extends RuntimeException {
     private static final long serialVersionUID = -5222087117410649402L;
