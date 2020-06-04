@@ -25,7 +25,7 @@ public final class EventStream {
         eventBus.post(event);
     }
 
-    public void xxxx() {
+    public void clear() {
         eventBus = new EventBus();
     }
 }

@@ -14,7 +14,7 @@ class ProcessFutureTest {
 
     @BeforeEach
     public void setup() {
-        EventStream.getInstance().xxxx();
+        EventStream.getInstance().clear();
     }
 
     @Test

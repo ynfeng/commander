@@ -51,6 +51,6 @@ public abstract class ProcessEngineTestSupport {
 
     @AfterEach
     public void tearDown() {
-        EventStream.getInstance().xxxx();
+        EventStream.getInstance().clear();
     }
 }

@@ -25,7 +25,7 @@ class EngineEventSubjectTest {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new StartDefinition());
         processContext = ProcessContext.create(ProcessId.of("id"), processDefinition);
-        EventStream.getInstance().xxxx();
+        EventStream.getInstance().clear();
     }
 
     @Test
