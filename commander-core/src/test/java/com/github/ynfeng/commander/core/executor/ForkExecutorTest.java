@@ -38,6 +38,8 @@ public class ForkExecutorTest extends ProcessEngineTestSupport {
         assertThat(processFuture.status(), is(ProcessStatus.COMPLETED));
         assertThat(executedNodes.get(0), is("start"));
         assertThat(executedNodes.get(1), is("aFork"));
+        assertThat(executedNodes.get(2), is("aService"));
+        assertThat(executedNodes.get(3), is("otherService"));
         assertThat(executedNodes.get(4), is("end"));
     }
 
