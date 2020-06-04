@@ -1,11 +1,12 @@
 package com.github.ynfeng.commander.core;
 
+import com.github.ynfeng.commander.core.context.ConcurrentProcessContexts;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessIdGenerator;
-import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.engine.ExecutorLauncher;
 import com.github.ynfeng.commander.core.engine.ProcessEngine;
+import com.github.ynfeng.commander.core.event.EventStream;
 import com.github.ynfeng.commander.core.executor.NodeExecutors;
 import java.util.UUID;
 import java.util.concurrent.Executors;
@@ -17,6 +18,7 @@ public abstract class ProcessEngineTestSupport {
     protected ProcessIdGenerator processIdGenerator;
     protected ProcessEngine processEngine;
     protected NodeExecutors nodeExecutors;
+    protected ConcurrentProcessContexts processContexts;
 
     @BeforeEach
     public void setUp() {
@@ -28,11 +30,15 @@ public abstract class ProcessEngineTestSupport {
 
     private void createProcessEngine() {
         ProcessContextFactory processContextFactory = new ProcessContextFactory(processIdGenerator);
+        processContexts = new ConcurrentProcessContexts();
+
         processEngine = ProcessEngine.builder()
             .processContextFactory(processContextFactory)
             .executorLauncher(new ExecutorLauncher(nodeExecutors))
             .executorService(Executors.newWorkStealingPool())
+            .processContexts(processContexts)
             .build();
+
         processEngine.startUp();
     }
 
@@ -45,6 +51,6 @@ public abstract class ProcessEngineTestSupport {
 
     @AfterEach
     public void tearDown() {
-        EngineEventSubject.getInstance().removeAllListeners();
+        EventStream.getInstance().xxxx();
     }
 }

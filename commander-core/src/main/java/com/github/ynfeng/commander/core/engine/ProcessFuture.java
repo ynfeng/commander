@@ -4,8 +4,8 @@ import com.github.ynfeng.commander.core.Variables;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
-import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.context.event.ProcessContextClearedEvent;
+import com.github.ynfeng.commander.core.event.EventStream;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import com.google.common.eventbus.Subscribe;
 import java.util.List;
@@ -55,7 +55,7 @@ public class ProcessFuture {
             }
             doWait(timeout, timeUnit);
         }
-        EngineEventSubject.getInstance().removeListener(completeEventListener);
+        EventStream.getInstance().unsubcribe(completeEventListener);
     }
 
     @SuppressWarnings("WaitNotInLoop")
@@ -66,7 +66,7 @@ public class ProcessFuture {
 
     private void registerProcessCompleteEventListener() {
         completeEventListener = new ProcessCompleteEventListener();
-        EngineEventSubject.getInstance().registerListener(completeEventListener);
+        EventStream.getInstance().subcribe(completeEventListener);
     }
 
     private void throwProcessEngineExceptionIfNecessary() {

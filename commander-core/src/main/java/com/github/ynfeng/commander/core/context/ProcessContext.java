@@ -2,9 +2,12 @@ package com.github.ynfeng.commander.core.context;
 
 
 import com.github.ynfeng.commander.core.Variables;
-import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
+import com.github.ynfeng.commander.core.context.event.NodeExecuteCompletedEvent;
+import com.github.ynfeng.commander.core.context.event.ProcessExecuteCompletedEvent;
+import com.github.ynfeng.commander.core.context.event.ProcessExecuteFailedEvent;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.github.ynfeng.commander.core.event.EventStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -50,12 +53,12 @@ public class ProcessContext {
 
     public void complete() {
         processStatus = ProcessStatus.COMPLETED;
-        EngineEventSubject.getInstance().notifyProcessExecutedComplete(this);
+        EventStream.getInstance().publish(new ProcessExecuteCompletedEvent(this));
     }
 
     public void completeNode(NodeDefinition currentNode) {
         executedNodes.add(currentNode.refName());
-        EngineEventSubject.getInstance().notifyNodeExecutedComplete(this);
+        EventStream.getInstance().publish(new NodeExecuteCompletedEvent(this));
     }
 
     public <T extends NodeDefinition> void addReadyNode(T next) {
@@ -85,6 +88,6 @@ public class ProcessContext {
     public void falied(Throwable e) {
         executeException = e;
         processStatus = ProcessStatus.FAILED;
-        EngineEventSubject.getInstance().notifyProcessExecutedException(this);
+        EventStream.getInstance().publish(new ProcessExecuteFailedEvent(this));
     }
 }

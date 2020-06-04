@@ -7,11 +7,13 @@ import com.github.ynfeng.commander.core.Variables;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessContexts;
-import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.context.event.NodeExecuteEvent;
+import com.github.ynfeng.commander.core.context.event.ProcessContextClearedEvent;
 import com.github.ynfeng.commander.core.context.event.ProcessExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.context.event.ProcessExecuteFailedEvent;
+import com.github.ynfeng.commander.core.context.event.ProcessStartedEvent;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
+import com.github.ynfeng.commander.core.event.EventStream;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.ExecutorService;
@@ -19,20 +21,29 @@ import lombok.Builder;
 
 @Builder
 public final class ProcessEngine {
-    private final ProcessContexts processContexts = new ProcessContexts();
+    private final ProcessContexts processContexts;
     private final ProcessContextFactory processContextFactory;
     private final ExecutorLauncher executorLauncher;
     private final ExecutorService executorService;
 
     public void startUp() {
         try {
-            checkNotNull(processContextFactory, "ProcessContextFactory not set.");
-            checkNotNull(executorLauncher, "ExecutorLauncher not set.").startUp();
-            checkNotNull(executorService, "Executor service not set.");
-            EngineEventSubject.getInstance().registerListener(new ProcessCompletedListener());
+            checkRequiredCompments();
+            listenProcessCompleted();
         } catch (Exception e) {
             throw new ProcessEngineException(e);
         }
+    }
+
+    private void listenProcessCompleted() {
+        EventStream.getInstance().subcribe(new ProcessCompletedListener());
+    }
+
+    private void checkRequiredCompments() {
+        checkNotNull(processContextFactory, "ProcessContextFactory not set.");
+        checkNotNull(executorLauncher, "ExecutorLauncher not set.").startUp();
+        checkNotNull(executorService, "ExecutorService not set.");
+        checkNotNull(processContexts, "ProcessContexts not set.");
     }
 
     public ProcessFuture startProcess(ProcessDefinition processDefinition) {
@@ -54,7 +65,7 @@ public final class ProcessEngine {
 
     private void publishProcessStartEvent(ProcessContext processContext) {
         executorService.execute(() -> {
-            EngineEventSubject.getInstance().notifyProcessStartedEvent(processContext);
+            EventStream.getInstance().publish(new ProcessStartedEvent(processContext));
         });
     }
 
@@ -68,7 +79,7 @@ public final class ProcessEngine {
         public void handleEvent(NodeExecuteEvent event) {
             if (isRunFinish(event)) {
                 processContexts.remove(event.processContext());
-                EngineEventSubject.getInstance().notifyProcessContextCleared(event.processContext());
+                EventStream.getInstance().publish(new ProcessContextClearedEvent(event.processContext()));
             }
         }
 

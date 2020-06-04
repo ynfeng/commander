@@ -5,13 +5,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessId;
-import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.context.event.NodeExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.context.event.ProcessExecuteCompletedEvent;
 import com.github.ynfeng.commander.core.context.event.ProcessStartedEvent;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
 import com.github.ynfeng.commander.core.event.Event;
+import com.github.ynfeng.commander.core.event.EventStream;
 import com.google.common.eventbus.Subscribe;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,19 +25,19 @@ class EngineEventSubjectTest {
         ProcessDefinition processDefinition = new ProcessDefinition("test", 1);
         processDefinition.firstNode(new StartDefinition());
         processContext = ProcessContext.create(ProcessId.of("id"), processDefinition);
-        EngineEventSubject.getInstance().removeAllListeners();
+        EventStream.getInstance().xxxx();
     }
 
     @Test
     public void should_publish_process_start_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineEventSubject.getInstance().registerListener(new Object() {
+        EventStream.getInstance().subcribe(new Object() {
             @Subscribe
             public void handleEvent(ProcessStartedEvent event) {
                 exceptedEvent.set(event);
             }
         });
-        EngineEventSubject.getInstance().notifyProcessStartedEvent(processContext);
+        EventStream.getInstance().publish(new ProcessStartedEvent(processContext));
 
         assertThat(exceptedEvent.get(), instanceOf(ProcessStartedEvent.class));
     }
@@ -45,13 +45,13 @@ class EngineEventSubjectTest {
     @Test
     public void should_publish_node_execute_complted_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineEventSubject.getInstance().registerListener(new Object() {
+        EventStream.getInstance().subcribe(new Object() {
             @Subscribe
             public void handleEvent(NodeExecuteCompletedEvent event) {
                 exceptedEvent.set(event);
             }
         });
-        EngineEventSubject.getInstance().notifyNodeExecutedComplete(processContext);
+        EventStream.getInstance().publish(new NodeExecuteCompletedEvent(processContext));
 
         assertThat(exceptedEvent.get(), instanceOf(NodeExecuteCompletedEvent.class));
     }
@@ -59,13 +59,13 @@ class EngineEventSubjectTest {
     @Test
     public void should_publish_process_execute_complete_event() {
         AtomicReference<Event> exceptedEvent = new AtomicReference<>();
-        EngineEventSubject.getInstance().registerListener(new Object() {
+        EventStream.getInstance().subcribe(new Object() {
             @Subscribe
             public void handleEvent(ProcessExecuteCompletedEvent event) {
                 exceptedEvent.set(event);
             }
         });
-        EngineEventSubject.getInstance().notifyProcessExecutedComplete(processContext);
+        EventStream.getInstance().publish(new ProcessExecuteCompletedEvent(processContext));
 
         assertThat(exceptedEvent.get(), instanceOf(ProcessExecuteCompletedEvent.class));
     }

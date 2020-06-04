@@ -6,8 +6,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-import com.github.ynfeng.commander.core.Variables;
 import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
+import com.github.ynfeng.commander.core.Variables;
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessContextFactory;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
@@ -82,7 +82,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
             processEngine.startUp();
         });
 
-        assertThat(exception.getMessage(), is("java.lang.NullPointerException: Executor service not set."));
+        assertThat(exception.getMessage(), is("java.lang.NullPointerException: ExecutorService not set."));
     }
 
     @Test

@@ -4,7 +4,7 @@ import com.github.ynfeng.commander.core.context.ProcessContext;
 
 public class ProcessExecuteCompletedEvent extends NodeExecuteEvent {
 
-    protected ProcessExecuteCompletedEvent(ProcessContext processContext) {
+    public ProcessExecuteCompletedEvent(ProcessContext processContext) {
         super(processContext);
     }
 }

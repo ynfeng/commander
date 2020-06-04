@@ -1,9 +1,9 @@
 package com.github.ynfeng.commander.core.engine;
 
 import com.github.ynfeng.commander.core.context.ProcessContext;
-import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
 import com.github.ynfeng.commander.core.context.event.NodeExecuteEvent;
 import com.github.ynfeng.commander.core.definition.NodeDefinition;
+import com.github.ynfeng.commander.core.event.EventStream;
 import com.github.ynfeng.commander.core.exception.ProcessEngineException;
 import com.github.ynfeng.commander.core.executor.NodeExecutor;
 import com.github.ynfeng.commander.core.executor.NodeExecutors;
@@ -28,7 +28,7 @@ public final class ExecutorLauncher {
     }
 
     public void startUp() {
-        EngineEventSubject.getInstance().registerListener(this);
+        EventStream.getInstance().subcribe(this);
     }
 
     @Subscribe

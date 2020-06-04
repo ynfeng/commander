@@ -1,11 +1,8 @@
 package com.github.ynfeng.commander.core.engine;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import com.github.ynfeng.commander.core.context.ProcessContext;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
-import com.github.ynfeng.commander.core.context.event.EngineEventSubject;
+import com.github.ynfeng.commander.core.event.EventStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,11 +14,12 @@ class ProcessFutureTest {
 
     @BeforeEach
     public void setup() {
-        EngineEventSubject.getInstance().removeAllListeners();
+        EventStream.getInstance().xxxx();
     }
 
     @Test
-    public void should_clear_listener_under_race_condition() throws InterruptedException {
+    public void should_return_immediately_under_race_condition() throws InterruptedException {
+        times = 0;
         ProcessContext processContext = Mockito.mock(ProcessContext.class);
         Mockito.when(processContext.status()).thenAnswer(new Answer<ProcessStatus>() {
             @Override
@@ -36,8 +34,6 @@ class ProcessFutureTest {
         ProcessFuture processFuture = ProcessFuture.create(processContext);
 
         processFuture.sync();
-
-        assertThat(EngineEventSubject.getInstance().numOfListeners(), is(0));
     }
 
     @Test
