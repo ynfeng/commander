@@ -6,7 +6,7 @@ public final class EventStream {
     private static final EventStream INSTANCE = new EventStream();
     private EventBus eventBus = new EventBus();
 
-    public EventStream() {
+    private EventStream() {
     }
 
     public static EventStream getInstance() {
