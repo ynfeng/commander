@@ -39,7 +39,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_clear_porcess_context_when_process_completed() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("fooTest", 1);
+        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withVersion(1).withName("fooTest");
         builder.createEnd("end");
         builder.createStart();
         builder.link("start", "end");
@@ -122,7 +122,7 @@ public class ProcessEngineTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_start_process_with_variables() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("fooTest", 1);
+        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("fooTest").withVersion(1);
         builder.createEnd("end");
         builder.createStart();
         builder.link("start", "end");

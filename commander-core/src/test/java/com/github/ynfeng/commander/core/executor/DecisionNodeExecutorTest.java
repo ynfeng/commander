@@ -24,7 +24,7 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_decision_node() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
+        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
         ServiceDefinition defaultService = builder.createService("defaultService", ServiceCoordinate.of("defaultService", 1));
         ServiceDefinition aService = builder.createService("aService", ServiceCoordinate.of("aService", 1));
         builder.createService("bService", ServiceCoordinate.of("bService", 1));
@@ -51,7 +51,7 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_default_branch_when_no_suitable_condition() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
+        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
         ServiceDefinition defaultService = builder.createService("defaultService", ServiceCoordinate.of("defaultService", 1));
         ServiceDefinition aService = builder.createService("aService", ServiceCoordinate.of("aService", 1));
         builder.createService("bService", ServiceCoordinate.of("bService", 1));

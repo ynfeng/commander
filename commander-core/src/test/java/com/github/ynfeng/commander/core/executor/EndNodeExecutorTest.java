@@ -18,7 +18,7 @@ public class EndNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_end_node() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
+        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
         builder.createEnd("end");
         builder.createStart();
         builder.link("start", "end");

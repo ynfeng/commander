@@ -27,4 +27,8 @@ public class ProcessDefinition {
     public void firstNode(NextableNodeDefinition startDefinition) {
         firstNode = startDefinition;
     }
+
+    public static ProcessDefinitionBuilder builder() {
+        return new ProcessDefinitionBuilder();
+    }
 }

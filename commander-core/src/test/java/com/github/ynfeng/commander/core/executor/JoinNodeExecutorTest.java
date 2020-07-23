@@ -23,7 +23,7 @@ public class JoinNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_join_node() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinitionBuilder.create("test", 1);
+        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
         builder.createStart();
         builder.createEnd("end");
         ServiceDefinition aService = builder.createService("aService", ServiceCoordinate.of("aService", 1));

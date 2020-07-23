@@ -1,15 +1,23 @@
 package com.github.ynfeng.commander.core.definition;
 
 public class ProcessDefinitionBuilder {
-    private final ProcessDefinition processDefinition;
+    private ProcessDefinition processDefinition;
     private final NodeDefinitions nodeDefinitions = NodeDefinitions.create();
+    private String name;
+    private int version;
 
-    private ProcessDefinitionBuilder(String name, int version) {
-        processDefinition = new ProcessDefinition(name, version);
+    protected ProcessDefinitionBuilder() {
     }
 
-    public static ProcessDefinitionBuilder create(String name, int version) {
-        return new ProcessDefinitionBuilder(name, version);
+    public ProcessDefinitionBuilder withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public ProcessDefinitionBuilder withVersion(int version) {
+        this.version = version;
+        processDefinition = new ProcessDefinition(this.name, this.version);
+        return this;
     }
 
     public StartDefinition createStart() {

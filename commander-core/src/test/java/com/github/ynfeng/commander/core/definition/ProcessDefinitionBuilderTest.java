@@ -17,7 +17,9 @@ public class ProcessDefinitionBuilderTest {
 
     @BeforeEach
     public void setUp() {
-        processDefinitionBuilder = ProcessDefinitionBuilder.create("foo", 1);
+        processDefinitionBuilder = ProcessDefinition.builder()
+            .withName("foo")
+            .withVersion(1);
     }
 
     @Test
