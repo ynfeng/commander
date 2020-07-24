@@ -9,7 +9,7 @@ import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.ForkDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
+import com.github.ynfeng.commander.core.definition.RelationShips;
 import com.github.ynfeng.commander.core.definition.ServiceCoordinate;
 import com.github.ynfeng.commander.core.definition.ServiceDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
@@ -22,15 +22,23 @@ public class ForkExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_join_node() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
-        builder.createStart();
-        builder.createEnd("end");
-        ServiceDefinition aService = builder.createService("aService", ServiceCoordinate.of("aService", 1));
-        ServiceDefinition otherService = builder.createService("otherService", ServiceCoordinate.of("otherService", 1));
-        builder.createFork("aFork").branch(aService).branch(otherService);
-        builder.link("start", "aFork");
-        builder.link("aService", "end");
-        ProcessDefinition processDefinition = builder.build();
+        ProcessDefinition processDefinition = ProcessDefinition.builder()
+            .withName("test")
+            .withVersion(1)
+            .withNodes(
+                new StartDefinition(),
+                new EndDefinition("end"),
+                new ForkDefinition("aFork"),
+                new ServiceDefinition("aService",ServiceCoordinate.of("aService", 1)),
+                new ServiceDefinition("otherService",ServiceCoordinate.of("otherService", 1))
+            ).withRelationShips(
+                RelationShips.builder()
+                    .withLink("start","aFork")
+                    .withFork("aFork","aService","otherService")
+                    .withLink("aService","end")
+                    .build()
+            )
+            .build();
 
         ProcessFuture processFuture = processEngine.startProcess(processDefinition).sync();
         List<String> executedNodes = processFuture.executedNodes();

@@ -4,7 +4,7 @@ public class DecisionDefinition extends AbstractNodeDefinition {
     private final ConditionBranches branches = new ConditionBranches();
     private ConditionBranch defaultBranch = ConditionBranch.EMPTY;
 
-    protected DecisionDefinition(String refName) {
+    public DecisionDefinition(String refName) {
         super(refName);
     }
 

@@ -8,7 +8,7 @@ import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
+import com.github.ynfeng.commander.core.definition.RelationShips;
 import com.github.ynfeng.commander.core.definition.ServiceCoordinate;
 import com.github.ynfeng.commander.core.definition.ServiceDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
@@ -20,13 +20,21 @@ public class ServiceNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_service_node() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
-        builder.createStart();
-        builder.createService("aService", ServiceCoordinate.of("aService", 1));
-        builder.createEnd("end");
-        builder.link("start", "aService");
-        builder.link("aService", "end");
-        ProcessDefinition processDefinition = builder.build();
+        ProcessDefinition processDefinition = ProcessDefinition.builder()
+            .withName("test")
+            .withVersion(1)
+            .withNodes(
+                new ServiceDefinition("aService", ServiceCoordinate.of("aService", 1)),
+                new StartDefinition(),
+                new EndDefinition("end")
+            )
+            .withRelationShips(
+                RelationShips.builder()
+                    .withLink("start", "aService")
+                    .withLink("aService", "end")
+                    .build()
+            )
+            .build();
 
         ProcessFuture processFuture = processEngine.startProcess(processDefinition).sync();
 

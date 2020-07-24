@@ -24,9 +24,14 @@ public class ProcessDefinitionBuilderTest {
 
     @Test
     public void should_build_empty_process_definition() {
-        processDefinitionBuilder.createStart();
-        processDefinitionBuilder.createEnd("normalEnd");
-        processDefinitionBuilder.link("start", "normalEnd");
+        processDefinitionBuilder
+            .withNodes(new StartDefinition(), new EndDefinition("normalEnd"))
+            .withRelationShips(
+                RelationShips.builder()
+                    .withLink("start", "normalEnd")
+                    .build()
+            ).build();
+
         ProcessDefinition processDefinition = processDefinitionBuilder.build();
 
         assertThat(processDefinition.name(), is("foo"));
@@ -37,9 +42,12 @@ public class ProcessDefinitionBuilderTest {
 
     @Test
     public void should_throw_exception_when_link_with_not_exists_source_node() {
-        processDefinitionBuilder.createEnd("end");
+        processDefinitionBuilder.withRelationShips(
+            RelationShips.builder()
+                .withLink("start", "end")
+                .build());
         ProcessDefinitionException exception = assertThrows(ProcessDefinitionException.class, () -> {
-            processDefinitionBuilder.link("start", "end");
+            processDefinitionBuilder.build();
         });
 
         assertThat(exception.getMessage(), is("The \"start\" node definition not exists."));
@@ -47,9 +55,15 @@ public class ProcessDefinitionBuilderTest {
 
     @Test
     public void should_throw_exception_when_link_with_not_exists_target_node() {
-        processDefinitionBuilder.createStart();
+        processDefinitionBuilder
+            .withNodes(new StartDefinition())
+            .withRelationShips(
+                RelationShips.builder()
+                    .withLink("start", "end")
+                    .build()
+            );
         ProcessDefinitionException exception = assertThrows(ProcessDefinitionException.class, () -> {
-            processDefinitionBuilder.link("start", "end");
+            processDefinitionBuilder.build();
         });
 
         assertThat(exception.getMessage(), is("The \"end\" node definition not exists."));
@@ -58,8 +72,11 @@ public class ProcessDefinitionBuilderTest {
     @Test
     public void should_throw_exception_when_duplicate_ref_name() {
         ProcessDefinitionException exception = assertThrows(ProcessDefinitionException.class, () -> {
-            processDefinitionBuilder.createEnd("end");
-            processDefinitionBuilder.createEnd("end");
+            processDefinitionBuilder
+                .withNodes(
+                    new EndDefinition("end"),
+                    new EndDefinition("end")
+                );
         });
 
         assertThat(exception.getMessage(), is("The ref name \"end\" was duplicated"));
@@ -67,12 +84,21 @@ public class ProcessDefinitionBuilderTest {
 
     @Test
     public void should_build_with_service_definition() {
-        processDefinitionBuilder.createStart();
-        processDefinitionBuilder.createEnd("end");
-        processDefinitionBuilder.createService("serviceRefName", ServiceCoordinate.of("aService", 1));
-        processDefinitionBuilder.link("start", "serviceRefName");
-        processDefinitionBuilder.link("serviceRefName", "end");
-        ProcessDefinition processDefinition = processDefinitionBuilder.build();
+        ProcessDefinition processDefinition = ProcessDefinition.builder()
+            .withName("test")
+            .withVersion(1)
+            .withNodes(
+                new StartDefinition(),
+                new EndDefinition("end"),
+                new ServiceDefinition("serviceRefName", ServiceCoordinate.of("aService", 1))
+            )
+            .withRelationShips(
+                RelationShips.builder()
+                    .withLink("start", "serviceRefName")
+                    .withLink("serviceRefName", "end")
+                    .build()
+            )
+            .build();
 
         ServiceDefinition serviceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
         ServiceCoordinate serviceCoordinate = serviceDefinition.serviceCoordinate();
@@ -86,15 +112,19 @@ public class ProcessDefinitionBuilderTest {
 
     @Test
     public void should_build_with_multiple_service_definition() {
-        processDefinitionBuilder.createStart();
-        processDefinitionBuilder.createEnd("end");
-        processDefinitionBuilder.createService("refName", ServiceCoordinate.of("aService", 1));
-        processDefinitionBuilder.createService("refName1", ServiceCoordinate.of("otherService", 1));
-        processDefinitionBuilder
-            .link("start", "refName")
-            .link("refName", "refName1")
-            .link("refName1", "end");
-        ProcessDefinition processDefinition = processDefinitionBuilder.build();
+        ProcessDefinition processDefinition = processDefinitionBuilder
+            .withNodes(
+                new StartDefinition(),
+                new ServiceDefinition("refName", ServiceCoordinate.of("aService", 1)),
+                new ServiceDefinition("refName1", ServiceCoordinate.of("otherService", 1)),
+                new EndDefinition("end")
+            ).withRelationShips(
+                RelationShips.builder()
+                    .withLink("start", "refName")
+                    .withLink("refName", "refName1")
+                    .withLink("refName1", "end")
+                    .build()
+            ).build();
 
         ServiceDefinition refNameServiceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
         ServiceDefinition refName1ServiceDefinition = refNameServiceDefinition.next();
@@ -106,19 +136,25 @@ public class ProcessDefinitionBuilderTest {
 
     @Test
     public void should_build_with_decision_definition() {
-        processDefinitionBuilder.createStart();
-        processDefinitionBuilder.createEnd("end");
-        processDefinitionBuilder.createService("aService", ServiceCoordinate.of("aService", 1));
-        processDefinitionBuilder.createService("lastService", ServiceCoordinate.of("lastService", 1));
-        processDefinitionBuilder.createDecision("aDecision")
-            .condition(Expression.of("aService.result.success == true"),
-                processDefinitionBuilder.createService("otherService", ServiceCoordinate.of("otherService", 1)))
-            .defaultCondition(processDefinitionBuilder.createService("defaultService", ServiceCoordinate.of("defaultService", 1)));
-        processDefinitionBuilder.link("start", "aService");
-        processDefinitionBuilder.link("aService", "aDecision");
-        processDefinitionBuilder.link("otherService", "lastService");
-        processDefinitionBuilder.link("lastService", "end");
-        ProcessDefinition processDefinition = processDefinitionBuilder.build();
+        ProcessDefinition processDefinition = processDefinitionBuilder.withNodes(
+            new StartDefinition(),
+            new ServiceDefinition("aService", ServiceCoordinate.of("aService", 1)),
+            new ServiceDefinition("lastService", ServiceCoordinate.of("lastService", 1)),
+            new DecisionDefinition("aDecision"),
+            new ServiceDefinition("otherService", ServiceCoordinate.of("otherService", 1)),
+            new ServiceDefinition("defaultService", ServiceCoordinate.of("defaultService", 1)),
+            new EndDefinition("end")
+        ).withRelationShips(
+            RelationShips.builder()
+                .withLink("start", "aService")
+                .withLink("aService", "aDecision")
+                .withDecision("aDecision", "aService.result.success == true", "otherService")
+                .withDefaultDecision("aDecision", "defaultService")
+                .withLink("otherService", "lastService")
+                .withLink("lastService", "end")
+                .withLink("defaultService", "end")
+                .build()
+        ).build();
 
         ServiceDefinition aServiceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
         DecisionDefinition decisionDefinition = aServiceDefinition.next();
@@ -138,15 +174,27 @@ public class ProcessDefinitionBuilderTest {
 
     @Test
     public void should_build_with_fork_and_join_definition() {
-        processDefinitionBuilder.createStart();
-        processDefinitionBuilder.createEnd("end");
-        processDefinitionBuilder.createFork("aFork")
-            .branch(processDefinitionBuilder.createService("aService", ServiceCoordinate.of("aService", 1)))
-            .branch(processDefinitionBuilder.createService("otherService", ServiceCoordinate.of("otherService", 1)));
-        processDefinitionBuilder.createJoin("aJoin").on("aService", "otherService");
-        processDefinitionBuilder.link("start", "aFork");
-        processDefinitionBuilder.link("aJoin", "end");
-        ProcessDefinition processDefinition = processDefinitionBuilder.build();
+        ProcessDefinition processDefinition =
+            ProcessDefinition.builder()
+                .withName("test")
+                .withVersion(1)
+                .withNodes(
+                    new StartDefinition(),
+                    new EndDefinition("end"),
+                    new ServiceDefinition("aService", ServiceCoordinate.of("aService", 1)),
+                    new ServiceDefinition("otherService", ServiceCoordinate.of("otherService", 1)),
+                    new ForkDefinition("aFork"),
+                    new JoinDefinition("aJoin")
+                )
+                .withRelationShips(
+                    RelationShips.builder()
+                        .withLink("start", "aFork")
+                        .withFork("aFork", "aService", "otherService")
+                        .withJoin("aJoin", "aService", "otherService")
+                        .withLink("aJoin", "end")
+                        .build()
+                )
+                .build();
 
         ForkDefinition fork = ((StartDefinition) processDefinition.firstNode()).next();
         ForkBranchs forkBranchs = fork.branchs();

@@ -8,7 +8,7 @@ import com.github.ynfeng.commander.core.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.EndDefinition;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
+import com.github.ynfeng.commander.core.definition.RelationShips;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
 import com.github.ynfeng.commander.core.engine.ProcessFuture;
 import org.junit.jupiter.api.Test;
@@ -18,11 +18,19 @@ public class EndNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_end_node() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
-        builder.createEnd("end");
-        builder.createStart();
-        builder.link("start", "end");
-        ProcessDefinition processDefinition = builder.build();
+        ProcessDefinition processDefinition = ProcessDefinition.builder()
+            .withName("test")
+            .withVersion(1)
+            .withNodes(
+                new StartDefinition(),
+                new EndDefinition("end")
+            )
+            .withRelationShips(
+                RelationShips.builder()
+                    .withLink("start","end")
+                    .build()
+            )
+            .build();
 
         ProcessFuture processFuture = processEngine.startProcess(processDefinition).sync();
 

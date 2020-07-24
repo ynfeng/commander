@@ -9,9 +9,8 @@ import com.github.ynfeng.commander.core.Variables;
 import com.github.ynfeng.commander.core.context.ProcessStatus;
 import com.github.ynfeng.commander.core.definition.DecisionDefinition;
 import com.github.ynfeng.commander.core.definition.EndDefinition;
-import com.github.ynfeng.commander.core.definition.Expression;
 import com.github.ynfeng.commander.core.definition.ProcessDefinition;
-import com.github.ynfeng.commander.core.definition.ProcessDefinitionBuilder;
+import com.github.ynfeng.commander.core.definition.RelationShips;
 import com.github.ynfeng.commander.core.definition.ServiceCoordinate;
 import com.github.ynfeng.commander.core.definition.ServiceDefinition;
 import com.github.ynfeng.commander.core.definition.StartDefinition;
@@ -24,20 +23,25 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_decision_node() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
-        ServiceDefinition defaultService = builder.createService("defaultService", ServiceCoordinate.of("defaultService", 1));
-        ServiceDefinition aService = builder.createService("aService", ServiceCoordinate.of("aService", 1));
-        builder.createService("bService", ServiceCoordinate.of("bService", 1));
-        builder.createDecision("decision")
-            .defaultCondition(defaultService)
-            .condition(Expression.of("context.input['level'] == 1"), aService);
-        builder.createStart();
-        builder.createEnd("end");
-        builder.link("start", "decision");
-        builder.link("defaultService", "end");
-        builder.link("aService", "bService");
-        builder.link("bService", "end");
-        ProcessDefinition processDefinition = builder.build();
+        ProcessDefinition processDefinition = ProcessDefinition.builder()
+            .withName("test")
+            .withVersion(1)
+            .withNodes(
+                new StartDefinition(),
+                new EndDefinition("end"),
+                new ServiceDefinition("defaultService", ServiceCoordinate.of("defaultService", 1)),
+                new ServiceDefinition("aService", ServiceCoordinate.of("aService", 1)),
+                new ServiceDefinition("bService", ServiceCoordinate.of("bService", 1)),
+                new DecisionDefinition("decision")
+            ).withRelationShips(
+                RelationShips.builder()
+                    .withLink("start", "decision")
+                    .withDecision("decision", "context.input['level'] == 1", "aService")
+                    .withDefaultDecision("decision", "defaultService")
+                    .withLink("aService", "bService")
+                    .withLink("bService", "end")
+                    .build()
+            ).build();
 
         Variables variables = new Variables();
         variables.put("level", "1");
@@ -51,20 +55,27 @@ public class DecisionNodeExecutorTest extends ProcessEngineTestSupport {
 
     @Test
     public void should_execute_default_branch_when_no_suitable_condition() throws InterruptedException {
-        ProcessDefinitionBuilder builder = ProcessDefinition.builder().withName("test").withVersion(1);
-        ServiceDefinition defaultService = builder.createService("defaultService", ServiceCoordinate.of("defaultService", 1));
-        ServiceDefinition aService = builder.createService("aService", ServiceCoordinate.of("aService", 1));
-        builder.createService("bService", ServiceCoordinate.of("bService", 1));
-        builder.createDecision("decision")
-            .defaultCondition(defaultService)
-            .condition(Expression.of("context.input['level'] == 2"), aService);
-        builder.createStart();
-        builder.createEnd("end");
-        builder.link("start", "decision");
-        builder.link("defaultService", "end");
-        builder.link("aService", "bService");
-        builder.link("bService", "end");
-        ProcessDefinition processDefinition = builder.build();
+        ProcessDefinition processDefinition = ProcessDefinition.builder()
+            .withName("test")
+            .withVersion(1)
+            .withNodes(
+                new StartDefinition(),
+                new EndDefinition("end"),
+                new DecisionDefinition("decision"),
+                new ServiceDefinition("aService", ServiceCoordinate.of("aService", 1)),
+                new ServiceDefinition("bService", ServiceCoordinate.of("bService", 1)),
+                new ServiceDefinition("defaultService", ServiceCoordinate.of("defaultService", 1))
+            )
+            .withRelationShips(
+                RelationShips.builder()
+                    .withLink("start", "decision")
+                    .withDecision("decision", "context.input['level'] == 2", "aService")
+                    .withDefaultDecision("decision","defaultService")
+                    .withLink("defaultService","end")
+                    .withLink("aService","bService")
+                    .withLink("bService","end")
+                    .build()
+            ).build();
 
         Variables variables = new Variables();
         variables.put("level", "1");
