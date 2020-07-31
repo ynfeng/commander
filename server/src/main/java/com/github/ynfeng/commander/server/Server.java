@@ -2,7 +2,7 @@ package com.github.ynfeng.commander.server;
 
 public class Server {
 
-    private String name;
+    private final String name;
 
     public Server(ServerConfig config) {
         name = config.getName();
