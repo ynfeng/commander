@@ -27,7 +27,7 @@ subprojects {
                 "org.junit.jupiter:junit-jupiter:$junitVersion",
                 "org.hamcrest:hamcrest-core:$hamcrestVersion",
                 "org.hamcrest:hamcrest-library:$hamcrestVersion",
-                "org.mockito:mockito-core:$mockitoVersion",
+                "org.mockito:mockito-core:$mockitoVersion"
         )
 
         compileOnly(
@@ -52,6 +52,8 @@ subprojects {
     apply from: "$rootDir/gradle/scripts/coverage.gradle"
     apply from: "$rootDir/gradle/scripts/checkstyle.gradle"
     apply from: "$rootDir/gradle/scripts/coveralls.gradle"
+
+    coverage.excludeClasses = ["com.github.ynfeng.commander.server.CmderLogger"]
 }
 
 

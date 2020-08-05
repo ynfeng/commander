@@ -9,7 +9,7 @@ apply plugin: 'checkstyle'
 
 checkstyle {
     configFile = file("$rootDir/gradle/config/checkstyle.xml")
-    toolVersion = '8.17'
+    toolVersion = '8.35'
     sourceSets = [sourceSets.main]
 }
 
