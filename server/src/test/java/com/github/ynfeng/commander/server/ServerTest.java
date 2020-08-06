@@ -4,8 +4,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.status.OnConsoleStatusListener;
+import ch.qos.logback.core.status.StatusManager;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.LoggerFactory;
 
 public class ServerTest {
 
@@ -62,6 +66,11 @@ public class ServerTest {
             .withAddress(Address.of("127.0.0.1", 1234))
             .withStartStep("test", startFunction)
             .build();
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        StatusManager statusManager = lc.getStatusManager();
+        OnConsoleStatusListener onConsoleListener = new OnConsoleStatusListener();
+        statusManager.add(onConsoleListener);
+
         server.startup();
 
         server.shutdown();

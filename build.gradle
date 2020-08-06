@@ -20,7 +20,8 @@ subprojects {
                 "io.atomix:atomix:$atomixVersion",
                 "io.atomix:atomix-raft:$atomixVersion",
                 "org.slf4j:slf4j-api:$slf4jVersion",
-                "ch.qos.logback:logback-classic:$logbackVersion"
+                "ch.qos.logback:logback-classic:$logbackVersion",
+                "ch.qos.logback:logback-core:$logbackVersion"
         )
 
         testImplementation(
