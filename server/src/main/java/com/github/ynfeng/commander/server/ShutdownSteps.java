@@ -11,11 +11,19 @@ public class ShutdownSteps {
         steps.add(shutdownStep);
     }
 
+    @SuppressWarnings("checkstyle:MethodLength")
     public void shutdownStepByStep() {
-        for (ShutdownStep shutdownStep : steps) {
+        for (int i = 0; i < steps.size(); i++) {
+            ShutdownStep step = steps.get(i);
             try {
-                shutdownStep.execute();
+                step.execute();
             } catch (Exception e) {
+                LOG.info(
+                    "Shutdown {} [{}/{}] failed with unexpected exception.",
+                    step.name(),
+                    i,
+                    steps.size(),
+                    e);
             }
         }
     }

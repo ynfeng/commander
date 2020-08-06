@@ -5,9 +5,15 @@ import org.slf4j.Marker;
 
 @SuppressWarnings("checkstyle:ParameterNumber")
 public class CmderLogger implements Logger {
+    private final Logger logger;
+
+    public CmderLogger(Logger logger) {
+        this.logger = logger;
+    }
+
     @Override
     public String getName() {
-        return null;
+        return logger.getName();
     }
 
     @Override
@@ -152,7 +158,7 @@ public class CmderLogger implements Logger {
 
     @Override
     public void info(String format, Object... arguments) {
-
+        logger.atInfo().log(format, arguments);
     }
 
     @Override

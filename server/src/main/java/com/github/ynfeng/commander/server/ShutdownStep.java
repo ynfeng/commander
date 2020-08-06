@@ -12,4 +12,8 @@ public class ShutdownStep {
     public void execute() throws Exception {
         function.close();
     }
+
+    public String name() {
+        return name;
+    }
 }
