@@ -66,11 +66,6 @@ public class ServerTest {
             .withAddress(Address.of("127.0.0.1", 1234))
             .withStartStep("test", startFunction)
             .build();
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-        StatusManager statusManager = lc.getStatusManager();
-        OnConsoleStatusListener onConsoleListener = new OnConsoleStatusListener();
-        statusManager.add(onConsoleListener);
-
         server.startup();
 
         server.shutdown();
