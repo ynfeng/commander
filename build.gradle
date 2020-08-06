@@ -21,7 +21,8 @@ subprojects {
                 "io.atomix:atomix-raft:$atomixVersion",
                 "org.slf4j:slf4j-api:$slf4jVersion",
                 "ch.qos.logback:logback-classic:$logbackVersion",
-                "ch.qos.logback:logback-core:$logbackVersion"
+                "ch.qos.logback:logback-core:$logbackVersion",
+                "org.fusesource.jansi:jansi:1.18"
         )
 
         testImplementation(
@@ -56,7 +57,3 @@ subprojects {
 
     coverage.excludeClasses = ["com.github.ynfeng.commander.server.CmderLogger"]
 }
-
-
-
-

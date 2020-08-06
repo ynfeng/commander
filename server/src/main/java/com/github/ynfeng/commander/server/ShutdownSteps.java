@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ShutdownSteps {
     private final List<ShutdownStep> steps = Lists.newArrayList();
-    private static final CmderLogger LOG = CmderLoggerFactory.getSystemLogger();
+    private static final CmderLogger LOG = CmderLoggerFactory.getServerLogger();
 
     public void add(ShutdownStep shutdownStep) {
         steps.add(shutdownStep);
@@ -21,7 +21,7 @@ public class ShutdownSteps {
                 LOG.info(
                     "Shutdown {} [{}/{}] failed with unexpected exception.",
                     step.name(),
-                    i,
+                    i + 1,
                     steps.size(),
                     e);
             }

@@ -6,7 +6,7 @@ public class CmderLoggerFactory {
     private CmderLoggerFactory() {
     }
 
-    public static CmderLogger getSystemLogger() {
-        return new CmderLogger(LoggerFactory.getLogger("com.github.ynfeng.commander.system"));
+    public static CmderLogger getServerLogger() {
+        return new CmderLogger(LoggerFactory.getLogger("com.github.ynfeng.commander.server"));
     }
 }

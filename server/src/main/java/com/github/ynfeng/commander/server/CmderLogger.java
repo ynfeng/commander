@@ -23,62 +23,82 @@ public class CmderLogger implements Logger {
 
     @Override
     public void trace(String msg) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(msg);
+        }
     }
 
     @Override
     public void trace(String format, Object arg) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(format, arg);
+        }
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(format, arg1, arg2);
+        }
     }
 
     @Override
     public void trace(String format, Object... arguments) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(format, arguments);
+        }
     }
 
     @Override
     public void trace(String msg, Throwable t) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(msg, t);
+        }
     }
 
     @Override
     public boolean isTraceEnabled(Marker marker) {
-        return false;
+        return logger.isTraceEnabled();
     }
 
     @Override
     public void trace(Marker marker, String msg) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(marker, msg);
+        }
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(marker, format, arg);
+        }
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(marker, format, arg1, arg2);
+        }
     }
 
     @Override
     public void trace(Marker marker, String format, Object... argArray) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(marker, format, argArray);
+        }
     }
 
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
-
+        if (logger.isTraceEnabled()) {
+            logger.trace(marker, msg, t);
+        }
     }
 
     @Override
     public boolean isDebugEnabled() {
-        return false;
+        return logger.isDebugEnabled();
     }
 
     @Override
@@ -280,7 +300,9 @@ public class CmderLogger implements Logger {
 
     @Override
     public void error(String format, Object... arguments) {
-
+        if (logger.isErrorEnabled()) {
+            logger.error(format, arguments);
+        }
     }
 
     @Override
