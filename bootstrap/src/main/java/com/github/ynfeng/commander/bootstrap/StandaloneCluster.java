@@ -1,5 +1,6 @@
 package com.github.ynfeng.commander.bootstrap;
 
+import com.github.ynfeng.commander.cluster.ClusterController;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
@@ -28,18 +29,18 @@ public class StandaloneCluster {
             .withName(nodeConfig.nodeId())
             .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
             .withRole(Role.valueOf(nodeConfig.role()))
-//            .withStartStep("Cluster controller", this::startClusterController)
+            .withStartStep("Cluster controller", this::startClusterController)
             .build()
             .startup();
         return shutdownFuture;
     }
 
-//    public AutoCloseable startClusterController() {
-//        ClusterController controller
-//            = clusterProvider.createClusterController(clusterConfig, nodeConfig);
-//        controller.startup();
-//        return () -> controller.shutdown();
-//    }
+    public AutoCloseable startClusterController() {
+        ClusterController controller
+            = clusterProvider.createClusterController(clusterConfig, nodeConfig);
+        controller.startup();
+        return () -> controller.shutdown();
+    }
 
     private ClusterProvider getProviderOrThrowException(ClusterProviderLoader clusterProviderLoader) {
         return clusterProviderLoader.load()
