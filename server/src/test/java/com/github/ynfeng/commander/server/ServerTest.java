@@ -33,7 +33,7 @@ public class ServerTest {
     }
 
     @Test
-    public void should_execute_startup_steps() throws Exception {
+    public void should_execute_startup_steps() {
         StartFunction startFunction = Mockito.mock(StartFunction.class);
         Server server = Server.builder()
             .withName("local")
@@ -102,10 +102,9 @@ public class ServerTest {
         assertThat(getLogMessage(1), is("Shutdown test [1/1] failed with unexpected exception."));
     }
 
-    private String getLogMessage(int index) {
+    private static String getLogMessage(int index) {
         List<LoggingEvent> events = TestableLoggerAppender.getEvents();
         LoggingEvent loggingEvent = events.get(index);
-        String logMessage = loggingEvent.getFormattedMessage();
-        return logMessage;
+        return loggingEvent.getFormattedMessage();
     }
 }
