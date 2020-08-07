@@ -3,8 +3,8 @@ package com.github.ynfeng.commander.server;
 public class Server {
     private final String name;
     private final Address address;
-    private final StartSteps startSteps = new StartSteps();
     private final Role role;
+    private final StartSteps startSteps = new StartSteps();
     private ShutdownSteps shutdownSteps = new ShutdownSteps();
 
     protected Server(ServerConfig config) {
