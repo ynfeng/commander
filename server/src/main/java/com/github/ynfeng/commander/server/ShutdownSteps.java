@@ -3,7 +3,7 @@ package com.github.ynfeng.commander.server;
 import com.google.common.collect.Lists;
 import java.util.List;
 
-public class ShutdownSteps {
+public class ShutdownSteps extends Steps {
     private final List<ShutdownStep> steps = Lists.newArrayList();
     private static final CmderLogger LOG = CmderLoggerFactory.getServerLogger();
 
@@ -11,20 +11,12 @@ public class ShutdownSteps {
         steps.add(shutdownStep);
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     public void shutdownStepByStep() {
-        for (int i = 0; i < steps.size(); i++) {
-            ShutdownStep step = steps.get(i);
-            try {
-                step.execute();
-            } catch (Exception e) {
-                LOG.info(
-                    "Shutdown {} [{}/{}] failed with unexpected exception.",
-                    step.name(),
-                    i + 1,
-                    steps.size(),
-                    e);
-            }
-        }
+        steps.stream().forEach(step -> checkedCall(
+            () -> takeDuration(step::execute))
+            .onException(e -> LOG.info("Shutdown {} [{}/{}] failed with unexpected exception.",
+                step.name(), 0 + 1, steps.size(), e))
+            .onResult(duration -> LOG.debug("Shutdown [{}/{}]: {} in {} ms", 0 + 1,
+                steps.size(), step.name(), duration)));
     }
 }

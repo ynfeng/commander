@@ -24,8 +24,8 @@ public class Server {
         return address;
     }
 
-    public void startup() {
-        shutdownSteps = startSteps.startupStepByStep();
+    public void startup() throws Exception {
+        shutdownSteps = startSteps.startup();
     }
 
     public void shutdown() {
