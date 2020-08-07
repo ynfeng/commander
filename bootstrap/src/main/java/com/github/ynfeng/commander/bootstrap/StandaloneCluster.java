@@ -27,7 +27,7 @@ public class StandaloneCluster {
     public CompletableFuture<Void> bootstrap() {
         Server.builder()
             .withName(nodeConfig.nodeId())
-            .withAddress(Address.of(nodeConfig.address(), 18988))
+            .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
             .withRole(Role.valueOf(nodeConfig.role()))
             .withStartStep("Cluster controller", this::startClusterController)
             .build()
