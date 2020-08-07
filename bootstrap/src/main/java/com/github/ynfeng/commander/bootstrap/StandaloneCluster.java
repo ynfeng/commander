@@ -1,6 +1,5 @@
 package com.github.ynfeng.commander.bootstrap;
 
-import com.github.ynfeng.commander.cluster.ClusterController;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
