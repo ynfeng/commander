@@ -6,6 +6,7 @@ import java.util.List;
 public class StartSteps extends Steps {
     private final List<StartStep> steps = Lists.newArrayList();
     private final ShutdownSteps shutdownStpes = new ShutdownSteps();
+    private int currentStep = 1;
     private static final CmderLogger LOG = CmderLoggerFactory.getServerLogger();
 
     public void addAll(List<StartStep> startStartSteps) {
@@ -21,8 +22,8 @@ public class StartSteps extends Steps {
         steps.forEach(step -> executeStep(
             () -> takeDuration(() -> shutdownStpes.add(new ShutdownStep(step.name(), step.execute()))))
             .onException(e -> LOG.info("Bootstrap {} [{}/{}] failed with unexpected exception.",
-                step.name(), 1, steps.size(), e))
-            .onResult(duration -> LOG.debug("Bootstrap [{}/{}]: {} started in {} ms", 1,
+                step.name(), currentStep++, steps.size(), e))
+            .onResult(duration -> LOG.debug("Bootstrap [{}/{}]: {} started in {} ms", currentStep++,
                 steps.size(), step.name(), duration))
             .throwServerExceptionIfNecessary());
     }
