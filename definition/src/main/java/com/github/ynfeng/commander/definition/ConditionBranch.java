@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
 public class ConditionBranch {
     public static final ConditionBranch EMPTY = new ConditionBranch(Expression.EMPTY, NodeDefinition.NULL);

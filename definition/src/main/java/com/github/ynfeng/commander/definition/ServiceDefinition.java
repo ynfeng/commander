@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
 public class ServiceDefinition extends NextableNodeDefinition {
     private final ServiceCoordinate serviceCoordinate;

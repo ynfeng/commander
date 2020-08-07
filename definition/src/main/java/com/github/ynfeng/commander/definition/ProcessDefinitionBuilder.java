@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
 import com.google.common.collect.Lists;
 import java.util.Arrays;

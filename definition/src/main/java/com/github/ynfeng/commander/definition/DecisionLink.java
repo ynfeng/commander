@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
 public class DecisionLink implements Link {
     private final String decisionRefName;

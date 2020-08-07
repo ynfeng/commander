@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
 public abstract class NextableNodeDefinition extends AbstractNodeDefinition implements Nextable {
     private NodeDefinition next = NodeDefinition.NULL;

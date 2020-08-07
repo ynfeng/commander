@@ -1,8 +1,8 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
-public class TestableDefinition extends NextableNodeDefinition {
+public class TestableNodeDefinition extends NextableNodeDefinition {
 
-    public TestableDefinition(String refName) {
+    public TestableNodeDefinition(String refName) {
         super(refName);
     }
 }

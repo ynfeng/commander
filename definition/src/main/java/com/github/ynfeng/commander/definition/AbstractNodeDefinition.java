@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
 public abstract class AbstractNodeDefinition implements NodeDefinition {
     private final String refName;

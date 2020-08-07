@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
 public class ForkDefinition extends AbstractNodeDefinition {
     private final ForkBranchs forkBranchs = new ForkBranchs();

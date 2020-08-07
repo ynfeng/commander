@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.core.definition;
+package com.github.ynfeng.commander.definition;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -6,8 +6,9 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.github.ynfeng.commander.core.exception.ProcessDefinitionException;
+import java.util.Arrays;
 import java.util.Iterator;
+import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +51,7 @@ public class ProcessDefinitionBuilderTest {
             processDefinitionBuilder.build();
         });
 
-        assertThat(exception.getMessage(), is("The \"start\" node definition not exists."));
+        MatcherAssert.assertThat(exception.getMessage(), is("The \"start\" node definition not exists."));
     }
 
     @Test
@@ -210,5 +211,6 @@ public class ProcessDefinitionBuilderTest {
         assertThat(otherService.next().refName(), is("aJoin"));
         assertThat(joinDefinition, sameInstance(otherService.next()));
         assertThat(joinDefinition.next().refName(), is("end"));
+        assertThat(joinDefinition.ons(), is(Arrays.asList("aService","otherService")));
     }
 }
