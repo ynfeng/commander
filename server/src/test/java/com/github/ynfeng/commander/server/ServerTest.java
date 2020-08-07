@@ -76,9 +76,7 @@ public class ServerTest {
         server.shutdown();
 
         List<LoggingEvent> events = TestableLoggerAppender.getEvents();
-
         LoggingEvent loggingEvent = events.get(0);
-
         assertThat(loggingEvent.getFormattedMessage(), is("Shutdown test [1/1] failed with unexpected exception."));
     }
 }
