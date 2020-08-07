@@ -19,7 +19,7 @@ public class ShutdownSteps extends Steps {
             () -> takeDuration(step::execute))
             .onException(e -> LOG.info("Shutdown {} [{}/{}] failed with unexpected exception.",
                 step.name(), currentStep++, steps.size(), e))
-            .onResult(duration -> LOG.debug("Shutdown [{}/{}]: {} in {} ms", currentStep++,
+            .onResult(duration -> LOG.debug("Shutdown [{}/{}]: {} in {} ms.", currentStep++,
                 steps.size(), step.name(), duration)));
     }
 }

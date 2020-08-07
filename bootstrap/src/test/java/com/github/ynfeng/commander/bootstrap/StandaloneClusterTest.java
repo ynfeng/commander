@@ -27,9 +27,9 @@ class StandaloneClusterTest {
         ClusterConfig clusterConfig = Mockito.mock(ClusterConfig.class);
         NodeConfig nodeConfig = Mockito.mock(NodeConfig.class);
         ClusterProviderLoader clusterProviderLoader = Mockito.mock(ClusterProviderLoader.class);
-        StandaloneCluster cluster = new StandaloneCluster(clusterConfig, nodeConfig, clusterProviderLoader);
 
         try {
+            StandaloneCluster cluster = new StandaloneCluster(clusterConfig, nodeConfig, clusterProviderLoader);
             cluster.bootstrap();
             fail("Should throw exception");
         } catch (Exception e) {

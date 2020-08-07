@@ -4,6 +4,10 @@ package com.github.ynfeng.commander.cluster.atomix;
 import com.github.ynfeng.commander.cluster.AbstractClusterController;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
 import com.github.ynfeng.commander.cluster.config.NodeConfig;
+import io.atomix.cluster.Node;
+import io.atomix.cluster.discovery.BootstrapDiscoveryProvider;
+import io.atomix.core.Atomix;
+import io.atomix.utils.net.Address;
 
 public class AtomixClusterController extends AbstractClusterController {
     private final ClusterConfig clusterConfig;
@@ -14,8 +18,20 @@ public class AtomixClusterController extends AbstractClusterController {
         this.nodeConfig = nodeConfig;
     }
 
+    @SuppressWarnings("checkstyle:MethodLength")
     @Override
     public void start() {
+        Atomix atomix = Atomix.builder()
+            .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
+            .withMembershipProvider(BootstrapDiscoveryProvider.builder()
+                .withNodes(
+                    Node.builder()
+                        .withId(nodeConfig.nodeId())
+                        .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
+                        .build())
+                .build())
+            .build();
+        atomix.start();
     }
 
     @Override

@@ -25,7 +25,7 @@ public class StartSteps extends Steps {
             () -> takeDuration(() -> shutdownStpes.add(new ShutdownStep(step.name(), step.execute()))))
             .onException(e -> LOG.info("Bootstrap {} [{}/{}] failed with unexpected exception.",
                 step.name(), currentStep++, steps.size(), e))
-            .onResult(duration -> LOG.debug("Bootstrap [{}/{}]: {} started in {} ms", currentStep++,
+            .onResult(duration -> LOG.debug("Bootstrap [{}/{}]: {} started in {} ms.", currentStep++,
                 steps.size(), step.name(), duration))
             .throwServerExceptionIfNecessary());
     }
