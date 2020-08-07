@@ -30,8 +30,8 @@ public class StandaloneCluster {
             .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
             .withRole(Role.valueOf(nodeConfig.role()))
             .withStartStep("Cluster controller", this::startClusterController)
-            .build()
-            .startup();
+            .build();
+//            .startup();
         return shutdownFuture;
     }
 

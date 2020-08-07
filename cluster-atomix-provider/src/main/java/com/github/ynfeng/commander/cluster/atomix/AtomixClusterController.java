@@ -31,7 +31,7 @@ public class AtomixClusterController extends AbstractClusterController {
                         .build())
                 .build())
             .build();
-//        atomix.start();
+        atomix.start();
     }
 
     @Override
