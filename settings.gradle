@@ -4,4 +4,5 @@ include 'engine'
 include 'cluster'
 include 'server'
 include 'definition'
+include 'support'
 
