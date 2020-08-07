@@ -11,7 +11,7 @@ public class Steps {
         return stopwatch.elapsed(TimeUnit.MILLISECONDS);
     }
 
-    protected <T> StepExecuteResult<T> checkedCall(CheckedCallable<T> callable) {
+    protected <T> StepExecuteResult<T> executeStep(CheckedCallable<T> callable) {
         try {
             T t = callable.call();
             return StepExecuteResult.result(t);

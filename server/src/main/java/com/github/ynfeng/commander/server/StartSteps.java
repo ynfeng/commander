@@ -18,7 +18,7 @@ public class StartSteps extends Steps {
     }
 
     private void startupStepByStep() {
-        steps.forEach(step -> checkedCall(
+        steps.forEach(step -> executeStep(
             () -> takeDuration(() -> shutdownStpes.add(new ShutdownStep(step.name(), step.execute()))))
             .onException(e -> LOG.info("Bootstrap {} [{}/{}] failed with unexpected exception.",
                 step.name(), 1, steps.size(), e))

@@ -12,7 +12,7 @@ public class ShutdownSteps extends Steps {
     }
 
     public void shutdownStepByStep() {
-        steps.stream().forEach(step -> checkedCall(
+        steps.stream().forEach(step -> executeStep(
             () -> takeDuration(step::execute))
             .onException(e -> LOG.info("Shutdown {} [{}/{}] failed with unexpected exception.",
                 step.name(), 0 + 1, steps.size(), e))
