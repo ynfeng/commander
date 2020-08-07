@@ -35,12 +35,12 @@ public class StandaloneCluster {
         return shutdownFuture;
     }
 
-    public AutoCloseable startClusterController() {
-        ClusterController controller
-            = clusterProvider.createClusterController(clusterConfig, nodeConfig);
-        controller.startup();
-        return () -> controller.shutdown();
-    }
+//    public AutoCloseable startClusterController() {
+//        ClusterController controller
+//            = clusterProvider.createClusterController(clusterConfig, nodeConfig);
+//        controller.startup();
+//        return () -> controller.shutdown();
+//    }
 
     private ClusterProvider getProviderOrThrowException(ClusterProviderLoader clusterProviderLoader) {
         return clusterProviderLoader.load()
