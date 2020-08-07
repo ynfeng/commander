@@ -43,7 +43,7 @@ class StandaloneClusterTest {
         ClusterConfig clusterConfig = Mockito.mock(ClusterConfig.class);
         NodeConfig nodeConfig = Mockito.mock(NodeConfig.class);
         Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
-        Mockito.when(nodeConfig.port()).thenReturn(1234);
+        Mockito.when(nodeConfig.port()).thenReturn(8098);
         Mockito.when(nodeConfig.nodeId()).thenReturn("local");
         Mockito.when(nodeConfig.role()).thenReturn("Controller");
 
