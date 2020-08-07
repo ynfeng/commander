@@ -7,7 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
-import com.github.ynfeng.commander.server.testutil.TestableLoggerAppender;
+import com.github.ynfeng.commander.testutil.TestableLoggerAppender;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

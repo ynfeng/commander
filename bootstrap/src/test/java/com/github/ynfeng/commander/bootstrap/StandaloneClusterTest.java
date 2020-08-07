@@ -42,6 +42,11 @@ class StandaloneClusterTest {
     public void should_bootstrap_standalong_cluster() {
         ClusterConfig clusterConfig = Mockito.mock(ClusterConfig.class);
         NodeConfig nodeConfig = Mockito.mock(NodeConfig.class);
+        Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
+        Mockito.when(nodeConfig.port()).thenReturn(1234);
+        Mockito.when(nodeConfig.nodeId()).thenReturn("local");
+        Mockito.when(nodeConfig.role()).thenReturn("Controller");
+
         StandaloneCluster cluster = new StandaloneCluster(clusterConfig, nodeConfig, clusterProviderLoader);
         cluster.bootstrap();
     }
