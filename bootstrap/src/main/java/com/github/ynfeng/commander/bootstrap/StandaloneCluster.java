@@ -29,7 +29,7 @@ public class StandaloneCluster {
             .withName(nodeConfig.nodeId())
             .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
             .withRole(Role.valueOf(nodeConfig.role()))
-            .withStartStep("Cluster controller", this::startClusterController)
+//            .withStartStep("Cluster controller", this::startClusterController)
             .build()
             .startup();
         return shutdownFuture;
