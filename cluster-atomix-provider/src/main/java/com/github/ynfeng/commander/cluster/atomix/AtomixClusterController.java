@@ -21,17 +21,17 @@ public class AtomixClusterController extends AbstractClusterController {
     @SuppressWarnings("checkstyle:MethodLength")
     @Override
     public void start() {
-        Atomix atomix = Atomix.builder()
-            .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
-            .withMembershipProvider(BootstrapDiscoveryProvider.builder()
-                .withNodes(
-                    Node.builder()
-                        .withId(nodeConfig.nodeId())
-                        .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
-                        .build())
-                .build())
-            .build();
-        atomix.start();
+//        Atomix atomix = Atomix.builder()
+//            .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
+//            .withMembershipProvider(BootstrapDiscoveryProvider.builder()
+//                .withNodes(
+//                    Node.builder()
+//                        .withId(nodeConfig.nodeId())
+//                        .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
+//                        .build())
+//                .build())
+//            .build();
+//        atomix.start();
     }
 
     @Override
