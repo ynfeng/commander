@@ -22,12 +22,12 @@ public class AtomixClusterController extends AbstractClusterController {
     @Override
     public void start() {
         Atomix atomix = Atomix.builder()
-            .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
+            .withAddress(Address.from(nodeConfig.address(), 18089))
             .withMembershipProvider(BootstrapDiscoveryProvider.builder()
                 .withNodes(
                     Node.builder()
                         .withId(nodeConfig.nodeId())
-                        .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
+                        .withAddress(Address.from(nodeConfig.address(), 18089))
                         .build())
                 .build())
             .build();
