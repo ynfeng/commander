@@ -4,14 +4,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.core.status.OnConsoleStatusListener;
-import ch.qos.logback.core.status.StatusManager;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import com.github.ynfeng.commander.server.testutil.TestableLoggerAppender;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.slf4j.LoggerFactory;
 
 public class ServerTest {
+
+    @BeforeEach
+    public void setup() {
+        TestableLoggerAppender.reset();
+    }
 
     @Test
     public void should_create_server_from_builder() {
@@ -69,5 +74,11 @@ public class ServerTest {
         server.startup();
 
         server.shutdown();
+
+        List<LoggingEvent> events = TestableLoggerAppender.getEvents();
+
+        LoggingEvent loggingEvent = events.get(0);
+
+        assertThat(loggingEvent.getFormattedMessage(), is("Shutdown test [1/1] failed with unexpected exception."));
     }
 }
