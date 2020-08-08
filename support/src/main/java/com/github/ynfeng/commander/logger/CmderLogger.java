@@ -103,7 +103,9 @@ public class CmderLogger implements Logger {
 
     @Override
     public void debug(String msg) {
-
+        if(isDebugEnabled()){
+            logger.debug(msg);
+        }
     }
 
     @Override
