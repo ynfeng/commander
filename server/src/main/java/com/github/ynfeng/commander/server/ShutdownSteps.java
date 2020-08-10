@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.server;
 import com.github.ynfeng.commander.logger.CmderLogger;
 import com.github.ynfeng.commander.logger.CmderLoggerFactory;
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
 
 public class ShutdownSteps extends Steps {
@@ -15,6 +16,7 @@ public class ShutdownSteps extends Steps {
     }
 
     public void shutdown() throws Exception {
+        Collections.reverse(steps);
         long duration = takeDuration(this::shutdownStepByStep);
         LOG.debug(
             "Shutdown succeeded. Shutdown {} steps in {} ms.",

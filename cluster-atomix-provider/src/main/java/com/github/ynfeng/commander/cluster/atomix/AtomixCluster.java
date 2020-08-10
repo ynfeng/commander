@@ -6,7 +6,9 @@ import com.github.ynfeng.commander.cluster.config.NodeConfig;
 import io.atomix.cluster.MemberId;
 import io.atomix.core.Atomix;
 import io.atomix.protocols.raft.partition.RaftPartitionGroup;
+import io.atomix.storage.StorageLevel;
 import io.atomix.utils.net.Address;
+import java.io.File;
 import java.time.Duration;
 
 public class AtomixCluster extends Cluster {
@@ -35,6 +37,8 @@ public class AtomixCluster extends Cluster {
         return RaftPartitionGroup
             .builder("system")
             .withNumPartitions(clusterConfig.managementPartitions())
+            .withStorageLevel(StorageLevel.MAPPED)
+            .withDataDirectory(new File(clusterConfig.dataDir()))
             .withMembers(clusterConfig.managementGroupMembers())
             .build();
     }

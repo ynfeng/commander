@@ -6,6 +6,4 @@ public interface NodeConfig {
     String address();
 
     int port();
-
-    String role();
 }

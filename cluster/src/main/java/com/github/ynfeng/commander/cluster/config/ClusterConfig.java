@@ -8,4 +8,6 @@ public interface ClusterConfig {
     int managementPartitions();
 
     String[] managementGroupMembers();
+
+    String dataDir();
 }

@@ -45,11 +45,11 @@ class BootrstapTest {
         Mockito.when(clusterConfig.bootstrapDiscoveryBroadcastIntervalSeconds()).thenReturn(1L);
         Mockito.when(clusterConfig.clusterId()).thenReturn("testCluster");
         Mockito.when(clusterConfig.managementPartitions()).thenReturn(1);
+        Mockito.when(clusterConfig.dataDir()).thenReturn("/tmp/atomix-mgr");
         Mockito.when(clusterConfig.managementGroupMembers()).thenReturn(new String[] {"local"});
         Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
         Mockito.when(nodeConfig.port()).thenReturn(8098);
         Mockito.when(nodeConfig.nodeId()).thenReturn("local");
-        Mockito.when(nodeConfig.role()).thenReturn("Controller");
 
         Bootrstap cluster = new Bootrstap(clusterConfig, nodeConfig, clusterProviderLoader);
         cluster.bootstrap();
