@@ -27,12 +27,12 @@ public class Server {
         return address;
     }
 
-    public void startup() {
+    public void startup() throws Exception {
         shutdownSteps = startSteps.startup();
     }
 
-    public void shutdown() {
-        shutdownSteps.shutdownStepByStep();
+    public void shutdown() throws Exception {
+        shutdownSteps.shutdown();
     }
 
     public Role role() {

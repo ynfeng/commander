@@ -15,13 +15,17 @@ public class StartSteps extends Steps {
         steps.addAll(startStartSteps);
     }
 
-    public ShutdownSteps startup() {
-        startupStepByStep();
+    public ShutdownSteps startup() throws Exception {
+        long duration = takeDuration(this::startupStepByStep);
+        LOG.debug(
+            "Bootstrap succeeded. Started {} steps in {} ms.",
+            steps.size(),
+            duration);
         return shutdownStpes;
     }
 
     private void startupStepByStep() {
-        steps.forEach(step -> executeStep(
+        steps.forEach(step -> executeChecked(
             () -> takeDuration(() -> shutdownStpes.add(new ShutdownStep(step.name(), step.execute()))))
             .onException(e -> LOG.info("Bootstrap {} [{}/{}] failed with unexpected exception.",
                 step.name(), currentStep++, steps.size(), e))

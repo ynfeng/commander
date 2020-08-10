@@ -24,7 +24,7 @@ public class StandaloneCluster {
         clusterProvider = getProviderOrThrowException(clusterProviderLoader);
     }
 
-    public void bootstrap() {
+    public void bootstrap() throws Exception {
         server = Server.builder()
             .withName(nodeConfig.nodeId())
             .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
@@ -34,7 +34,7 @@ public class StandaloneCluster {
         server.startup();
     }
 
-    public void shutdown() {
+    public void shutdown() throws Exception {
         server.shutdown();
     }
 

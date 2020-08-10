@@ -14,11 +14,20 @@ public class ShutdownSteps extends Steps {
         steps.add(shutdownStep);
     }
 
+    public void shutdown() throws Exception {
+        long duration = takeDuration(this::shutdownStepByStep);
+        LOG.debug(
+            "Shutdown succeeded. Shutdown {} steps in {} ms.",
+            steps.size(),
+            duration);
+    }
+
     public void shutdownStepByStep() {
-        steps.stream().forEach(step -> executeStep(
+        steps.stream().forEach(step -> executeChecked(
             () -> takeDuration(step::execute))
             .onException(e -> LOG.info("Shutdown {} [{}/{}] failed with unexpected exception.",
                 step.name(), currentStep++, steps.size(), e))
+            .throwServerExceptionIfNecessary()
             .onResult(duration -> LOG.debug("Shutdown [{}/{}]: {} in {} ms.", currentStep++,
                 steps.size(), step.name(), duration)));
     }

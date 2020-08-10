@@ -35,7 +35,7 @@ public class ServerTest {
     }
 
     @Test
-    public void should_execute_startup_steps() {
+    public void should_execute_startup_steps() throws Exception {
         StartFunction startFunction = Mockito.mock(StartFunction.class);
         Server server = Server.builder()
             .withName("local")
@@ -47,6 +47,7 @@ public class ServerTest {
 
         Mockito.verify(startFunction).execute();
         assertThat(getLogMessage(0), containsString("Bootstrap [1/1]: test started in"));
+        assertThat(getLogMessage(1), containsString("Bootstrap succeeded. Started 1 steps in"));
     }
 
     @Test
@@ -83,7 +84,8 @@ public class ServerTest {
         server.shutdown();
 
         Mockito.verify(closeable).close();
-        assertThat(getLogMessage(1), containsString("Shutdown [1/1]: test in"));
+        assertThat(getLogMessage(2), containsString("Shutdown [1/1]: test in"));
+        assertThat(getLogMessage(3), containsString("Shutdown succeeded. Shutdown 1 steps in"));
     }
 
     @Test
@@ -99,9 +101,14 @@ public class ServerTest {
             .build();
         server.startup();
 
-        server.shutdown();
+        try {
+            server.shutdown();
+            fail("Should throw exception.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        assertThat(getLogMessage(1), is("Shutdown test [1/1] failed with unexpected exception."));
+        assertThat(getLogMessage(2), is("Shutdown test [1/1] failed with unexpected exception."));
     }
 
     private static String getLogMessage(int index) {

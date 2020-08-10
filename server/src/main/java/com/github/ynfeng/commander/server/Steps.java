@@ -11,12 +11,12 @@ public class Steps {
         return stopwatch.elapsed(TimeUnit.MILLISECONDS);
     }
 
-    protected <T> StepExecuteResult<T> executeStep(CheckedCallable<T> callable) {
+    protected <T> CheckedExecuteResult<T> executeChecked(CheckedCallable<T> callable) {
         try {
             T t = callable.call();
-            return StepExecuteResult.result(t);
+            return CheckedExecuteResult.result(t);
         } catch (Exception e) {
-            return StepExecuteResult.exception(e);
+            return CheckedExecuteResult.exception(e);
         }
     }
 }

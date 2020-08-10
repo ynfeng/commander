@@ -39,7 +39,7 @@ class StandaloneClusterTest {
     }
 
     @Test
-    public void should_bootstrap_standalong_cluster() {
+    public void should_bootstrap_standalong_cluster() throws Exception {
         ClusterConfig clusterConfig = Mockito.mock(ClusterConfig.class);
         NodeConfig nodeConfig = Mockito.mock(NodeConfig.class);
         Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
