@@ -49,5 +49,6 @@ class StandaloneClusterTest {
 
         StandaloneCluster cluster = new StandaloneCluster(clusterConfig, nodeConfig, clusterProviderLoader);
         cluster.bootstrap();
+        cluster.shutdown();
     }
 }

@@ -6,6 +6,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
+import com.github.ynfeng.commander.definition.EndDefinition;
+import com.github.ynfeng.commander.definition.NextableNodeDefinition;
+import com.github.ynfeng.commander.definition.NodeDefinition;
+import com.github.ynfeng.commander.definition.ProcessDefinition;
+import com.github.ynfeng.commander.definition.RelationShips;
+import com.github.ynfeng.commander.definition.StartDefinition;
 import com.github.ynfeng.commander.engine.ProcessEngineTestSupport;
 import com.github.ynfeng.commander.engine.Variables;
 import com.github.ynfeng.commander.engine.context.ProcessContext;
@@ -17,12 +23,6 @@ import com.github.ynfeng.commander.engine.executor.NodeExecutor;
 import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.engine.executor.SPINodeExecutors;
 import com.github.ynfeng.commander.engine.executor.StartNodeExecutor;
-import com.github.ynfeng.commander.definition.EndDefinition;
-import com.github.ynfeng.commander.definition.NextableNodeDefinition;
-import com.github.ynfeng.commander.definition.NodeDefinition;
-import com.github.ynfeng.commander.definition.ProcessDefinition;
-import com.github.ynfeng.commander.definition.RelationShips;
-import com.github.ynfeng.commander.definition.StartDefinition;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.bootstrap;
 
-import com.github.ynfeng.commander.cluster.ClusterController;
+import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
@@ -8,13 +8,13 @@ import com.github.ynfeng.commander.cluster.config.NodeConfig;
 import com.github.ynfeng.commander.server.Address;
 import com.github.ynfeng.commander.server.Role;
 import com.github.ynfeng.commander.server.Server;
-import java.util.concurrent.CompletableFuture;
 
 public class StandaloneCluster {
     private final ClusterConfig clusterConfig;
     private final NodeConfig nodeConfig;
     private final ClusterProvider clusterProvider;
-    private final CompletableFuture<Void> shutdownFuture = new CompletableFuture<>();
+    private Cluster cluster;
+    private Server server;
 
     public StandaloneCluster(ClusterConfig clusterConfig,
                              NodeConfig nodeConfig,
@@ -24,23 +24,26 @@ public class StandaloneCluster {
         clusterProvider = getProviderOrThrowException(clusterProviderLoader);
     }
 
-    public CompletableFuture<Void> bootstrap() {
-        Server.builder()
+    public void bootstrap() {
+        server = Server.builder()
             .withName(nodeConfig.nodeId())
             .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
             .withRole(Role.valueOf(nodeConfig.role()))
-            .withStartStep("Cluster controller", this::startClusterController)
-            .build()
-            .startup();
-        return shutdownFuture;
+            .withStartStep("Initialize cluster", this::initCluster)
+            .build();
+        server.startup();
     }
 
-    public AutoCloseable startClusterController() {
-        ClusterController controller
-            = clusterProvider.createClusterController(clusterConfig, nodeConfig);
-        controller.startup();
-        return () -> controller.shutdown();
+    public void shutdown() {
+        server.shutdown();
     }
+
+    private AutoCloseable initCluster() {
+        cluster = clusterProvider.createCluster(clusterConfig, nodeConfig);
+        return () -> {
+        };
+    }
+
 
     private ClusterProvider getProviderOrThrowException(ClusterProviderLoader clusterProviderLoader) {
         return clusterProviderLoader.load()
