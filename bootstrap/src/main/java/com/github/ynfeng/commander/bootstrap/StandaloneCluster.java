@@ -39,7 +39,7 @@ public class StandaloneCluster {
     }
 
     private AutoCloseable initCluster() {
-        cluster = clusterProvider.createCluster(clusterConfig, nodeConfig);
+        cluster = clusterProvider.cluster(clusterConfig, nodeConfig);
         return () -> {
         };
     }
