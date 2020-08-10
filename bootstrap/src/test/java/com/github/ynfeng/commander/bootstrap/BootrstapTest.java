@@ -52,7 +52,11 @@ class BootrstapTest {
         Mockito.when(nodeConfig.nodeId()).thenReturn("local");
 
         Bootrstap cluster = new Bootrstap(clusterConfig, nodeConfig, clusterProviderLoader);
-        cluster.bootstrap();
+        try {
+            cluster.bootstrap();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         cluster.shutdown();
     }
 }
