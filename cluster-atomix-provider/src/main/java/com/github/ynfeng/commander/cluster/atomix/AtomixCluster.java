@@ -38,7 +38,7 @@ public class AtomixCluster extends Cluster {
             .builder("system")
             .withNumPartitions(clusterConfig.managementPartitions())
             .withStorageLevel(StorageLevel.MAPPED)
-            .withDataDirectory(new File(clusterConfig.dataDir()))
+            .withDataDirectory(new File(clusterConfig.managementDataDir()))
             .withMembers(clusterConfig.managementGroupMembers())
             .build();
     }

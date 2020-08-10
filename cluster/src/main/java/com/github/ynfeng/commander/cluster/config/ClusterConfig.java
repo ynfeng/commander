@@ -9,5 +9,5 @@ public interface ClusterConfig {
 
     String[] managementGroupMembers();
 
-    String dataDir();
+    String managementDataDir();
 }
