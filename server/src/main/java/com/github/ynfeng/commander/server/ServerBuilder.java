@@ -21,9 +21,4 @@ public class ServerBuilder {
     public Server build() {
         return new Server(config);
     }
-
-    public ServerBuilder withRole(Role role) {
-        config.setRole(role);
-        return this;
-    }
 }

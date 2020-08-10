@@ -24,12 +24,10 @@ public class ServerTest {
     public void should_create_server_from_builder() {
         Server server = Server.builder()
             .withName("local")
-            .withRole(Role.Controller)
             .withAddress(Address.of("127.0.0.1", 1234))
             .build();
 
         assertThat(server.name(), is("local"));
-        assertThat(server.role(), is(Role.Controller));
         assertThat(server.address(), is(Address.of("127.0.0.1", 1234)));
         assertThat(server, notNullValue());
     }

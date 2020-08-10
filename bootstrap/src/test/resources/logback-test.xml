@@ -15,4 +15,8 @@
         <appender-ref ref="TESTABLE"/>
     </logger>
     <logger name="com.github.ynfeng.commander.server" level="TRACE"/>
+
+    <root level="TRACE">
+        <appender-ref ref="STDOUT"/>
+    </root>
 </configuration>
