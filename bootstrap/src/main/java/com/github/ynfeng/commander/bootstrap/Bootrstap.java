@@ -27,8 +27,8 @@ public class Bootrstap {
         server = Server.builder()
             .withName(nodeConfig.nodeId())
             .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
-            .withStartStep("Initialize cluster", this::initCluster)
-            .withStartStep("Bootstrap cluster", this::bootCluster)
+            .withStartStep("Cluster protocol", this::initCluster)
+            .withStartStep("Cluster services", this::bootCluster)
             .build();
         server.startup();
     }
