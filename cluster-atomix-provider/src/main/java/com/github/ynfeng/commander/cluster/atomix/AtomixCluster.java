@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.cluster.atomix;
 
-import com.github.ynfeng.commander.cluster.Cluster;
+import com.github.ynfeng.commander.cluster.AbstractCluster;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
 import com.github.ynfeng.commander.cluster.config.NodeConfig;
 import io.atomix.cluster.MemberId;
@@ -11,7 +11,7 @@ import io.atomix.utils.net.Address;
 import java.io.File;
 import java.time.Duration;
 
-public class AtomixCluster extends Cluster {
+public class AtomixCluster extends AbstractCluster {
     private final ClusterConfig clusterConfig;
     private final NodeConfig nodeConfig;
     private Atomix atomix;
