@@ -5,7 +5,6 @@ import com.github.ynfeng.commander.cluster.config.ClusterConfig;
 import com.github.ynfeng.commander.cluster.config.NodeConfig;
 import io.atomix.cluster.MemberId;
 import io.atomix.core.Atomix;
-import io.atomix.core.AtomixBuilder;
 import io.atomix.protocols.raft.partition.RaftPartitionGroup;
 import io.atomix.storage.StorageLevel;
 import io.atomix.utils.net.Address;
@@ -24,14 +23,14 @@ public class AtomixCluster extends AbstractCluster {
     }
 
     private void initAtomix() {
-        AtomixBuilder builder = Atomix.builder();
-        builder.withClusterId(clusterConfig.clusterId());
-        builder.withMemberId(MemberId.from(nodeConfig.nodeId()));
-        builder.withAddress(Address.from(nodeConfig.address(), nodeConfig.port()));
-        builder.withMulticastEnabled();
-        builder.withManagementGroup(buildManagementGroup());
-        builder.setBroadcastInterval(Duration.ofSeconds(clusterConfig.bootstrapDiscoveryBroadcastIntervalSeconds()));
-        atomix = builder.build();
+        atomix = Atomix.builder()
+            .withClusterId(clusterConfig.clusterId())
+            .withMemberId(MemberId.from(nodeConfig.nodeId()))
+            .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
+            .withMulticastEnabled()
+            .withManagementGroup(buildManagementGroup())
+            .setBroadcastInterval(Duration.ofSeconds(clusterConfig.bootstrapDiscoveryBroadcastIntervalSeconds()))
+            .build();
     }
 
     private RaftPartitionGroup buildManagementGroup() {
