@@ -24,10 +24,9 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build --stacktrace --scan
-      - name: Junit Report to Annotations
         uses: ashley-taylor/junit-report-annotations-action@1.3
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
         if: always()
-          with:
-            access-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v1.0.12
