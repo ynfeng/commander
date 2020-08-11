@@ -24,10 +24,7 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build --stacktrace --scan
-      - name: Jest Github Action Reporter
-        uses: IgnusG/jest-report-action@v2.3.3
-        if: always()
-        with:
-          access-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Report jUnit Annotations as Github Actions Annotations
+        uses: shyim/junit-report-annotations-action@0.2.0
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v1.0.12
