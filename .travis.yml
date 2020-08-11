@@ -1,5 +1,0 @@
-language: java
-sudo: false
-script: ./gradlew build
-after_success:
-  - ./gradlew jacocoTestReport coveralls
