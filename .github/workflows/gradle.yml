@@ -19,18 +19,17 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Clone atomix
+      - name: Checkout atomix
         uses: actions/checkout@v2
         with:
           repository: 'ynfeng/atomix'
           ref: commander
       - name: Build atomix
         run: ./mvnw clean install --batch-mode -V -DskipTests=true -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
-      - uses: actions/checkout@v2
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew build --stacktrace --scan
+      - name: Checkout commander
+        uses: actions/checkout@v2
+      - name: Build commander
+        run: ./gradlew build --stacktrace
       - uses: ashley-taylor/junit-report-annotations-action@1.3
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
