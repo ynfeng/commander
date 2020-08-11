@@ -27,13 +27,13 @@ public class Bootrstap {
         server = Server.builder()
             .withName(nodeConfig.nodeId())
             .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
-            .withStartStep("Cluster protocol", this::initCluster)
-            .withStartStep("Cluster services", this::bootCluster)
+            .withStartStep("Cluster protocol", this::initClusterProtocol)
+            .withStartStep("Cluster services", this::bootClusterServices)
             .build();
         server.startup();
     }
 
-    private AutoCloseable bootCluster() {
+    private AutoCloseable bootClusterServices() {
         cluster.startup();
         return cluster::shutdown;
     }
@@ -42,7 +42,7 @@ public class Bootrstap {
         server.shutdown();
     }
 
-    private AutoCloseable initCluster() {
+    private AutoCloseable initClusterProtocol() {
         cluster = clusterProvider.cluster(clusterConfig, nodeConfig);
         return () -> {
         };

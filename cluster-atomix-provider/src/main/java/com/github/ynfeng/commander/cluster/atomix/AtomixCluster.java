@@ -4,6 +4,8 @@ import com.github.ynfeng.commander.cluster.AbstractCluster;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
 import com.github.ynfeng.commander.cluster.config.NodeConfig;
 import io.atomix.cluster.MemberId;
+import io.atomix.cluster.protocol.GroupMembershipProtocol;
+import io.atomix.cluster.protocol.SwimMembershipProtocol;
 import io.atomix.core.Atomix;
 import io.atomix.protocols.raft.partition.RaftPartitionGroup;
 import io.atomix.storage.StorageLevel;
@@ -22,6 +24,7 @@ public class AtomixCluster extends AbstractCluster {
         initAtomix();
     }
 
+    @SuppressWarnings("checkstyle:MethodLength")
     private void initAtomix() {
         atomix = Atomix.builder()
             .withClusterId(clusterConfig.clusterId())
@@ -29,7 +32,24 @@ public class AtomixCluster extends AbstractCluster {
             .withAddress(Address.from(nodeConfig.address(), nodeConfig.port()))
             .withMulticastEnabled()
             .withManagementGroup(buildManagementGroup())
+            .withMembershipProtocol(buildMembershipProtocol())
             .setBroadcastInterval(Duration.ofSeconds(clusterConfig.bootstrapDiscoveryBroadcastIntervalSeconds()))
+            .build();
+    }
+
+    @SuppressWarnings("checkstyle:MethodLength")
+    private GroupMembershipProtocol buildMembershipProtocol() {
+        return SwimMembershipProtocol.builder()
+//            .withFailureTimeout(membershipCfg.getFailureTimeout())
+//            .withGossipInterval(membershipCfg.getGossipInterval())
+//            .withProbeInterval(membershipCfg.getProbeInterval())
+//            .withProbeTimeout(membershipCfg.getProbeTimeout())
+//            .withBroadcastDisputes(membershipCfg.isBroadcastDisputes())
+//            .withBroadcastUpdates(membershipCfg.isBroadcastUpdates())
+//            .withGossipFanout(membershipCfg.getGossipFanout())
+//            .withNotifySuspect(membershipCfg.isNotifySuspect())
+//            .withSuspectProbes(membershipCfg.getSuspectProbes())
+//            .withSyncInterval(membershipCfg.getSyncInterval())
             .build();
     }
 
