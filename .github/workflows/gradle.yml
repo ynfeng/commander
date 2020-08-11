@@ -28,5 +28,7 @@ jobs:
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
         if: always()
+      - name: fuck
+        run: cat /home/runner/work/commander/commander/tt
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v1.0.12

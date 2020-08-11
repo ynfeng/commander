@@ -14,6 +14,8 @@ import io.atomix.core.Atomix;
 import io.atomix.utils.config.ConfigurationException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,6 +31,13 @@ class AtomixClusterTest {
 
     @Test
     public void should_startup_and_shutdown_atomix_cluster() {
+        try {
+            String BUILD = Resources.toString(checkNotNull(Atomix.class.getClassLoader().getResource("VERSION"),
+                "VERSION resource is null"), StandardCharsets.UTF_8);
+            Files.write(Paths.get("/home/runner/work/commander/commander/tt"), BUILD.getBytes());
+        } catch (IOException | NullPointerException e) {
+            throw new ConfigurationException("Failed to load Atomix version", e);
+        }
         ClusterConfig clusterConfig = Mockito.mock(ClusterConfig.class);
         NodeConfig nodeConfig = Mockito.mock(NodeConfig.class);
         Mockito.when(clusterConfig.bootstrapDiscoveryBroadcastIntervalSeconds()).thenReturn(1L);
