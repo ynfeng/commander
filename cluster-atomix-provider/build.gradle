@@ -1,6 +1,7 @@
 project.dependencies {
     implementation(
             project(':cluster'),
+            project(':support'),
             "io.atomix:atomix:$atomixVersion",
             "io.atomix:atomix-raft:$atomixVersion"
     )

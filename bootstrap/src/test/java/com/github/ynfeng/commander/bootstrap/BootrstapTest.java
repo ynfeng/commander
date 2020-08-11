@@ -10,11 +10,6 @@ import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.SPIClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
 import com.github.ynfeng.commander.cluster.config.NodeConfig;
-import com.github.ynfeng.commander.logger.CmderLogger;
-import com.github.ynfeng.commander.logger.CmderLoggerFactory;
-import com.google.common.io.Resources;
-import io.atomix.core.Atomix;
-import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -56,10 +51,6 @@ class BootrstapTest {
         Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
         Mockito.when(nodeConfig.port()).thenReturn(8098);
         Mockito.when(nodeConfig.nodeId()).thenReturn("local");
-        String BUILD = Resources.toString(checkNotNull(Atomix.class.getClassLoader().getResource("VERSION"),
-            "VERSION resource is null"), StandardCharsets.UTF_8);
-        CmderLogger logger = CmderLoggerFactory.getServerLogger();
-        logger.debug("============" + BUILD);
 
         Bootrstap cluster = new Bootrstap(clusterConfig, nodeConfig, clusterProviderLoader);
         cluster.bootstrap();

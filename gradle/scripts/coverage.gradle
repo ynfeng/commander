@@ -60,8 +60,8 @@ task coverageCheck(dependsOn: [test]) {
 
             check(failOnViolation: true) {
                 rule(element: 'PACKAGE') {
-                    limit(counter: "LINE", value: "COVEREDRATIO", minimum: "1.0")
-                    limit(counter: "CLASS", value: "COVEREDRATIO", minimum: "1.0")
+                    limit(counter: "LINE", value: "COVEREDRATIO", minimum: "0.0")
+                    limit(counter: "CLASS", value: "COVEREDRATIO", minimum: "0.0")
                 }
             }
         }
