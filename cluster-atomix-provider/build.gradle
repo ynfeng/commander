@@ -5,4 +5,8 @@ project.dependencies {
             "io.atomix:atomix:$atomixVersion",
             "io.atomix:atomix-raft:$atomixVersion"
     )
+
+    testImplementation(
+            project(':testutil')
+    )
 }
