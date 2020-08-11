@@ -29,16 +29,6 @@ class AtomixClusterTest {
 
     @Test
     public void should_startup_and_shutdown_atomix_cluster() {
-        try {
-            String BUILD = Resources.toString(checkNotNull(Atomix.class.getClassLoader().getResource("VERSION"),
-                "VERSION resource is null"), StandardCharsets.UTF_8);
-            System.out.println("=========" + BUILD);
-            if(true){
-                throw new RuntimeException(BUILD) ;
-            }
-        } catch (IOException | NullPointerException e) {
-            throw new ConfigurationException("Failed to load Atomix version", e);
-        }
         ClusterConfig clusterConfig = Mockito.mock(ClusterConfig.class);
         NodeConfig nodeConfig = Mockito.mock(NodeConfig.class);
         Mockito.when(clusterConfig.bootstrapDiscoveryBroadcastIntervalSeconds()).thenReturn(1L);
