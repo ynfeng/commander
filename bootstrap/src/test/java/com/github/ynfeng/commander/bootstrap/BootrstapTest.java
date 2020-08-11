@@ -10,6 +10,8 @@ import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.SPIClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
 import com.github.ynfeng.commander.cluster.config.NodeConfig;
+import com.github.ynfeng.commander.logger.CmderLogger;
+import com.github.ynfeng.commander.logger.CmderLoggerFactory;
 import com.google.common.io.Resources;
 import io.atomix.core.Atomix;
 import java.nio.charset.StandardCharsets;
@@ -56,7 +58,9 @@ class BootrstapTest {
         Mockito.when(nodeConfig.nodeId()).thenReturn("local");
         String BUILD = Resources.toString(checkNotNull(Atomix.class.getClassLoader().getResource("VERSION"),
             "VERSION resource is null"), StandardCharsets.UTF_8);
-        System.out.println("============" + BUILD);
+        CmderLogger logger = CmderLoggerFactory.getServerLogger();
+        logger.debug("============" + BUILD);
+
         Bootrstap cluster = new Bootrstap(clusterConfig, nodeConfig, clusterProviderLoader);
         cluster.bootstrap();
         cluster.shutdown();
