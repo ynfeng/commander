@@ -29,7 +29,7 @@ jobs:
           access-token: ${{ secrets.GITHUB_TOKEN }}
         if: always()
       - name: cat report
-        run: cat /home/runner/work/commander/commander/cluster-atomix-provider/build/reports/tests/test/classes/com.github.ynfeng.commander.cluster.atomix.AtomixClusterTest.html#should_startup_and_shutdown_atomix_cluster()
+        run: cat '/home/runner/work/commander/commander/cluster-atomix-provider/build/reports/tests/test/index.html'
         if: always()
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v1.0.12
