@@ -14,7 +14,6 @@ public class Bootrstap {
     private ShutdownSteps shutdownSteps = new ShutdownSteps();
     private Cluster cluster;
 
-
     public Bootrstap(ClusterConfig clusterConfig,
                      NodeConfig nodeConfig,
                      ClusterProviderLoader clusterProviderLoader) {
@@ -43,7 +42,6 @@ public class Bootrstap {
         return () -> {
         };
     }
-
 
     private static ClusterProvider getProviderOrThrowException(ClusterProviderLoader clusterProviderLoader) {
         return clusterProviderLoader.load()
