@@ -1,5 +1,6 @@
 package com.github.ynfeng.commander.bootstrap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -9,6 +10,9 @@ import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.SPIClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
 import com.github.ynfeng.commander.cluster.config.NodeConfig;
+import com.google.common.io.Resources;
+import io.atomix.core.Atomix;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -50,7 +54,9 @@ class BootrstapTest {
         Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
         Mockito.when(nodeConfig.port()).thenReturn(8098);
         Mockito.when(nodeConfig.nodeId()).thenReturn("local");
-
+        String BUILD = Resources.toString(checkNotNull(Atomix.class.getClassLoader().getResource("VERSION"),
+            "VERSION resource is null"), StandardCharsets.UTF_8);
+        System.out.println("============" + BUILD);
         Bootrstap cluster = new Bootrstap(clusterConfig, nodeConfig, clusterProviderLoader);
         cluster.bootstrap();
         cluster.shutdown();
