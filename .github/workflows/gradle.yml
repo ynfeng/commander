@@ -28,5 +28,7 @@ jobs:
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
         if: always()
+      - name: cat report
+        run: cat /home/runner/work/commander/commander/cluster-atomix-provider/build/reports/tests/test/index.html
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v1.0.12
