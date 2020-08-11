@@ -20,11 +20,12 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build atomix
+      - name: Clone atomix
         uses: actions/checkout@v2
         with:
           repository: 'https://github.com/ynfeng/atomix.git'
           ref: commander
+      - name: Build atomix
         run: ./atomix/mvnw clean install --batch-mode -V -DskipTests=true -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
