@@ -33,6 +33,9 @@ class AtomixClusterTest {
             String BUILD = Resources.toString(checkNotNull(Atomix.class.getClassLoader().getResource("VERSION"),
                 "VERSION resource is null"), StandardCharsets.UTF_8);
             System.out.println("=========" + BUILD);
+            if(true){
+                throw new RuntimeException(BUILD) ;
+            }
         } catch (IOException | NullPointerException e) {
             throw new ConfigurationException("Failed to load Atomix version", e);
         }
