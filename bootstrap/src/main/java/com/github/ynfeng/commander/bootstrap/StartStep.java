@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.server;
+package com.github.ynfeng.commander.bootstrap;
 
 public class StartStep {
     private final String name;

@@ -1,9 +1,0 @@
-project.dependencies {
-    implementation(
-            project(':support')
-    )
-
-    testImplementation(
-            project(':testutil')
-    )
-}

@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.server;
+package com.github.ynfeng.commander.support;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -34,9 +34,9 @@ public class CheckedExecuteResult<T> {
         return this;
     }
 
-    public CheckedExecuteResult<T> throwServerExceptionIfNecessary() {
+    public CheckedExecuteResult<T> throwExceptionIfNecessary() {
         if (Objects.nonNull(e)) {
-            throw new ServerException(e);
+            throw new CheckedExecuteException(e);
         }
         return this;
     }

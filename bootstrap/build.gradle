@@ -1,6 +1,5 @@
 project.dependencies {
     implementation(
-            project(':server'),
             project(':cluster'),
             project(':support')
     )

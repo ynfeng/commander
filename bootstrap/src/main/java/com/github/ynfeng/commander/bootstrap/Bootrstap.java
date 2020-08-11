@@ -5,15 +5,15 @@ import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.config.ClusterConfig;
 import com.github.ynfeng.commander.cluster.config.NodeConfig;
-import com.github.ynfeng.commander.server.Address;
-import com.github.ynfeng.commander.server.Server;
 
 public class Bootrstap {
     private final ClusterConfig clusterConfig;
     private final NodeConfig nodeConfig;
     private final ClusterProvider clusterProvider;
+    private final StartSteps startSteps = new StartSteps();
+    private ShutdownSteps shutdownSteps = new ShutdownSteps();
     private Cluster cluster;
-    private Server server;
+
 
     public Bootrstap(ClusterConfig clusterConfig,
                      NodeConfig nodeConfig,
@@ -24,13 +24,9 @@ public class Bootrstap {
     }
 
     public void bootstrap() throws Exception {
-        server = Server.builder()
-            .withName(nodeConfig.nodeId())
-            .withAddress(Address.of(nodeConfig.address(), nodeConfig.port()))
-            .withStartStep("Cluster protocol", this::initClusterProtocol)
-            .withStartStep("Cluster services", this::bootClusterServices)
-            .build();
-        server.startup();
+        startSteps.add(new StartStep("Cluster protocol", this::initClusterProtocol));
+        startSteps.add(new StartStep("Cluster services", this::bootClusterServices));
+        shutdownSteps = startSteps.execute();
     }
 
     private AutoCloseable bootClusterServices() {
@@ -39,7 +35,7 @@ public class Bootrstap {
     }
 
     public void shutdown() throws Exception {
-        server.shutdown();
+        shutdownSteps.execute();
     }
 
     private AutoCloseable initClusterProtocol() {

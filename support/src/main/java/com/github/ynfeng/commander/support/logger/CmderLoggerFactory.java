@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.logger;
+package com.github.ynfeng.commander.support.logger;
 
 import org.slf4j.LoggerFactory;
 

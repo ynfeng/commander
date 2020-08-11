@@ -1,7 +1,7 @@
-package com.github.ynfeng.commander.server;
+package com.github.ynfeng.commander.bootstrap;
 
-import com.github.ynfeng.commander.logger.CmderLogger;
-import com.github.ynfeng.commander.logger.CmderLoggerFactory;
+import com.github.ynfeng.commander.support.logger.CmderLogger;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,7 @@ public class ShutdownSteps extends Steps {
         steps.add(shutdownStep);
     }
 
-    public void shutdown() throws Exception {
+    public void execute() throws Exception {
         Collections.reverse(steps);
         long duration = takeDuration(this::shutdownStepByStep);
         LOG.debug(
@@ -29,7 +29,7 @@ public class ShutdownSteps extends Steps {
             () -> takeDuration(step::execute))
             .onException(e -> LOG.info("Shutdown {} [{}/{}] failed with unexpected exception.",
                 step.name(), currentStep++, steps.size(), e))
-            .throwServerExceptionIfNecessary()
+            .throwExceptionIfNecessary()
             .onResult(duration -> LOG.debug("Shutdown [{}/{}]: {} in {} ms.", currentStep++,
                 steps.size(), step.name(), duration)));
     }

@@ -2,7 +2,6 @@ rootProject.name = 'commander'
 
 include 'engine'
 include 'cluster'
-include 'server'
 include 'definition'
 include 'support'
 include 'bootstrap'

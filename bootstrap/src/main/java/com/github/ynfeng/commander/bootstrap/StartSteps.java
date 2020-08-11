@@ -1,7 +1,7 @@
-package com.github.ynfeng.commander.server;
+package com.github.ynfeng.commander.bootstrap;
 
-import com.github.ynfeng.commander.logger.CmderLogger;
-import com.github.ynfeng.commander.logger.CmderLoggerFactory;
+import com.github.ynfeng.commander.support.logger.CmderLogger;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Lists;
 import java.util.List;
 
@@ -11,17 +11,17 @@ public class StartSteps extends Steps {
     private int currentStep = 1;
     private static final CmderLogger LOG = CmderLoggerFactory.getServerLogger();
 
-    public void addAll(List<StartStep> startStartSteps) {
-        steps.addAll(startStartSteps);
-    }
-
-    public ShutdownSteps startup() throws Exception {
+    public ShutdownSteps execute() throws Exception {
         long duration = takeDuration(this::startupStepByStep);
         LOG.debug(
             "Bootstrap succeeded. Started {} steps in {} ms.",
             steps.size(),
             duration);
         return shutdownStpes;
+    }
+
+    public void add(StartStep startStep) {
+        steps.add(startStep);
     }
 
     private void startupStepByStep() {
@@ -31,6 +31,6 @@ public class StartSteps extends Steps {
                 step.name(), currentStep++, steps.size(), e))
             .onResult(duration -> LOG.debug("Bootstrap [{}/{}]: {} started in {} ms.", currentStep++,
                 steps.size(), step.name(), duration))
-            .throwServerExceptionIfNecessary());
+            .throwExceptionIfNecessary());
     }
 }
