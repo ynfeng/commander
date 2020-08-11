@@ -36,7 +36,7 @@ class BootrstapTest {
     }
 
     @Test
-    public void should_bootstrap_cluster() throws Exception {
+    public void should_bootstrap_and_shutdown_cluster() throws Exception {
         clusterProviderLoader = Mockito.mock(ClusterProviderLoader.class);
         Cluster cluster = Mockito.mock(Cluster.class);
         ClusterProvider clusterProvider = Mockito.mock(ClusterProvider.class);
