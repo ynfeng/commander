@@ -2,8 +2,7 @@ project.dependencies {
     implementation(
             project(':server'),
             project(':cluster'),
-            project(':support'),
-            project(':cluster-atomix-provider')
+            project(':support')
     )
     testImplementation(
             project(':testutil')
