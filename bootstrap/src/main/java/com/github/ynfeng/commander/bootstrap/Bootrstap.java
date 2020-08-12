@@ -3,22 +3,15 @@ package com.github.ynfeng.commander.bootstrap;
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
-import com.github.ynfeng.commander.cluster.config.ClusterConfig;
-import com.github.ynfeng.commander.cluster.config.NodeConfig;
+import com.github.ynfeng.commander.cluster.Environment;
 
 public class Bootrstap {
-    private final ClusterConfig clusterConfig;
-    private final NodeConfig nodeConfig;
     private final ClusterProvider clusterProvider;
     private final StartSteps startSteps = new StartSteps();
     private ShutdownSteps shutdownSteps = new ShutdownSteps();
     private Cluster cluster;
 
-    public Bootrstap(ClusterConfig clusterConfig,
-                     NodeConfig nodeConfig,
-                     ClusterProviderLoader clusterProviderLoader) {
-        this.clusterConfig = clusterConfig;
-        this.nodeConfig = nodeConfig;
+    public Bootrstap(ClusterProviderLoader clusterProviderLoader) {
         clusterProvider = getProviderOrThrowException(clusterProviderLoader);
     }
 
@@ -38,7 +31,8 @@ public class Bootrstap {
     }
 
     private AutoCloseable initClusterProtocol() {
-        cluster = clusterProvider.cluster(clusterConfig, nodeConfig);
+        Environment env = clusterProvider.parepareEnvironment();
+        cluster = clusterProvider.getCluster(env);
         return () -> {
         };
     }

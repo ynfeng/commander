@@ -1,7 +1,7 @@
 package com.github.ynfeng.commander.cluster.atomix;
 
 @SuppressWarnings("checkstyle:LineLength")
-public final class ConfigKey {
+public final class PropertyKey {
     public static final String CLUSTER_MGR_PARTITIONS = "cluster.mgr.partitions";
     public static final String CLUSTER_MGR_DATA_DIR = "cluster.mgr.dataDir";
     public static final String CLUSTER_MGR_GROUP_MEMBERS = "cluster.mgr.groupMembers";
@@ -18,7 +18,11 @@ public final class ConfigKey {
     public static final String CLUSTER_RAFT_PARTITION_MEMBERS = "cluster.raftPartition.members";
     public static final String CLUSTER_RAFT_PARTITION_DATA_DIR = "cluster.raftPartition.dataDir";
     public static final String CLUSTER_RAFT_PARTITION_PARTITION_SIZE = "cluster.raftPartition.partitionSize";
+    public static final String CLUSTER_ID = "cluster.id";
+    public static final String CLUSTER_NODE_ID = "cluster.node.id";
+    public static final String CLUSTER_NODE_ADDRESS = "cluster.node.address";
+    public static final String CLUSTER_NODE_PORT = "cluster.node.port";
 
-    private ConfigKey() {
+    private PropertyKey() {
     }
 }
