@@ -42,16 +42,20 @@ public class AtomixCluster extends AbstractCluster {
     @SuppressWarnings("checkstyle:MethodLength")
     private GroupMembershipProtocol buildMembershipProtocol() {
         return SwimMembershipProtocol.builder()
-//            .withFailureTimeout(membershipCfg.getFailureTimeout())
-//            .withGossipInterval(membershipCfg.getGossipInterval())
-//            .withProbeInterval(membershipCfg.getProbeInterval())
-//            .withProbeTimeout(membershipCfg.getProbeTimeout())
-//            .withBroadcastDisputes(membershipCfg.isBroadcastDisputes())
-//            .withBroadcastUpdates(membershipCfg.isBroadcastUpdates())
-//            .withGossipFanout(membershipCfg.getGossipFanout())
-//            .withNotifySuspect(membershipCfg.isNotifySuspect())
-//            .withSuspectProbes(membershipCfg.getSuspectProbes())
-//            .withSyncInterval(membershipCfg.getSyncInterval())
+            .withFailureTimeout(
+                Duration.ofSeconds(
+                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_FAILURE_TIME_OUT_SECONDS)))
+            .withGossipInterval(
+                Duration.ofSeconds(
+                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_GOSSIP_INTERVAL_SECONDS)))
+            .withProbeInterval(
+                Duration.ofSeconds(
+                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_PROBE_INTERVAL_SECONDS)))
+            .withBroadcastDisputes(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_BROADCAST_DISPUTES))
+            .withBroadcastUpdates(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_BROADCAST_UPDATES))
+            .withGossipFanout(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_GOOSIP_FANOUT))
+            .withNotifySuspect(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_NOTIFY_SUSPECT))
+            .withSuspectProbes(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_SUSPECT_PROBES))
             .build();
     }
 
