@@ -47,16 +47,14 @@ public class AtomixCluster extends AbstractCluster {
     @SuppressWarnings("checkstyle:MethodLength")
     private RaftPartitionGroup buildManagementGroup() {
         List<String> memberList = env.getProperty(PropertyKey.CLUSTER_MGR_GROUP_MEMBERS, EMPTY_LIST);
+        int numPartitions = env.getProperty(PropertyKey.CLUSTER_MGR_PARTITIONS, 1);
+        String dataDir = env.getProperty(PropertyKey.CLUSTER_MGR_DATA_DIR, "./commander-mgr-data");
         return RaftPartitionGroup
             .builder("system")
-            .withNumPartitions(
-                env.getProperty(PropertyKey.CLUSTER_MGR_PARTITIONS, 1))
-            .withStorageLevel(
-                StorageLevel.MAPPED)
-            .withDataDirectory(
-                new File(env.getProperty(PropertyKey.CLUSTER_MGR_DATA_DIR, "./commander-mgr-data")))
-            .withMembers(
-                memberList.stream().map(MemberId::new).toArray(MemberId[]::new))
+            .withNumPartitions(numPartitions)
+            .withStorageLevel(StorageLevel.MAPPED)
+            .withDataDirectory(new File(dataDir))
+            .withMembers(memberList.stream().map(MemberId::new).toArray(MemberId[]::new))
             .build();
     }
 
@@ -65,42 +63,37 @@ public class AtomixCluster extends AbstractCluster {
         int failureTimeoutSeconds = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_FAILURE_TIME_OUT_SECONDS, 10);
         int gossipIntervalMs = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_GOSSIP_INTERVAL_MS, 250);
         int probeIntervalSeconds = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_PROBE_INTERVAL_SECONDS, 1);
+        boolean broadcastDisputes = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_BROADCAST_DISPUTES, false);
+        boolean broadcastUpdates = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_BROADCAST_UPDATES, false);
+        int goosipFanout = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_GOOSIP_FANOUT, 2);
+        boolean notifySuspect = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_NOTIFY_SUSPECT, false);
+        Integer suspectProbes = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_SUSPECT_PROBES, 2);
         return SwimMembershipProtocol.builder()
-            .withFailureTimeout(
-                Duration.ofSeconds(Long.valueOf(failureTimeoutSeconds)))
-            .withGossipInterval(
-                Duration.ofMillis(Long.valueOf(gossipIntervalMs)))
-            .withProbeInterval(
-                Duration.ofSeconds(Long.valueOf(probeIntervalSeconds)))
-            .withBroadcastDisputes(
-                env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_BROADCAST_DISPUTES, false))
-            .withBroadcastUpdates(
-                env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_BROADCAST_UPDATES, false))
-            .withGossipFanout(
-                env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_GOOSIP_FANOUT, 2))
-            .withNotifySuspect(
-                env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_NOTIFY_SUSPECT, false))
-            .withSuspectProbes(
-                env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_SUSPECT_PROBES, 2))
+            .withFailureTimeout(Duration.ofSeconds(Long.valueOf(failureTimeoutSeconds)))
+            .withGossipInterval(Duration.ofMillis(Long.valueOf(gossipIntervalMs)))
+            .withProbeInterval(Duration.ofSeconds(Long.valueOf(probeIntervalSeconds)))
+            .withBroadcastDisputes(broadcastDisputes)
+            .withBroadcastUpdates(broadcastUpdates)
+            .withGossipFanout(goosipFanout)
+            .withNotifySuspect(notifySuspect)
+            .withSuspectProbes(suspectProbes)
             .build();
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
     private ManagedPartitionGroup buildRaftPartition() {
         List<String> memberList = env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_MEMBERS, EMPTY_LIST);
+        int numPartitions = env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_PARTITIONS, 7);
+        int partitionSize = env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_PARTITION_SIZE, 0);
+        String dataDir = env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_DATA_DIR,
+            "./commander-raft-partition-data");
         return RaftPartitionGroup
             .builder("raft-partition")
-            .withNumPartitions(
-                env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_PARTITIONS, 7))
-            .withPartitionSize(
-                env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_PARTITION_SIZE, 0))
-            .withStorageLevel(
-                StorageLevel.DISK)
-            .withDataDirectory(
-                new File(env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_DATA_DIR,
-                    "./commander-raft-partition-data")))
-            .withMembers(
-                memberList.stream().map(MemberId::new).toArray(MemberId[]::new))
+            .withNumPartitions(numPartitions)
+            .withPartitionSize(partitionSize)
+            .withStorageLevel(StorageLevel.DISK)
+            .withDataDirectory(new File(dataDir))
+            .withMembers(memberList.stream().map(MemberId::new).toArray(MemberId[]::new))
             .build();
     }
 
