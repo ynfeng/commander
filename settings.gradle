@@ -7,4 +7,5 @@ include 'support'
 include 'bootstrap'
 include 'cluster-atomix-provider'
 include 'testutil'
+include 'dist'
 

@@ -22,7 +22,7 @@ class AtomixEnvTest {
         String mgrDataDir = env.getProperty(PropertyKey.CLUSTER_MGR_DATA_DIR, "/tmp");
         List<String> mgrGroupMembers = env.getProperty(PropertyKey.CLUSTER_MGR_GROUP_MEMBERS, Lists.newArrayList());
         int bootstrapDiscoveryBroadcastIntervalSeconds =
-            env.getProperty(PropertyKey.CLUSTER_BOOTSTRAP_DISCOVERY_BROADCAST_INTERVAL_SECONDS, 200);
+            env.getProperty(PropertyKey.CLUSTER_DISCOVERY_BROADCAST_INTERVAL_SECONDS, 200);
         int membershipFailureTimeOutSeconds =
             env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_FAILURE_TIME_OUT_SECONDS, 100);
         boolean memberBroadcastDisputes =

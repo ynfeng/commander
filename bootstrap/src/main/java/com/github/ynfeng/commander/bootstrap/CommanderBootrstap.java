@@ -5,13 +5,13 @@ import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.Environment;
 
-public class Bootrstap {
+public class CommanderBootrstap {
     private final ClusterProvider clusterProvider;
     private final StartSteps startSteps = new StartSteps();
     private ShutdownSteps shutdownSteps = new ShutdownSteps();
     private Cluster cluster;
 
-    public Bootrstap(ClusterProviderLoader clusterProviderLoader) {
+    public CommanderBootrstap(ClusterProviderLoader clusterProviderLoader) {
         clusterProvider = getProviderOrThrowException(clusterProviderLoader);
     }
 

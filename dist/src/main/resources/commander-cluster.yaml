@@ -1,0 +1,27 @@
+cluster:
+  id: standalong
+  node:
+    id: local
+    address: 127.0.0.1
+    port: 12345
+  bootstrapDiscoveryBroadcastIntervalSeconds: 5
+  mgr:
+    partitions: 1
+    dataDir: /tmp/mgr-data
+    groupMembers:
+      - local
+  raftPartition:
+    partitions: 32
+    members:
+      - local
+    dataDir: /tmp/raft-partition-data
+    partitionSize: 20
+  membership:
+    failureTimeOutSeconds: 5
+    gossipIntervalMs: 500
+    probeIntervalSeconds: 3
+    broadcastDisputes: true
+    broadcastUpdates: true
+    goosipFanout: 10
+    notifySuspect: false
+    suspectProbes: 10

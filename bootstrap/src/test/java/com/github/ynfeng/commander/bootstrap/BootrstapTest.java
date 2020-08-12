@@ -21,7 +21,7 @@ class BootrstapTest {
     public void should_throw_exception_when_no_cluster_provider() {
         clusterProviderLoader = Mockito.mock(ClusterProviderLoader.class);
         try {
-            Bootrstap cluster = new Bootrstap(clusterProviderLoader);
+            CommanderBootrstap cluster = new CommanderBootrstap(clusterProviderLoader);
             cluster.bootstrap();
             fail("Should throw exception");
         } catch (Exception e) {
@@ -39,7 +39,7 @@ class BootrstapTest {
         Mockito.when(clusterProvider.parepareEnvironment()).thenReturn(env);
         Mockito.when(clusterProvider.getCluster(env)).thenReturn(cluster);
         Mockito.when(clusterProviderLoader.load()).thenReturn(Optional.of(clusterProvider));
-        Bootrstap clusterBootstrap = new Bootrstap(clusterProviderLoader);
+        CommanderBootrstap clusterBootstrap = new CommanderBootrstap(clusterProviderLoader);
         clusterBootstrap.bootstrap();
         clusterBootstrap.shutdown();
 

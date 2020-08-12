@@ -1,0 +1,8 @@
+project.dependencies {
+    implementation(
+            project(':bootstrap'),
+            project(':cluster'),
+            project(':cluster-atomix-provider')
+    )
+}
+
