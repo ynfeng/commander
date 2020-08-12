@@ -38,6 +38,10 @@ class AtomixClusterTest {
         Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_GOOSIP_FANOUT, 2)).thenReturn(1);
         Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_NOTIFY_SUSPECT, false)).thenReturn(true);
         Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_SUSPECT_PROBES, 2)).thenReturn(1);
+        Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_RAFT_PARTITION_PARTITIONS, 7)).thenReturn(7);
+        Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_RAFT_PARTITION_MEMBERS, new String[] {})).thenReturn(new String[] {"local"});
+        Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_RAFT_PARTITION_DATA_DIR, "./commander-raft-partition-data")).thenReturn("/tmp/atomix-raft-partition");
+        Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_RAFT_PARTITION_PARTITION_SIZE, 0)).thenReturn(1);
         Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
         Mockito.when(nodeConfig.port()).thenReturn(8098);
         Mockito.when(nodeConfig.nodeId()).thenReturn("local");

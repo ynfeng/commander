@@ -14,6 +14,10 @@ public final class ConfigKey {
     public static final String CLUSTER_MEMBERSHIP_GOOSIP_FANOUT = "cluster.membership.goosipFanout";
     public static final String CLUSTER_MEMBERSHIP_NOTIFY_SUSPECT = "cluster.membership.notifySuspect";
     public static final String CLUSTER_MEMBERSHIP_SUSPECT_PROBES = "cluster.membership.suspectProbes";
+    public static final String CLUSTER_RAFT_PARTITION_PARTITIONS = "cluster.raftPartition.partitions";
+    public static final String CLUSTER_RAFT_PARTITION_MEMBERS = "cluster.raftPartition.members";
+    public static final String CLUSTER_RAFT_PARTITION_DATA_DIR = "cluster.raftPartition.dataDir";
+    public static final String CLUSTER_RAFT_PARTITION_PARTITION_SIZE = "cluster.raftPartition.partitionSize";
 
     private ConfigKey() {
     }
