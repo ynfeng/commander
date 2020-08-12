@@ -1,6 +1,8 @@
 package com.github.ynfeng.commander.cluster.config;
 
-public interface NodeConfig {
+import com.github.ynfeng.commander.support.CmderConfig;
+
+public interface NodeConfig extends CmderConfig {
     String nodeId();
 
     String address();

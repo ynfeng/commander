@@ -1,13 +1,7 @@
 package com.github.ynfeng.commander.cluster.config;
 
-public interface ClusterConfig {
+import com.github.ynfeng.commander.support.CmderConfig;
+
+public interface ClusterConfig extends CmderConfig {
     String clusterId();
-
-    long bootstrapDiscoveryBroadcastIntervalSeconds();
-
-    int managementPartitions();
-
-    String[] managementGroupMembers();
-
-    String managementDataDir();
 }
