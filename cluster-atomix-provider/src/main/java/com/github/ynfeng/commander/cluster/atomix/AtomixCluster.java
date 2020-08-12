@@ -35,7 +35,7 @@ public class AtomixCluster extends AbstractCluster {
             .withMembershipProtocol(buildMembershipProtocol())
             .setBroadcastInterval(
                 Duration.ofSeconds(
-                    clusterConfig.getConfig(ConfigKey.CLUSTER_BOOTSTRAP_DISCOVERY_BROADCAST_INTERVAL_SECONDS)))
+                    clusterConfig.getConfig(ConfigKey.CLUSTER_BOOTSTRAP_DISCOVERY_BROADCAST_INTERVAL_SECONDS, 1L)))
             .build();
     }
 
@@ -44,28 +44,38 @@ public class AtomixCluster extends AbstractCluster {
         return SwimMembershipProtocol.builder()
             .withFailureTimeout(
                 Duration.ofSeconds(
-                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_FAILURE_TIME_OUT_SECONDS)))
+                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_FAILURE_TIME_OUT_SECONDS, 10L)))
             .withGossipInterval(
-                Duration.ofSeconds(
-                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_GOSSIP_INTERVAL_SECONDS)))
+                Duration.ofMillis(
+                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_GOSSIP_INTERVAL_MS, 250L)))
             .withProbeInterval(
                 Duration.ofSeconds(
-                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_PROBE_INTERVAL_SECONDS)))
-            .withBroadcastDisputes(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_BROADCAST_DISPUTES))
-            .withBroadcastUpdates(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_BROADCAST_UPDATES))
-            .withGossipFanout(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_GOOSIP_FANOUT))
-            .withNotifySuspect(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_NOTIFY_SUSPECT))
-            .withSuspectProbes(clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_SUSPECT_PROBES))
+                    clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_PROBE_INTERVAL_SECONDS, 1L)))
+            .withBroadcastDisputes(
+                clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_BROADCAST_DISPUTES, false))
+            .withBroadcastUpdates(
+                clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_BROADCAST_UPDATES, false))
+            .withGossipFanout(
+                clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_GOOSIP_FANOUT, 2))
+            .withNotifySuspect(
+                clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_NOTIFY_SUSPECT, false))
+            .withSuspectProbes(
+                clusterConfig.getConfig(ConfigKey.CLUSTER_MEMBERSHIP_SUSPECT_PROBES, 2))
             .build();
     }
 
+    @SuppressWarnings("checkstyle:MethodLength")
     private RaftPartitionGroup buildManagementGroup() {
         return RaftPartitionGroup
             .builder("system")
-            .withNumPartitions(clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_PARTITIONS))
-            .withStorageLevel(StorageLevel.MAPPED)
-            .withDataDirectory(new File((String) clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_DATA_DIR)))
-            .withMembers((String[]) clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_GROUP_MEMBERS))
+            .withNumPartitions(
+                clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_PARTITIONS, 1))
+            .withStorageLevel(
+                StorageLevel.MAPPED)
+            .withDataDirectory(
+                new File(clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_DATA_DIR, "./commander-mgr-data")))
+            .withMembers(
+                clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_GROUP_MEMBERS, new String[] {}))
             .build();
     }
 
