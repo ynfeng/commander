@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.cluster.atomix;
 import com.github.ynfeng.commander.cluster.Environment;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Optional;
 import org.mvel2.MVEL;
 import org.yaml.snakeyaml.Yaml;
 
@@ -24,8 +25,9 @@ public class AtomixEnv implements Environment {
     @Override
     public <T> T getProperty(String name, T defaultValue) {
         try {
-            T result = (T) MVEL.eval(name, data);
-            return result == null ? defaultValue : result;
+            Optional<T> resultCaidcate =
+                Optional.ofNullable((T) MVEL.eval(name, data));
+            return resultCaidcate.orElse(defaultValue);
         } catch (Exception e) {
             return defaultValue;
         }
