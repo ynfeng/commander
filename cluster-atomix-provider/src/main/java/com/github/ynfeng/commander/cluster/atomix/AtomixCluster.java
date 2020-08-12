@@ -34,7 +34,8 @@ public class AtomixCluster extends AbstractCluster {
             .withManagementGroup(buildManagementGroup())
             .withMembershipProtocol(buildMembershipProtocol())
             .setBroadcastInterval(
-                Duration.ofSeconds(clusterConfig.getConfig("cluster.bootstrapDiscoveryBroadcastIntervalSeconds")))
+                Duration.ofSeconds(
+                    clusterConfig.getConfig(ConfigKey.CLUSTER_BOOTSTRAP_DISCOVERY_BROADCAST_INTERVAL_SECONDS)))
             .build();
     }
 
@@ -57,10 +58,10 @@ public class AtomixCluster extends AbstractCluster {
     private RaftPartitionGroup buildManagementGroup() {
         return RaftPartitionGroup
             .builder("system")
-            .withNumPartitions(clusterConfig.getConfig("cluster.mgrPartitions"))
+            .withNumPartitions(clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_PARTITIONS))
             .withStorageLevel(StorageLevel.MAPPED)
-            .withDataDirectory(new File((String) clusterConfig.getConfig("cluster.mgrDataDir")))
-            .withMembers((String[]) clusterConfig.getConfig("cluster.mgrGroupMembers"))
+            .withDataDirectory(new File((String) clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_DATA_DIR)))
+            .withMembers((String[]) clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_GROUP_MEMBERS))
             .build();
     }
 

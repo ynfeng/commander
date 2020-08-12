@@ -46,14 +46,6 @@ class BootrstapTest {
             .thenReturn(Optional.of(clusterProvider));
         ClusterConfig clusterConfig = Mockito.mock(ClusterConfig.class);
         NodeConfig nodeConfig = Mockito.mock(NodeConfig.class);
-        Mockito.when(clusterConfig.getConfig("cluster.bootstrapDiscoveryBroadcastIntervalSeconds")).thenReturn(1L);
-        Mockito.when(clusterConfig.clusterId()).thenReturn("testCluster");
-        Mockito.when(clusterConfig.getConfig("cluster.mgrPartitions")).thenReturn(1);
-        Mockito.when(clusterConfig.getConfig("cluster.mgrDataDir")).thenReturn("/tmp/atomix-mgr");
-        Mockito.when(clusterConfig.getConfig("cluster.mgrGroupMembers")).thenReturn(new String[] {"local"});
-        Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
-        Mockito.when(nodeConfig.port()).thenReturn(8098);
-        Mockito.when(nodeConfig.nodeId()).thenReturn("local");
 
         Bootrstap clusterBootstrap = new Bootrstap(clusterConfig, nodeConfig, clusterProviderLoader);
         clusterBootstrap.bootstrap();

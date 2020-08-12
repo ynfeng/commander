@@ -27,9 +27,9 @@ class AtomixClusterTest {
         NodeConfig nodeConfig = Mockito.mock(NodeConfig.class);
         Mockito.when(clusterConfig.getConfig("cluster.bootstrapDiscoveryBroadcastIntervalSeconds")).thenReturn(1L);
         Mockito.when(clusterConfig.clusterId()).thenReturn("testCluster");
-        Mockito.when(clusterConfig.getConfig("cluster.mgrPartitions")).thenReturn(1);
-        Mockito.when(clusterConfig.getConfig("cluster.mgrDataDir")).thenReturn("/tmp/atomix-mgr");
-        Mockito.when(clusterConfig.getConfig("cluster.mgrGroupMembers")).thenReturn(new String[] {"local"});
+        Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_PARTITIONS)).thenReturn(1);
+        Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_DATA_DIR)).thenReturn("/tmp/atomix-mgr");
+        Mockito.when(clusterConfig.getConfig(ConfigKey.CLUSTER_MGR_GROUP_MEMBERS)).thenReturn(new String[] {"local"});
         Mockito.when(nodeConfig.address()).thenReturn("127.0.0.1");
         Mockito.when(nodeConfig.port()).thenReturn(8098);
         Mockito.when(nodeConfig.nodeId()).thenReturn("local");
