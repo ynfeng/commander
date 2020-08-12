@@ -13,6 +13,6 @@ public class AtomixClusterProvider implements ClusterProvider {
 
     @Override
     public Environment parepareEnvironment() {
-        return null;
+        return new AtomixEnv();
     }
 }
