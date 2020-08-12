@@ -67,7 +67,7 @@ public class AtomixCluster extends AbstractCluster {
         boolean broadcastUpdates = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_BROADCAST_UPDATES, false);
         int goosipFanout = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_GOOSIP_FANOUT, 2);
         boolean notifySuspect = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_NOTIFY_SUSPECT, false);
-        Integer suspectProbes = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_SUSPECT_PROBES, 2);
+        int suspectProbes = env.getProperty(PropertyKey.CLUSTER_MEMBERSHIP_SUSPECT_PROBES, 2);
         return SwimMembershipProtocol.builder()
             .withFailureTimeout(Duration.ofSeconds(Long.valueOf(failureTimeoutSeconds)))
             .withGossipInterval(Duration.ofMillis(Long.valueOf(gossipIntervalMs)))
