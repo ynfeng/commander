@@ -11,4 +11,14 @@ A microservice orchestration engine.
 
 Developing...
 
+## Road map
+
+ * [X] Flow definitions 
+ * [X] Flow engine
+ * [ ] Cluster support
+ * [ ] Actor model support
+ * [ ] RPC support
+ * [ ] Command line cluster controller
+ * [ ] Alpha version release
+
 
