@@ -9,7 +9,7 @@ public class StartSteps extends Steps {
     private final List<StartStep> steps = Lists.newArrayList();
     private final ShutdownSteps shutdownStpes = new ShutdownSteps();
     private int currentStep = 1;
-    private static final CmderLogger LOG = CmderLoggerFactory.getServerLogger();
+    private static final CmderLogger LOG = CmderLoggerFactory.getSystemLogger();
 
     public ShutdownSteps execute() throws Exception {
         long duration = takeDuration(this::startupStepByStep);

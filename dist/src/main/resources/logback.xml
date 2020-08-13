@@ -9,7 +9,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <logger name="com.github.ynfeng.commander.server" level="TRACE"/>
+    <logger name="com.github.ynfeng.commander.system" level="TRACE"/>
 
     <root level="TRACE">
         <appender-ref ref="STDOUT"/>

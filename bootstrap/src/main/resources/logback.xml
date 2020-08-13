@@ -9,7 +9,7 @@
     <logger name="com.github.ynfeng.commander" level="ERROR">
         <appender-ref ref="STDOUT"/>
     </logger>
-    <logger name="com.github.ynfeng.commander.server" level="INFO"/>
+    <logger name="com.github.ynfeng.commander.system" level="INFO"/>
 
     <root level="TRACE">
         <appender-ref ref="STDOUT"/>

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ShutdownSteps extends Steps {
     private final List<ShutdownStep> steps = Lists.newArrayList();
-    private static final CmderLogger LOG = CmderLoggerFactory.getServerLogger();
+    private static final CmderLogger LOG = CmderLoggerFactory.getSystemLogger();
     private int currentStep = 1;
 
     public void add(ShutdownStep shutdownStep) {

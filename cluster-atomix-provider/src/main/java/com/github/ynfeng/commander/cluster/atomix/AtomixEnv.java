@@ -8,4 +8,9 @@ public class AtomixEnv extends AbstractEnvironment {
     protected AtomixEnv(PropertySource propertySource) {
         super(propertySource);
     }
+
+    @Override
+    public String name() {
+        return "Atomix";
+    }
 }

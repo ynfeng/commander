@@ -44,6 +44,7 @@ class AtomixEnvTest {
         assertThat(bootstrapDiscoveryBroadcastIntervalSeconds, is(5));
         assertThat(membershipFailureTimeOutSeconds, is(5));
         assertThat(memberBroadcastDisputes, is(true));
+        assertThat(env.name(), is("Atomix"));
     }
 
     @Test
