@@ -25,7 +25,7 @@ class AtomixClusterTest {
     public void should_startup_and_shutdown_atomix_cluster() {
         Environment env = Mockito.mock(Environment.class);
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_DISCOVERY_BROADCAST_INTERVAL_SECONDS, 1)).thenReturn(1);
-        Mockito.when(env.getProperty(PropertyKey.CLUSTER_ID, null)).thenReturn("testCluster");
+        Mockito.when(env.getProperty(PropertyKey.CLUSTER_ID)).thenReturn("testCluster");
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_MGR_PARTITIONS, 1)).thenReturn(1);
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_MGR_DATA_DIR, "./commander-mgr-data")).thenReturn("/tmp/atomix-mgr");
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_MGR_GROUP_MEMBERS, Lists.newArrayList())).thenReturn(Lists.newArrayList("local"));
@@ -41,9 +41,9 @@ class AtomixClusterTest {
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_MEMBERS, Lists.newArrayList())).thenReturn(Lists.newArrayList("local"));
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_DATA_DIR, "./commander-raft-partition-data")).thenReturn("/tmp/atomix-raft-partition");
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_PARTITION_SIZE, 0)).thenReturn(1);
-        Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_ADDRESS, null)).thenReturn("127.0.0.1");
+        Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_ADDRESS)).thenReturn("127.0.0.1");
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_PORT, 0)).thenReturn(8098);
-        Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_ID, null)).thenReturn("local");
+        Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_ID)).thenReturn("local");
         Optional<ClusterProvider> clusterCandicate = clusterProvider.load();
 
         assertThat(clusterCandicate.isPresent(), is(true));

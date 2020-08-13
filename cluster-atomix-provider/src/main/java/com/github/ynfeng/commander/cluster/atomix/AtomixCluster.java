@@ -28,9 +28,9 @@ public class AtomixCluster extends AbstractCluster {
     @SuppressWarnings("checkstyle:MethodLength")
     private void initAtomix() {
         int broadcastIntervalSeconds = env.getProperty(PropertyKey.CLUSTER_DISCOVERY_BROADCAST_INTERVAL_SECONDS, 1);
-        String clusterId = env.getProperty(PropertyKey.CLUSTER_ID, null);
-        String nodeId = env.getProperty(PropertyKey.CLUSTER_NODE_ID, null);
-        String addressId = env.getProperty(PropertyKey.CLUSTER_NODE_ADDRESS, null);
+        String clusterId = env.getProperty(PropertyKey.CLUSTER_ID);
+        String nodeId = env.getProperty(PropertyKey.CLUSTER_NODE_ID);
+        String addressId = env.getProperty(PropertyKey.CLUSTER_NODE_ADDRESS);
         int port = env.getProperty(PropertyKey.CLUSTER_NODE_PORT, 0);
         atomix = Atomix.builder()
             .withClusterId(clusterId)

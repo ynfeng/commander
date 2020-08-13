@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.cluster.atomix;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.google.common.collect.Lists;
@@ -55,5 +56,23 @@ class AtomixEnvTest {
         String shouldNull = atomixEnv.getProperty("cluster.shouldNull", "shouldNull");
 
         assertThat(shouldNull, is("shouldNull"));
+    }
+
+    @Test
+    public void should_return_null_value_when_preperty_was_null() {
+        AtomixEnv atomixEnv = new AtomixEnv();
+
+        String shouldNull = atomixEnv.getProperty("cluster.shouldNull");
+
+        assertThat(shouldNull, nullValue());
+    }
+
+    @Test
+    public void should_return_null_value_when_property_not_exists() {
+        AtomixEnv atomixEnv = new AtomixEnv();
+
+        String shouldNull = atomixEnv.getProperty("cluster.notExists");
+
+        assertThat(shouldNull, nullValue());
     }
 }

@@ -32,4 +32,13 @@ public class AtomixEnv implements Environment {
             return defaultValue;
         }
     }
+
+    @Override
+    public <T> T getProperty(String name) {
+        try {
+            return (T) MVEL.eval(name, data);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
