@@ -20,6 +20,7 @@ public class AtomixCluster extends AbstractCluster {
     private static final List<String> EMPTY_LIST = Lists.newArrayList();
     private final Environment env;
     private Atomix atomix;
+    private volatile AtomixClusterContext context;
 
     public AtomixCluster(Environment environment) {
         env = environment;
@@ -101,6 +102,11 @@ public class AtomixCluster extends AbstractCluster {
     @Override
     public void start() {
         atomix.start().join();
+        initContext();
+    }
+
+    private void initContext() {
+        context = new AtomixClusterContext();
     }
 
     @Override
@@ -110,10 +116,6 @@ public class AtomixCluster extends AbstractCluster {
 
     @Override
     public ClusterContext getContext() {
-        return ContextHolder.CONTEXT;
-    }
-
-    private static class ContextHolder {
-        private static final AtomixClusterContext CONTEXT = new AtomixClusterContext();
+        return context;
     }
 }

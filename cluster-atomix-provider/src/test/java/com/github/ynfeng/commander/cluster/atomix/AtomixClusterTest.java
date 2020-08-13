@@ -34,8 +34,10 @@ class AtomixClusterTest {
     @Test
     public void should_get_cluster_context_from_atomix_cluster() {
         Cluster cluster = getCluster();
+        cluster.startup();
 
         ClusterContext context = cluster.getContext();
+        cluster.shutdown();
 
         assertThat(context, notNullValue());
     }
