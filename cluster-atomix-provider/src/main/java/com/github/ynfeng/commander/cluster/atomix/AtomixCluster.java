@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.AbstractCluster;
+import com.github.ynfeng.commander.cluster.ClusterContext;
 import com.github.ynfeng.commander.cluster.Environment;
 import com.google.common.collect.Lists;
 import io.atomix.cluster.MemberId;
@@ -105,5 +106,14 @@ public class AtomixCluster extends AbstractCluster {
     @Override
     public void stop() {
         atomix.stop().join();
+    }
+
+    @Override
+    public ClusterContext getContext() {
+        return ContextHolder.CONTEXT;
+    }
+
+    private static class ContextHolder {
+        private static final AtomixClusterContext CONTEXT = new AtomixClusterContext();
     }
 }

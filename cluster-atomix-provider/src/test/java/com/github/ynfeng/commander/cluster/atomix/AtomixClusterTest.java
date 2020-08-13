@@ -1,9 +1,11 @@
 package com.github.ynfeng.commander.cluster.atomix;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.cluster.Cluster;
+import com.github.ynfeng.commander.cluster.ClusterContext;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.Environment;
 import com.github.ynfeng.commander.cluster.SPIClusterProviderLoader;
@@ -23,6 +25,31 @@ class AtomixClusterTest {
 
     @Test
     public void should_startup_and_shutdown_atomix_cluster() {
+        Cluster cluster = getCluster();
+
+        cluster.startup();
+        cluster.shutdown();
+    }
+
+    @Test
+    public void should_get_cluster_context_from_atomix_cluster() {
+        Cluster cluster = getCluster();
+
+        ClusterContext context = cluster.getContext();
+
+        assertThat(context, notNullValue());
+    }
+
+    private Cluster getCluster() {
+        Environment env = mockEnvironment();
+        Optional<ClusterProvider> clusterCandicate = clusterProvider.load();
+        assertThat(clusterCandicate.isPresent(), is(true));
+        ClusterProvider clusterProvider = Mockito.spy(clusterCandicate.get());
+        Mockito.when(clusterProvider.parepareEnvironment()).thenReturn(env);
+        return clusterProvider.getCluster(clusterProvider.parepareEnvironment());
+    }
+
+    private Environment mockEnvironment() {
         Environment env = Mockito.mock(Environment.class);
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_DISCOVERY_BROADCAST_INTERVAL_SECONDS, 1)).thenReturn(1);
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_ID)).thenReturn("testCluster");
@@ -44,13 +71,6 @@ class AtomixClusterTest {
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_ADDRESS)).thenReturn("127.0.0.1");
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_PORT, 0)).thenReturn(8098);
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_ID)).thenReturn("local");
-        Optional<ClusterProvider> clusterCandicate = clusterProvider.load();
-
-        assertThat(clusterCandicate.isPresent(), is(true));
-        ClusterProvider clusterProvider = Mockito.spy(clusterCandicate.get());
-        Mockito.when(clusterProvider.parepareEnvironment()).thenReturn(env);
-        Cluster cluster = clusterProvider.getCluster(clusterProvider.parepareEnvironment());
-        cluster.startup();
-        cluster.shutdown();
+        return env;
     }
 }

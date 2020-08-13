@@ -4,4 +4,6 @@ public interface Cluster {
     void startup();
 
     void shutdown();
+
+    ClusterContext getContext();
 }
