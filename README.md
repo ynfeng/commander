@@ -18,6 +18,7 @@ Developing...
  * [ ] Cluster support
  * [ ] Actor model support
  * [ ] RPC support
+ * [ ] Flow DSL
  * [ ] Command line cluster controller
  * [ ] Alpha version release
 
