@@ -11,6 +11,6 @@ public class AtomixEnv extends AbstractEnvironment {
 
     @Override
     public String name() {
-        return "Atomix";
+        return "atomix";
     }
 }

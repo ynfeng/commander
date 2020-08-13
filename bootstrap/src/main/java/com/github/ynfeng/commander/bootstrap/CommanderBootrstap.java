@@ -4,8 +4,11 @@ import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
 import com.github.ynfeng.commander.cluster.Environment;
+import com.github.ynfeng.commander.support.logger.CmderLogger;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 
 public class CommanderBootrstap {
+    private static final CmderLogger LOG = CmderLoggerFactory.getSystemLogger();
     private final ClusterProvider clusterProvider;
     private final StartSteps startSteps = new StartSteps();
     private ShutdownSteps shutdownSteps = new ShutdownSteps();
@@ -32,6 +35,7 @@ public class CommanderBootrstap {
 
     private AutoCloseable initClusterProtocol() {
         Environment env = clusterProvider.parepareEnvironment();
+        LOG.debug("Prepared {} cluster environment.", env.name());
         cluster = clusterProvider.getCluster(env);
         return () -> {
         };
