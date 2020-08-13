@@ -7,14 +7,20 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class AtomixEnvTest {
 
+    private AtomixEnv env;
+
+    @BeforeEach
+    public void setup() {
+        env = new AtomixEnv(new YamlPropertySource());
+    }
+
     @Test
     public void should_get_property() {
-        AtomixEnv env = new AtomixEnv();
-
         String clusterId = env.getProperty(PropertyKey.CLUSTER_ID, "default");
         String nodeId = env.getProperty(PropertyKey.CLUSTER_NODE_ID, "default");
         String address = env.getProperty(PropertyKey.CLUSTER_NODE_ADDRESS, "default");
@@ -42,36 +48,28 @@ class AtomixEnvTest {
 
     @Test
     public void should_return_default_value_when_property_not_exists() {
-        AtomixEnv atomixEnv = new AtomixEnv();
-
-        String notExist = atomixEnv.getProperty("notExists", "notExist");
+        String notExist = env.getProperty("notExists", "notExist");
 
         assertThat(notExist, is("notExist"));
     }
 
     @Test
     public void should_return_default_value_when_property_was_null() {
-        AtomixEnv atomixEnv = new AtomixEnv();
-
-        String shouldNull = atomixEnv.getProperty("cluster.shouldNull", "shouldNull");
+        String shouldNull = env.getProperty("cluster.shouldNull", "shouldNull");
 
         assertThat(shouldNull, is("shouldNull"));
     }
 
     @Test
     public void should_return_null_value_when_preperty_was_null() {
-        AtomixEnv atomixEnv = new AtomixEnv();
-
-        String shouldNull = atomixEnv.getProperty("cluster.shouldNull");
+        String shouldNull = env.getProperty("cluster.shouldNull");
 
         assertThat(shouldNull, nullValue());
     }
 
     @Test
     public void should_return_null_value_when_property_not_exists() {
-        AtomixEnv atomixEnv = new AtomixEnv();
-
-        String shouldNull = atomixEnv.getProperty("cluster.notExists");
+        String shouldNull = env.getProperty("cluster.notExists");
 
         assertThat(shouldNull, nullValue());
     }
