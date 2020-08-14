@@ -23,35 +23,35 @@ public class CmderLogger implements Logger {
 
     @Override
     public void trace(String msg) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(msg);
         }
     }
 
     @Override
     public void trace(String format, Object arg) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(format, arg);
         }
     }
 
     @Override
     public void trace(String format, Object arg1, Object arg2) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(format, arg1, arg2);
         }
     }
 
     @Override
     public void trace(String format, Object... arguments) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(format, arguments);
         }
     }
 
     @Override
     public void trace(String msg, Throwable t) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(msg, t);
         }
     }
@@ -63,35 +63,35 @@ public class CmderLogger implements Logger {
 
     @Override
     public void trace(Marker marker, String msg) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(marker, msg);
         }
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(marker, format, arg);
         }
     }
 
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(marker, format, arg1, arg2);
         }
     }
 
     @Override
     public void trace(Marker marker, String format, Object... argArray) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(marker, format, argArray);
         }
     }
 
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
-        if (logger.isTraceEnabled()) {
+        if (isTraceEnabled()) {
             logger.trace(marker, msg, t);
         }
     }
@@ -131,6 +131,9 @@ public class CmderLogger implements Logger {
 
     @Override
     public void debug(String msg, Throwable t) {
+        if (isDebugEnabled()) {
+            logger.debug(msg, t);
+        }
     }
 
     @Override
