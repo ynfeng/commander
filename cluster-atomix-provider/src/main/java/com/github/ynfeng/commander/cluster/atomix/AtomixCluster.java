@@ -8,7 +8,6 @@ import io.atomix.cluster.MemberId;
 import io.atomix.cluster.protocol.GroupMembershipProtocol;
 import io.atomix.cluster.protocol.SwimMembershipProtocol;
 import io.atomix.core.Atomix;
-import io.atomix.primitive.partition.ManagedPartitionGroup;
 import io.atomix.protocols.raft.partition.RaftPartitionGroup;
 import io.atomix.storage.StorageLevel;
 import io.atomix.utils.net.Address;
@@ -83,7 +82,7 @@ public class AtomixCluster extends AbstractCluster {
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
-    private ManagedPartitionGroup buildRaftPartition() {
+    private RaftPartitionGroup buildRaftPartition() {
         List<String> memberList = env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_MEMBERS, EMPTY_LIST);
         int numPartitions = env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_PARTITIONS, 7);
         int partitionSize = env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_PARTITION_SIZE, 0);
