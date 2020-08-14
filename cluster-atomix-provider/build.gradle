@@ -4,6 +4,7 @@ project.dependencies {
             project(':support'),
             "io.atomix:atomix:$atomixVersion",
             "io.atomix:atomix-raft:$atomixVersion",
+            "io.atomix:atomix-log:$atomixVersion",
             "org.yaml:snakeyaml:$snakeyamlVersion",
             "org.mvel:mvel2:$mvelVersion"
     )
