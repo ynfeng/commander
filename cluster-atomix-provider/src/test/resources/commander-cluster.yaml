@@ -1,5 +1,5 @@
 cluster:
-  id: test
+  id: standalong
   shouldNull:
   node:
     id: local

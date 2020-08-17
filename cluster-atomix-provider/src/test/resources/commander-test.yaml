@@ -1,5 +1,6 @@
 cluster:
-  id: standalong
+  id: test
+  shouldNull:
   node:
     id: local
     address: 127.0.0.1
@@ -11,7 +12,7 @@ cluster:
     groupMembers:
       - local
   raftPartition:
-    partitions: 2
+    partitions: 32
     members:
       - local
     dataDir: /tmp/raft-partition-data

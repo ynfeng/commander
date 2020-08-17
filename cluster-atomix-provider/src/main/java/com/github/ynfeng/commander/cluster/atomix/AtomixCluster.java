@@ -17,6 +17,7 @@ import java.util.List;
 
 public class AtomixCluster extends AbstractCluster {
     private static final List<String> EMPTY_LIST = Lists.newArrayList();
+    public static final String RAFT_PARTITION_GROUP_NAME = "raft-partition";
     private final Environment env;
     private Atomix atomix;
     private volatile AtomixClusterContext context;
@@ -89,7 +90,7 @@ public class AtomixCluster extends AbstractCluster {
         String dataDir = env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_DATA_DIR,
             "./commander-raft-partition-data");
         return RaftPartitionGroup
-            .builder("raft-partition")
+            .builder(RAFT_PARTITION_GROUP_NAME)
             .withNumPartitions(numPartitions)
             .withPartitionSize(partitionSize)
             .withStorageLevel(StorageLevel.DISK)
@@ -105,7 +106,7 @@ public class AtomixCluster extends AbstractCluster {
     }
 
     private void initContext() {
-        context = new AtomixClusterContext();
+        context = new AtomixClusterContext(atomix, env);
     }
 
     @Override

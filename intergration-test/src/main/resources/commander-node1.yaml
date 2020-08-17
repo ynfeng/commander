@@ -1,24 +1,26 @@
 cluster:
-  id: standalong
+  id: test-cluster
   node:
-    id: local
+    id: node1
     address: 127.0.0.1
     port: 12345
   bootstrapDiscoveryBroadcastIntervalSeconds: 5
   mgr:
     partitions: 1
-    dataDir: /tmp/mgr-data
+    dataDir: /tmp/mgr-data-n1
     groupMembers:
-      - local
+      - node1
+      - node2
   raftPartition:
     partitions: 2
     members:
-      - local
-    dataDir: /tmp/raft-partition-data
+      - node1
+      - node2
+    dataDir: /tmp/raft-partition-data-n1
     partitionSize: 20
   membership:
     failureTimeOutSeconds: 5
-    gossipIntervalMs: 500
+    gossipIntervalMs: 5000
     probeIntervalSeconds: 3
     broadcastDisputes: true
     broadcastUpdates: true
