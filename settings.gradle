@@ -9,4 +9,5 @@ include 'cluster-atomix-provider'
 include 'testutil'
 include 'dist'
 include 'intergration-test'
+include 'actor'
 
