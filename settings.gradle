@@ -1,6 +1,5 @@
 rootProject.name = 'commander'
 
-include 'engine'
 include 'cluster'
 include 'definition'
 include 'support'
@@ -9,5 +8,5 @@ include 'cluster-atomix-provider'
 include 'testutil'
 include 'dist'
 include 'intergration-test'
-include 'actor'
+include 'engine-impl'
 

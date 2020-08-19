@@ -1,0 +1,7 @@
+project.dependencies {
+    implementation(
+            project(':definition'),
+            "org.mvel:mvel2:$mvelVersion",
+            "com.typesafe.akka:akka-actor-typed_2.13:$akkaVersion"
+    )
+}
