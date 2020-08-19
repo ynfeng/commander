@@ -8,5 +8,5 @@ include 'cluster-atomix-provider'
 include 'testutil'
 include 'dist'
 include 'intergration-test'
-include 'engine-impl'
+include 'akka-engine-provider'
 
