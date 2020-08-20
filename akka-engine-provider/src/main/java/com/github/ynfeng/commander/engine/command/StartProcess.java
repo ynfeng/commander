@@ -2,7 +2,6 @@ package com.github.ynfeng.commander.engine.command;
 
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.engine.ProcessFuture;
-import com.github.ynfeng.commander.engine.command.EngineCommand;
 
 public class StartProcess implements EngineCommand {
     private final ProcessDefinition processDefinition;
