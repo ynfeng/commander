@@ -6,7 +6,7 @@ public class AkkaEngineProvider implements EngineProvider {
 
     @Override
     public ProcessEngine getEngine(Environment environment) {
-        return new AkkaProcessEngine();
+        return new AkkaProcessEngine(new UUIDProcessIdGenerator());
     }
 
     @Override

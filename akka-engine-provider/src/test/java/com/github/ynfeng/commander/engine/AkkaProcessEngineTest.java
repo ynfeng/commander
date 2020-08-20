@@ -22,7 +22,7 @@ class AkkaProcessEngineTest {
                     .build()
             ).build();
 
-        ProcessEngine engine = new AkkaProcessEngine();
+        ProcessEngine engine = new AkkaProcessEngine(new UUIDProcessIdGenerator());
         engine.startup();
         engine.startProcess(processDefinition).join();
         engine.shutdown();
