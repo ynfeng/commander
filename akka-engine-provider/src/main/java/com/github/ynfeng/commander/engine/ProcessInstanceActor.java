@@ -53,7 +53,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     @Override
     public Receive<EngineCommand> createReceive() {
         return newReceiveBuilder()
-            .onMessage(ProcessInstanceStart.class, this::onStart)
+            .onMessage(ProcessInstanceStart.class, this::onProcessInstanceStart)
             .onMessage(RunNodes.class, this::onRunNodes)
             .onMessage(ProcessComplete.class, this::onComplete)
             .onMessage(AddReadyNode.class, this::onAddReadyNode)
@@ -80,7 +80,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         return this;
     }
 
-    private Behavior<EngineCommand> onStart(ProcessInstanceStart cmd) {
+    private Behavior<EngineCommand> onProcessInstanceStart(ProcessInstanceStart cmd) {
         getContext().getSelf().tell(new AddReadyNode(cmd.firstNode()));
         getContext().getSelf().tell(new RunNodes());
         return this;
