@@ -1,0 +1,6 @@
+project.dependencies {
+    implementation(
+            project(':definition'),
+            project(':support')
+    )
+}

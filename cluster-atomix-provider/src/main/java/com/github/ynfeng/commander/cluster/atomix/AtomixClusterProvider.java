@@ -2,7 +2,7 @@ package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
-import com.github.ynfeng.commander.cluster.Environment;
+import com.github.ynfeng.commander.support.env.Environment;
 
 public class AtomixClusterProvider implements ClusterProvider {
 

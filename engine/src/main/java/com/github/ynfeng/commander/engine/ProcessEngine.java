@@ -5,5 +5,7 @@ import com.github.ynfeng.commander.definition.ProcessDefinition;
 public interface ProcessEngine {
     void startup();
 
-    void startProcess(ProcessDefinition processDefinition);
+    ProcessFuture startProcess(ProcessDefinition processDefinition);
+
+    void shutdown();
 }

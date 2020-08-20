@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
-import com.github.ynfeng.commander.cluster.Environment;
+import com.github.ynfeng.commander.support.env.Environment;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.cluster.atomix;
 
-import com.github.ynfeng.commander.cluster.PropertySource;
+import com.github.ynfeng.commander.support.env.PropertySource;
 import com.google.common.base.Strings;
 import java.io.InputStream;
 import java.util.Map;

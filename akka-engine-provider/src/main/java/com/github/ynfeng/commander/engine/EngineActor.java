@@ -16,15 +16,16 @@ public class EngineActor extends AbstractBehavior<EngineCommand> {
         return Behaviors.setup(EngineActor::new);
     }
 
-
     @Override
     public Receive<EngineCommand> createReceive() {
-        return newReceiveBuilder().onMessage(StartProcess.class, this::onStartProcess).build();
+        return newReceiveBuilder()
+            .onMessage(StartProcess.class, this::onStartProcess)
+            .build();
     }
 
     private Behavior<EngineCommand> onStartProcess(StartProcess cmd) {
-        System.out.println("start process.");
         cmd.processDefinition();
+        cmd.processFuture().complete(null);
         return this;
     }
 }

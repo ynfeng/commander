@@ -2,7 +2,7 @@ package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.AbstractCluster;
 import com.github.ynfeng.commander.cluster.ClusterContext;
-import com.github.ynfeng.commander.cluster.Environment;
+import com.github.ynfeng.commander.support.env.Environment;
 import com.google.common.collect.Lists;
 import io.atomix.cluster.MemberId;
 import io.atomix.cluster.protocol.GroupMembershipProtocol;
