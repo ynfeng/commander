@@ -16,6 +16,7 @@ class AtomixEnvTest {
 
     @BeforeEach
     public void setup() {
+        System.setProperty("cmder.profile", "test");
         env = new AtomixEnv(new YamlPropertySource());
     }
 
