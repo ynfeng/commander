@@ -25,14 +25,19 @@ public class AkkaProcessEngine implements ProcessEngine {
     }
 
     @Override
-    public ProcessFuture startProcess(String name, int version) {
+    public ProcessFuture startProcess(String name, int version, Variables variables) {
         Optional<ProcessDefinition> candicate = definitionRepository.findProcessDefinition(
             Preconditions.checkNotNull(name, "process definition name is required."), version);
         ProcessDefinition processDefinition = candicate.orElseThrow(
             () -> new ProcessEngineException("process definition was not exists."));
         ProcessFuture future = new ProcessFuture();
-        engineActor.tell(new StartProcess(processDefinition, future));
+        engineActor.tell(new StartProcess(processDefinition, future, variables));
         return future;
+    }
+
+    @Override
+    public ProcessFuture startProcess(String name, int version) {
+        return startProcess(name, version, Variables.EMPTY);
     }
 
     @Override

@@ -33,7 +33,7 @@ public class EngineActor extends AbstractBehavior<EngineCommand> {
     private Behavior<EngineCommand> onStartProcess(StartProcess cmd) {
         ProcessId processId = idGenerator.nextId();
         String name = String.format("process-%s", processId);
-        Behavior<EngineCommand> behavior = ProcessInstanceActor.create(processId, cmd.processFuture());
+        Behavior<EngineCommand> behavior = ProcessInstanceActor.create(processId, cmd.variables(), cmd.processFuture());
         ActorRef<EngineCommand> processInstanceRef = getContext().spawn(behavior, name);
         NodeDefinition firstNode = cmd.processDefinition().firstNode();
         processInstanceRef.tell(new ProcessInstanceStart(firstNode));

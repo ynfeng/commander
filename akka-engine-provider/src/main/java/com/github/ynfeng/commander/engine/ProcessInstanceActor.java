@@ -18,17 +18,14 @@ import com.google.common.collect.Lists;
 import java.util.Queue;
 
 public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implements ProcessInstance {
-    private final ProcessId processId;
-    private final ProcessFuture processFuture;
-    private Queue<NodeDefinition> readyNodes = Lists.newLinkedList();
+    private ProcessId processId;
+    private Variables variables;
+    private ProcessFuture processFuture;
+    private final Queue<NodeDefinition> readyNodes = Lists.newLinkedList();
     private final NodeExecutors nodeExecutors = new SPINodeExecutors();
 
-    public ProcessInstanceActor(ActorContext<EngineCommand> context,
-                                ProcessId processId,
-                                ProcessFuture processFuture) {
+    public ProcessInstanceActor(ActorContext<EngineCommand> context) {
         super(context);
-        this.processId = processId;
-        this.processFuture = processFuture;
     }
 
     @Override
@@ -97,7 +94,32 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         return this;
     }
 
-    public static Behavior<EngineCommand> create(ProcessId processId, ProcessFuture processFuture) {
-        return Behaviors.setup(ctx -> new ProcessInstanceActor(ctx, processId, processFuture));
+    public static Behavior<EngineCommand> create(ProcessId processId,
+                                                 Variables variables,
+                                                 ProcessFuture processFuture) {
+        return Behaviors.setup(
+            ctx -> {
+                ProcessInstanceActorBuilder builder = ProcessInstanceActor.builder(ctx)
+                    .processId(processId)
+                    .variables(variables)
+                    .processFuture(processFuture);
+                return builder.build();
+            });
+    }
+
+    private static ProcessInstanceActorBuilder builder(ActorContext<EngineCommand> context) {
+        return new ProcessInstanceActorBuilder(new ProcessInstanceActor(context));
+    }
+
+    protected void setProcessId(ProcessId processId) {
+        this.processId = processId;
+    }
+
+    protected void setVariables(Variables variables) {
+        this.variables = variables;
+    }
+
+    public void setProcessFuture(ProcessFuture processFuture) {
+        this.processFuture = processFuture;
     }
 }
