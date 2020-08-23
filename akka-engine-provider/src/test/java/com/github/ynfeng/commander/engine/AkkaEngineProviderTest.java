@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
 import com.github.ynfeng.commander.support.env.Environment;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,7 @@ class AkkaEngineProviderTest {
 
     @Test
     public void should_get_engine() {
-        ProcessEngine engine = provider.getEngine(env);
+        ProcessEngine engine = provider.getEngine(env, Mockito.mock(ProcessDefinitionRepository.class));
 
         assertThat(engine, instanceOf(AkkaProcessEngine.class));
     }
