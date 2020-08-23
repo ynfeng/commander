@@ -99,7 +99,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
                                                  ProcessFuture processFuture) {
         return Behaviors.setup(
             ctx -> {
-                ProcessInstanceActorBuilder builder = ProcessInstanceActor.builder(ctx)
+                ProcessInstanceActorBuilder builder = builder(ctx)
                     .processId(processId)
                     .variables(variables)
                     .processFuture(processFuture);
