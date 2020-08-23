@@ -7,6 +7,7 @@ import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.engine.command.EngineCommand;
+import com.github.ynfeng.commander.engine.command.NodeComplte;
 import com.github.ynfeng.commander.engine.command.ProcessComplete;
 import com.github.ynfeng.commander.engine.command.ProcessInstanceStart;
 import com.github.ynfeng.commander.engine.command.RunNodes;
@@ -47,6 +48,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     @Override
     public void nodeComplete(NodeDefinition nodeDefinition) {
+        getContext().getSelf().tell(new NodeComplte());
         getContext().getSelf().tell(new RunNodes());
     }
 
@@ -56,8 +58,14 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
             .onMessage(ProcessInstanceStart.class, this::onProcessInstanceStart)
             .onMessage(RunNodes.class, this::onRunNodes)
             .onMessage(ProcessComplete.class, this::onComplete)
+            .onMessage(NodeComplte.class, this::onNodeComplete)
             .onMessage(AddReadyNode.class, this::onAddReadyNode)
             .build();
+    }
+
+    private Behavior<EngineCommand> onNodeComplete(NodeComplte cmd) {
+        readyNodes.poll();
+        return this;
     }
 
     private Behavior<EngineCommand> onAddReadyNode(AddReadyNode cmd) {
@@ -71,13 +79,16 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private Behavior<EngineCommand> onRunNodes(RunNodes cmd) {
-        NodeDefinition nextNode = readyNodes.poll();
-        while (nextNode != NodeDefinition.NULL && null != nextNode) {
+        NodeDefinition nextNode = readyNodes.peek();
+        if (canExecute(nextNode)) {
             NodeExecutor executor = nodeExecutors.getExecutor(nextNode);
             executor.execute(this, nextNode);
-            nextNode = readyNodes.poll();
         }
         return this;
+    }
+
+    private boolean canExecute(NodeDefinition nextNode) {
+        return nextNode != NodeDefinition.NULL && null != nextNode;
     }
 
     private Behavior<EngineCommand> onProcessInstanceStart(ProcessInstanceStart cmd) {
