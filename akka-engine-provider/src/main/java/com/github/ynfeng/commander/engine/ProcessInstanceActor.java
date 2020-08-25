@@ -17,6 +17,8 @@ import com.github.ynfeng.commander.engine.command.RunNodes;
 import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.engine.executor.SPINodeExecutors;
 import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.List;
 import java.util.Queue;
 
 public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implements ProcessInstance {
@@ -24,6 +26,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private Variables variables;
     private ProcessFuture processFuture;
     private final Queue<NodeDefinition> readyNodes = Lists.newLinkedList();
+    private final List<NodeDefinition> executedNodes = Lists.newArrayList();
     private final NodeExecutors nodeExecutors = new SPINodeExecutors();
     private final ExecutorActors executorActors = new ExecutorActors();
 
@@ -53,6 +56,11 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     @Override
+    public List<NodeDefinition> getExecutedNodes() {
+        return Collections.unmodifiableList(executedNodes);
+    }
+
+    @Override
     public Receive<EngineCommand> createReceive() {
         return newReceiveBuilder()
             .onMessage(ProcessInstanceStart.class, this::onProcessInstanceStart)
@@ -67,6 +75,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         NodeDefinition nodeDefinition = readyNodes.poll();
         ActorRef<EngineCommand> executorActorRef = executorActors.remove(nodeDefinition.refName());
         executorActorRef.tell(new CloseExecutorActor());
+        executedNodes.add(nodeDefinition);
         return this;
     }
 
@@ -76,7 +85,8 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private Behavior<EngineCommand> onComplete(ProcessComplete cmd) {
-        processFuture.complete(null);
+        ProcessInstanceInfo processInstanceInfo = new ProcessInstanceInfo(executedNodes);
+        processFuture.complete(processInstanceInfo);
         return Behaviors.stopped();
     }
 

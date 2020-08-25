@@ -5,11 +5,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.github.ynfeng.commander.definition.EndDefinition;
+import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
 import com.github.ynfeng.commander.definition.RelationShips;
 import com.github.ynfeng.commander.definition.StartDefinition;
+import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,6 +26,12 @@ class AkkaProcessEngineTest {
     public void setup() {
         repository = Mockito.mock(ProcessDefinitionRepository.class);
         engine = new AkkaProcessEngine(new UUIDProcessIdGenerator(), repository);
+        engine.startup();
+    }
+
+    @AfterEach
+    public void destory() {
+        engine.shutdown();
     }
 
     @Test
@@ -41,9 +50,11 @@ class AkkaProcessEngineTest {
         Mockito.when(repository.findProcessDefinition("test", 1))
             .thenReturn(Optional.of(processDefinition));
 
-        engine.startup();
-        engine.startProcess("test", 1).join();
-        engine.shutdown();
+        ProcessInstanceInfo info = engine.startProcess("test", 1).join();
+
+        List<NodeDefinition> nodeDefinitions = info.executeNodes();
+        assertThat(nodeDefinitions.get(0).refName(), is("start"));
+        assertThat(nodeDefinitions.get(1).refName(), is("end"));
     }
 
     @Test
