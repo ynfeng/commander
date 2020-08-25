@@ -52,7 +52,7 @@ class AkkaProcessEngineTest {
 
         ProcessInstanceInfo info = engine.startProcess("test", 1).join();
 
-        List<NodeDefinition> nodeDefinitions = info.executeNodes();
+        List<NodeDefinition> nodeDefinitions = info.executedNodes();
         assertThat(nodeDefinitions.get(0).refName(), is("start"));
         assertThat(nodeDefinitions.get(1).refName(), is("end"));
     }

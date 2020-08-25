@@ -56,11 +56,6 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     @Override
-    public List<NodeDefinition> getExecutedNodes() {
-        return Collections.unmodifiableList(executedNodes);
-    }
-
-    @Override
     public Receive<EngineCommand> createReceive() {
         return newReceiveBuilder()
             .onMessage(ProcessInstanceStart.class, this::onProcessInstanceStart)
@@ -85,7 +80,8 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private Behavior<EngineCommand> onComplete(ProcessComplete cmd) {
-        ProcessInstanceInfo processInstanceInfo = new ProcessInstanceInfo(executedNodes);
+        ProcessInstanceInfo processInstanceInfo = new ProcessInstanceInfo(
+            Collections.unmodifiableList(executedNodes));
         processFuture.complete(processInstanceInfo);
         return Behaviors.stopped();
     }

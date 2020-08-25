@@ -4,13 +4,13 @@ import com.github.ynfeng.commander.definition.NodeDefinition;
 import java.util.List;
 
 public class ProcessInstanceInfo {
-    private final List<NodeDefinition> executeNodes;
+    private final List<NodeDefinition> executedNodes;
 
-    public ProcessInstanceInfo(List<NodeDefinition> executeNodes) {
-        this.executeNodes = executeNodes;
+    public ProcessInstanceInfo(List<NodeDefinition> executedNodes) {
+        this.executedNodes = executedNodes;
     }
 
-    public List<NodeDefinition> executeNodes() {
-        return executeNodes;
+    public List<NodeDefinition> executedNodes() {
+        return executedNodes;
     }
 }
