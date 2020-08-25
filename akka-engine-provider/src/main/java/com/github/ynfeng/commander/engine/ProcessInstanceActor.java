@@ -1,17 +1,19 @@
 package com.github.ynfeng.commander.engine;
 
+import akka.actor.typed.ActorRef;
 import akka.actor.typed.Behavior;
 import akka.actor.typed.javadsl.AbstractBehavior;
 import akka.actor.typed.javadsl.ActorContext;
 import akka.actor.typed.javadsl.Behaviors;
 import akka.actor.typed.javadsl.Receive;
 import com.github.ynfeng.commander.definition.NodeDefinition;
+import com.github.ynfeng.commander.engine.command.CloseExecutorActor;
 import com.github.ynfeng.commander.engine.command.EngineCommand;
-import com.github.ynfeng.commander.engine.command.NodeComplte;
+import com.github.ynfeng.commander.engine.command.ExecuteNode;
+import com.github.ynfeng.commander.engine.command.NodeComplete;
 import com.github.ynfeng.commander.engine.command.ProcessComplete;
 import com.github.ynfeng.commander.engine.command.ProcessInstanceStart;
 import com.github.ynfeng.commander.engine.command.RunNodes;
-import com.github.ynfeng.commander.engine.executor.NodeExecutor;
 import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.engine.executor.SPINodeExecutors;
 import com.google.common.collect.Lists;
@@ -23,6 +25,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private ProcessFuture processFuture;
     private final Queue<NodeDefinition> readyNodes = Lists.newLinkedList();
     private final NodeExecutors nodeExecutors = new SPINodeExecutors();
+    private final ExecutorActors executorActors = new ExecutorActors();
 
     public ProcessInstanceActor(ActorContext<EngineCommand> context) {
         super(context);
@@ -45,7 +48,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     @Override
     public void nodeComplete(NodeDefinition nodeDefinition) {
-        getContext().getSelf().tell(new NodeComplte());
+        getContext().getSelf().tell(new NodeComplete());
         getContext().getSelf().tell(new RunNodes());
     }
 
@@ -55,13 +58,15 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
             .onMessage(ProcessInstanceStart.class, this::onProcessInstanceStart)
             .onMessage(RunNodes.class, this::onRunNodes)
             .onMessage(ProcessComplete.class, this::onComplete)
-            .onMessage(NodeComplte.class, this::onNodeComplete)
+            .onMessage(NodeComplete.class, this::onNodeComplete)
             .onMessage(AddReadyNode.class, this::onAddReadyNode)
             .build();
     }
 
-    private Behavior<EngineCommand> onNodeComplete(NodeComplte cmd) {
-        readyNodes.poll();
+    private Behavior<EngineCommand> onNodeComplete(NodeComplete cmd) {
+        NodeDefinition nodeDefinition = readyNodes.poll();
+        ActorRef<EngineCommand> executorActorRef = executorActors.remove(nodeDefinition.refName());
+        executorActorRef.tell(new CloseExecutorActor());
         return this;
     }
 
@@ -78,14 +83,22 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private Behavior<EngineCommand> onRunNodes(RunNodes cmd) {
         NodeDefinition nextNode = readyNodes.peek();
         if (canExecute(nextNode)) {
-            NodeExecutor executor = nodeExecutors.getExecutor(nextNode);
-            executor.execute(this, nextNode);
+            executeWithActor(nextNode);
         }
         return this;
     }
 
     private boolean canExecute(NodeDefinition nextNode) {
         return nextNode != NodeDefinition.NULL && null != nextNode;
+    }
+
+    private void executeWithActor(NodeDefinition nextNode) {
+        String name = String.format("executor-%s", nextNode.refName());
+        Behavior<EngineCommand> executorActor = ExecutorActor.create(this,
+            nodeExecutors.getExecutor(nextNode));
+        ActorRef<EngineCommand> executorRef = getContext().spawn(executorActor, name);
+        executorActors.add(nextNode.refName(), executorRef);
+        executorRef.tell(new ExecuteNode(nextNode));
     }
 
     private Behavior<EngineCommand> onProcessInstanceStart(ProcessInstanceStart cmd) {
