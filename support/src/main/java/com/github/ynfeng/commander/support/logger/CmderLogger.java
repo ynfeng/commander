@@ -178,12 +178,12 @@ public class CmderLogger implements Logger {
 
     @Override
     public boolean isInfoEnabled() {
-        return false;
+        return logger.isInfoEnabled();
     }
 
     @Override
     public void info(String msg) {
-
+        logger.info(msg);
     }
 
     @Override
