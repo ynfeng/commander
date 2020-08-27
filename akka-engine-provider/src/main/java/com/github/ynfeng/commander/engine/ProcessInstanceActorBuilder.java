@@ -25,4 +25,9 @@ public class ProcessInstanceActorBuilder {
         processInstance.setProcessFuture(processFuture);
         return this;
     }
+
+    public ProcessInstanceActorBuilder environment(EngineEnvironment environment) {
+        processInstance.setEnvironment(environment);
+        return this;
+    }
 }

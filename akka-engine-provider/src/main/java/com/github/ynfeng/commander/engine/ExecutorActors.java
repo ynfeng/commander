@@ -17,4 +17,8 @@ public class ExecutorActors {
         refs.remove(refName);
         return ref;
     }
+
+    public ActorRef<EngineCommand> get(String refName) {
+        return refs.get(refName);
+    }
 }

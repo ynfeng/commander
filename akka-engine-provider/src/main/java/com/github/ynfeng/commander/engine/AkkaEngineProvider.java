@@ -6,8 +6,8 @@ import com.github.ynfeng.commander.support.env.Environment;
 public class AkkaEngineProvider implements EngineProvider {
 
     @Override
-    public ProcessEngine getEngine(Environment environment, ProcessDefinitionRepository definitionRepository) {
-        return new AkkaProcessEngine(new UUIDProcessIdGenerator(), definitionRepository);
+    public ProcessEngine getEngine(EngineEnvironment environment, ProcessDefinitionRepository definitionRepository) {
+        return new AkkaProcessEngine(environment, definitionRepository);
     }
 
     @Override

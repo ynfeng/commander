@@ -12,12 +12,12 @@ import org.mockito.Mockito;
 
 class AkkaEngineProviderTest {
     private AkkaEngineProvider provider;
-    private Environment env;
+    private EngineEnvironment env;
 
     @BeforeEach
     public void setup() {
         provider = new AkkaEngineProvider();
-        env = Mockito.mock(AkkaEngineEnv.class);
+        env = Mockito.mock(EngineEnvironment.class);
     }
 
     @Test

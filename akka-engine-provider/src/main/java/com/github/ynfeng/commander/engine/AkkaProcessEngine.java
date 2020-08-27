@@ -3,29 +3,31 @@ package com.github.ynfeng.commander.engine;
 import akka.actor.typed.ActorSystem;
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
+import com.github.ynfeng.commander.engine.command.ContinueProcess;
 import com.github.ynfeng.commander.engine.command.EngineCommand;
 import com.github.ynfeng.commander.engine.command.StartProcess;
 import com.google.common.base.Preconditions;
 import java.util.Optional;
 
 public class AkkaProcessEngine implements ProcessEngine {
-    private final ProcessIdGenerator processIdGenerator;
+    private EngineEnvironment environment;
     private final ProcessDefinitionRepository definitionRepository;
     private ActorSystem<EngineCommand> engineActor;
 
-    public AkkaProcessEngine(ProcessIdGenerator processIdGenerator,
+    public AkkaProcessEngine(EngineEnvironment environment,
                              ProcessDefinitionRepository definitionRepository) {
-        this.processIdGenerator = processIdGenerator;
+        this.environment = environment;
         this.definitionRepository = definitionRepository;
     }
 
     @Override
     public void startup() {
-        engineActor = ActorSystem.create(EngineActor.create(processIdGenerator), "process-engine");
+        engineActor = ActorSystem.create(EngineActor.create(environment), "process-engine");
     }
 
     @Override
     public ProcessFuture startProcess(String name, int version, Variables variables) {
+        //TODO exception process and definition repository should return Optional<ProcessDefinition>
         Optional<ProcessDefinition> candicate = definitionRepository.findProcessDefinition(
             Preconditions.checkNotNull(name, "process definition name is required."), version);
         ProcessDefinition processDefinition = candicate.orElseThrow(
@@ -43,5 +45,12 @@ public class AkkaProcessEngine implements ProcessEngine {
     @Override
     public void shutdown() {
         engineActor.terminate();
+    }
+
+    @Override
+    public ProcessFuture continueProcess(ProcessId processId, String nodeRefName, Variables variables) {
+        ContinueProcess continueProcess = new ContinueProcess(processId, nodeRefName, variables);
+        engineActor.tell(continueProcess);
+        return continueProcess.processFuture();
     }
 }

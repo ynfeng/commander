@@ -8,4 +8,6 @@ public interface ProcessEngine {
     ProcessFuture startProcess(String name, int version);
 
     void shutdown();
+
+    ProcessFuture continueProcess(ProcessId processId, String nodeRefName, Variables variables);
 }
