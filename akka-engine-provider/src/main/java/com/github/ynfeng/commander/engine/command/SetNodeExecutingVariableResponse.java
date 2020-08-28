@@ -2,10 +2,10 @@ package com.github.ynfeng.commander.engine.command;
 
 import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
 
-public class NodeExecutingVariableResponse {
+public class SetNodeExecutingVariableResponse {
     private NodeExecutingVariable variable;
 
-    public NodeExecutingVariableResponse(NodeExecutingVariable variable) {
+    public SetNodeExecutingVariableResponse(NodeExecutingVariable variable) {
         this.variable = variable;
     }
 

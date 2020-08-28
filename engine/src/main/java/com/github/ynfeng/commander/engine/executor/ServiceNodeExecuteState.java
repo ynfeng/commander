@@ -8,8 +8,7 @@ public enum ServiceNodeExecuteState {
         @Override
         void accept(ProcessInstance processInstance, ServiceDefinition serviceDefinition) {
             processInstance.setNodeExecutingVariable(
-                serviceDefinition.refName(), "state", Waiting)
-                .join();
+                serviceDefinition.refName(), "state", Waiting);
         }
     },
     Done {

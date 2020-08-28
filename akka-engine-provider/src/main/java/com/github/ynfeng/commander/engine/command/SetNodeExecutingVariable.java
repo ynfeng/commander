@@ -1,21 +1,17 @@
 package com.github.ynfeng.commander.engine.command;
 
-import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
-import java.util.concurrent.CompletableFuture;
+import akka.actor.typed.ActorRef;
 
 public class SetNodeExecutingVariable implements EngineCommand {
     private final String key;
     private final Object val;
-    private final CompletableFuture<NodeExecutingVariable> future;
+    private final ActorRef<SetNodeExecutingVariableResponse> replyTo;
 
-    public SetNodeExecutingVariable(String key, Object val, CompletableFuture<NodeExecutingVariable> future) {
+    public SetNodeExecutingVariable(String key, Object val,
+                                    ActorRef<SetNodeExecutingVariableResponse> replyTo) {
         this.key = key;
         this.val = val;
-        this.future = future;
-    }
-
-    public CompletableFuture<NodeExecutingVariable> future() {
-        return future;
+        this.replyTo = replyTo;
     }
 
     public String key() {
@@ -24,5 +20,9 @@ public class SetNodeExecutingVariable implements EngineCommand {
 
     public Object value() {
         return val;
+    }
+
+    public ActorRef<SetNodeExecutingVariableResponse> replyTo() {
+        return replyTo;
     }
 }

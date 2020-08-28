@@ -10,8 +10,9 @@ import com.github.ynfeng.commander.engine.command.ContineExecute;
 import com.github.ynfeng.commander.engine.command.EngineCommand;
 import com.github.ynfeng.commander.engine.command.ExecuteNode;
 import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariable;
-import com.github.ynfeng.commander.engine.command.NodeExecutingVariableResponse;
+import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariableResponse;
 import com.github.ynfeng.commander.engine.command.SetNodeExecutingVariable;
+import com.github.ynfeng.commander.engine.command.SetNodeExecutingVariableResponse;
 import com.github.ynfeng.commander.engine.executor.NodeExecutor;
 
 public class ExecutorActor extends AbstractBehavior<EngineCommand> {
@@ -51,12 +52,12 @@ public class ExecutorActor extends AbstractBehavior<EngineCommand> {
 
     private Behavior<EngineCommand> onSetNodeExecutingVariable(SetNodeExecutingVariable cmd) {
         variable.put(cmd.key(), cmd.value());
-        cmd.future().complete(variable);
+        cmd.replyTo().tell(new SetNodeExecutingVariableResponse(variable));
         return this;
     }
 
     private Behavior<EngineCommand> onGetNodeExecutingVariable(GetNodeExecutingVariable cmd) {
-        NodeExecutingVariableResponse response = new NodeExecutingVariableResponse(variable);
+        GetNodeExecutingVariableResponse response = new GetNodeExecutingVariableResponse(variable);
         cmd.replyTo().tell(response);
         return this;
     }

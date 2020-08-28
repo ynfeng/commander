@@ -16,11 +16,12 @@ import com.github.ynfeng.commander.engine.command.ExecuteNode;
 import com.github.ynfeng.commander.engine.command.GetExecutingVariableSuccess;
 import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariable;
 import com.github.ynfeng.commander.engine.command.NodeComplete;
-import com.github.ynfeng.commander.engine.command.NodeExecutingVariableResponse;
+import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariableResponse;
 import com.github.ynfeng.commander.engine.command.ProcessComplete;
 import com.github.ynfeng.commander.engine.command.ProcessInstanceStart;
 import com.github.ynfeng.commander.engine.command.RunNodes;
 import com.github.ynfeng.commander.engine.command.SetNodeExecutingVariable;
+import com.github.ynfeng.commander.engine.command.SetNodeExecutingVariableResponse;
 import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
 import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
@@ -72,7 +73,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private void doGetNodeExecutingVariable(ActorRef<EngineCommand> executorRef,
                                             CompletableFuture<NodeExecutingVariable> future) {
         getContext().ask(
-            NodeExecutingVariableResponse.class,
+            GetNodeExecutingVariableResponse.class,
             executorRef,
             Duration.ofSeconds(5),
             ref -> new GetNodeExecutingVariable(ref),
@@ -81,10 +82,20 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     @Override
     public CompletableFuture<NodeExecutingVariable> setNodeExecutingVariable(String refName, String key, Object val) {
-        //TODO ask
         ActorRef<EngineCommand> executorRef = executorActors.get(refName);
+        return doSetNodeExecutingVariable(key, val, executorRef);
+    }
+
+    private CompletableFuture<NodeExecutingVariable> doSetNodeExecutingVariable(String key,
+                                                                                Object val,
+                                                                                ActorRef<EngineCommand> executorRef) {
         CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<>();
-        executorRef.tell(new SetNodeExecutingVariable(key, val, future));
+        getContext().ask(
+            SetNodeExecutingVariableResponse.class,
+            executorRef,
+            Duration.ofSeconds(5),
+            ref -> new SetNodeExecutingVariable(key, val, ref),
+            (response, throwable) -> new SetExecutingVariableSuccess(future, response.variable()));
         return future;
     }
 
@@ -105,9 +116,15 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
             .onMessage(AddReadyNode.class, this::onAddReadyNode)
             .onMessage(ContinueNodeExecute.class, this::onContinueNodeExecute)
             .onMessage(GetExecutingVariableSuccess.class, this::onGetExecutingVariableSuccess)
+            .onMessage(SetExecutingVariableSuccess.class, this::onSetExecutingVariableSuccess)
 //            .onSignal(ChildFailed.class, this::onChildFailed)
             .onSignal(Terminated.class, this::onTerminated)
             .build();
+    }
+
+    private Behavior<EngineCommand> onSetExecutingVariableSuccess(SetExecutingVariableSuccess cmd) {
+        cmd.future().complete(cmd.variable());
+        return this;
     }
 
     private Behavior<EngineCommand> onGetExecutingVariableSuccess(GetExecutingVariableSuccess cmd) {
