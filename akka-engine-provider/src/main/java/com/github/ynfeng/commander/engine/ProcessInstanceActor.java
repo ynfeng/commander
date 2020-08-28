@@ -13,8 +13,10 @@ import com.github.ynfeng.commander.engine.command.ContineExecute;
 import com.github.ynfeng.commander.engine.command.ContinueNodeExecute;
 import com.github.ynfeng.commander.engine.command.EngineCommand;
 import com.github.ynfeng.commander.engine.command.ExecuteNode;
+import com.github.ynfeng.commander.engine.command.GetExecutingVariableSuccess;
 import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariable;
 import com.github.ynfeng.commander.engine.command.NodeComplete;
+import com.github.ynfeng.commander.engine.command.NodeExecutingVariableResponse;
 import com.github.ynfeng.commander.engine.command.ProcessComplete;
 import com.github.ynfeng.commander.engine.command.ProcessInstanceStart;
 import com.github.ynfeng.commander.engine.command.RunNodes;
@@ -24,6 +26,7 @@ import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Lists;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -62,8 +65,18 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     public CompletableFuture<NodeExecutingVariable> getNodeExecutingVariable(String refName) {
         ActorRef<EngineCommand> executorRef = executorActors.get(refName);
         CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<>();
-        executorRef.tell(new GetNodeExecutingVariable(future));
+        doGetNodeExecutingVariable(executorRef, future);
         return future;
+    }
+
+    private void doGetNodeExecutingVariable(ActorRef<EngineCommand> executorRef,
+                                            CompletableFuture<NodeExecutingVariable> future) {
+        getContext().ask(
+            NodeExecutingVariableResponse.class,
+            executorRef,
+            Duration.ofSeconds(5),
+            ref -> new GetNodeExecutingVariable(ref),
+            (response, throwable) -> new GetExecutingVariableSuccess(future, response.variable()));
     }
 
     @Override
@@ -91,9 +104,15 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
             .onMessage(NodeComplete.class, this::onNodeComplete)
             .onMessage(AddReadyNode.class, this::onAddReadyNode)
             .onMessage(ContinueNodeExecute.class, this::onContinueNodeExecute)
+            .onMessage(GetExecutingVariableSuccess.class, this::onGetExecutingVariableSuccess)
 //            .onSignal(ChildFailed.class, this::onChildFailed)
             .onSignal(Terminated.class, this::onTerminated)
             .build();
+    }
+
+    private Behavior<EngineCommand> onGetExecutingVariableSuccess(GetExecutingVariableSuccess cmd) {
+        cmd.future().complete(cmd.variable());
+        return this;
     }
 
     private Behavior<EngineCommand> onTerminated(Terminated terminated) {
@@ -118,7 +137,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         return this;
     }
 
-    private void completeExceptionally(ContinueNodeExecute cmd) {
+    private static void completeExceptionally(ContinueNodeExecute cmd) {
         cmd.processFuture()
             .completeExceptionally(new ProcessEngineException(
                 String.format("No such executing node[%s]", cmd.nodeRefName())));

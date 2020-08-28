@@ -1,16 +1,15 @@
 package com.github.ynfeng.commander.engine.command;
 
-import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
-import java.util.concurrent.CompletableFuture;
+import akka.actor.typed.ActorRef;
 
 public class GetNodeExecutingVariable implements EngineCommand {
-    private final CompletableFuture<NodeExecutingVariable> future;
+    private ActorRef<NodeExecutingVariableResponse> replyTo;
 
-    public GetNodeExecutingVariable(CompletableFuture<NodeExecutingVariable> future) {
-        this.future = future;
+    public GetNodeExecutingVariable(ActorRef<NodeExecutingVariableResponse> replyTo) {
+        this.replyTo = replyTo;
     }
 
-    public CompletableFuture<NodeExecutingVariable> future() {
-        return future;
+    public ActorRef<NodeExecutingVariableResponse> replyTo() {
+        return replyTo;
     }
 }
