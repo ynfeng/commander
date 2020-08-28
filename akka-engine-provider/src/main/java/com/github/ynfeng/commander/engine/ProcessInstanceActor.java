@@ -15,8 +15,8 @@ import com.github.ynfeng.commander.engine.command.EngineCommand;
 import com.github.ynfeng.commander.engine.command.ExecuteNode;
 import com.github.ynfeng.commander.engine.command.GetExecutingVariableSuccess;
 import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariable;
-import com.github.ynfeng.commander.engine.command.NodeComplete;
 import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariableResponse;
+import com.github.ynfeng.commander.engine.command.NodeComplete;
 import com.github.ynfeng.commander.engine.command.ProcessComplete;
 import com.github.ynfeng.commander.engine.command.ProcessInstanceStart;
 import com.github.ynfeng.commander.engine.command.RunNodes;
@@ -41,6 +41,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private final Variables variables = new Variables();
     private final ExecutorActors executorActors = new ExecutorActors();
     private final ReadyNodes readyNodes = new ReadyNodes();
+    private final RunningNodes runningNodes = new RunningNodes();
     private final List<NodeDefinition> executedNodes = Lists.newArrayList();
 
     protected ProcessInstanceActor(ActorContext<EngineCommand> context) {
@@ -101,7 +102,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     @Override
     public void nodeComplete(NodeDefinition nodeDefinition) {
-        getContext().getSelf().tell(new NodeComplete());
+        getContext().getSelf().tell(new NodeComplete(nodeDefinition));
         getContext().getSelf().tell(new RunNodes());
     }
 
@@ -145,7 +146,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 //    }
 
     private Behavior<EngineCommand> onContinueNodeExecute(ContinueNodeExecute cmd) {
-        Optional<NodeDefinition> nodeDefinitionOptional = readyNodes.get(cmd.nodeRefName());
+        Optional<NodeDefinition> nodeDefinitionOptional = runningNodes.get(cmd.nodeRefName());
         if (nodeDefinitionOptional.isPresent()) {
             continueExecute(cmd, nodeDefinitionOptional);
         } else {
@@ -167,10 +168,11 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private Behavior<EngineCommand> onNodeComplete(NodeComplete cmd) {
-        NodeDefinition nodeDefinition = readyNodes.poll();
+        NodeDefinition nodeDefinition = cmd.nodeDefinition();
         ActorRef<EngineCommand> executorActorRef = executorActors.remove(nodeDefinition.refName());
-        executorActorRef.tell(new CloseExecutorActor());
+        runningNodes.remove(cmd.nodeDefinition().refName());
         executedNodes.add(nodeDefinition);
+        executorActorRef.tell(new CloseExecutorActor());
         return this;
     }
 
@@ -187,22 +189,25 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private Behavior<EngineCommand> onRunNodes(RunNodes cmd) {
-        NodeDefinition nextNode = readyNodes.peek();
-        if (canExecute(nextNode)) {
-            executeWithActor(nextNode);
+        NodeDefinition nextNode = readyNodes.poll();
+        while (nextNode != null) {
+            if (canExecute(nextNode)) {
+                executeWithActor(nextNode);
+            }
+            nextNode = readyNodes.poll();
         }
         return this;
     }
 
     private static boolean canExecute(NodeDefinition nextNode) {
-        return nextNode != NodeDefinition.NULL && null != nextNode;
+        return nextNode != NodeDefinition.NULL;
     }
 
     private void executeWithActor(NodeDefinition nextNode) {
-        Behavior<EngineCommand> executorActor = ExecutorActor.create(this,
-            getNodeExecutors().getExecutor(nextNode));
+        Behavior<EngineCommand> executorActor = ExecutorActor.create(this, getNodeExecutors().getExecutor(nextNode));
         ActorRef<EngineCommand> executorRef = getContext().spawn(executorActor,
             String.format("executor-%s", nextNode.refName()));
+        runningNodes.add(nextNode);
         executorActors.add(nextNode.refName(), executorRef);
         getContext().watch(executorRef);
         LOGGER.debug(String.format("Execute node %s with actor %s", nextNode.refName(), executorRef.path()));
