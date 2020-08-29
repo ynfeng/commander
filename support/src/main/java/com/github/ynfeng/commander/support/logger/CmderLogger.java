@@ -188,7 +188,7 @@ public class CmderLogger implements Logger {
 
     @Override
     public void info(String format, Object arg) {
-
+        logger.info(format, arg);
     }
 
     @Override
