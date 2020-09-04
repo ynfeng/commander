@@ -92,7 +92,7 @@ public class AkkaDecisionNodeExecutorTest extends EngineTestSupport {
         } catch (Exception e) {
         }
         ProcessInstanceInfo info = engine.continueProcess(ProcessId.of("1"), "defaultService", Variables.EMPTY).join();
-        List<NodeDefinition> executedNodes = info .executedNodes();
+        List<NodeDefinition> executedNodes = info.executedNodes();
         assertThat(executedNodes.get(2).refName(), is("defaultService"));
     }
 }
