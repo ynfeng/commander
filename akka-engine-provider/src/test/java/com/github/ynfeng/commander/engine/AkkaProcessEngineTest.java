@@ -8,43 +8,19 @@ import static org.junit.jupiter.api.Assertions.fail;
 import com.github.ynfeng.commander.definition.EndDefinition;
 import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinition;
-import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
 import com.github.ynfeng.commander.definition.RelationShips;
 import com.github.ynfeng.commander.definition.ServiceCoordinate;
 import com.github.ynfeng.commander.definition.ServiceDefinition;
 import com.github.ynfeng.commander.definition.StartDefinition;
-import com.github.ynfeng.commander.engine.executor.SPINodeExecutors;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-class AkkaProcessEngineTest {
-    private ProcessDefinitionRepository repository;
-    private EngineEnvironment environment;
-    private AkkaProcessEngine engine;
-
-    @BeforeEach
-    public void setup() {
-        environment = Mockito.mock(EngineEnvironment.class);
-        Mockito.when(environment.getNodeExecutors()).thenReturn(
-            new SPINodeExecutors());
-        Mockito.when(environment.getProcessIdGenerator())
-            .thenReturn(new ProcessIdGenerator() {
-                @Override
-                public ProcessId nextId() {
-                    return ProcessId.of("1");
-                }
-            });
-        repository = Mockito.mock(ProcessDefinitionRepository.class);
-        engine = new AkkaProcessEngine(environment, repository);
-        engine.startup();
-    }
-
+class AkkaProcessEngineTest extends EngineTestSupport {
     @AfterEach
     public void destory() {
         engine.shutdown();
@@ -72,36 +48,6 @@ class AkkaProcessEngineTest {
         List<NodeDefinition> nodeDefinitions = info.executedNodes();
         assertThat(nodeDefinitions.get(0).refName(), is("start"));
         assertThat(nodeDefinitions.get(1).refName(), is("end"));
-    }
-
-    @Test
-    public void should_execute_service_node() throws InterruptedException {
-        ProcessDefinition processDefinition = ProcessDefinition.builder()
-            .withVersion(1)
-            .withName("test")
-            .withNodes(
-                new StartDefinition(),
-                new ServiceDefinition("aService", ServiceCoordinate.of("remote", 1)),
-                new EndDefinition("end")
-            ).withRelationShips(
-                RelationShips.builder()
-                    .withLink("start", "aService")
-                    .withLink("aService", "end")
-                    .build()
-            ).build();
-        Mockito.when(repository.findProcessDefinition("test", 1))
-            .thenReturn(Optional.of(processDefinition));
-
-        try {
-            engine.startProcess("test", 1).get(1, TimeUnit.SECONDS);
-        } catch (Exception e) {
-        }
-        ProcessInstanceInfo info = engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY).join();
-
-        List<NodeDefinition> nodeDefinitions = info.executedNodes();
-        assertThat(nodeDefinitions.get(0).refName(), is("start"));
-        assertThat(nodeDefinitions.get(1).refName(), is("aService"));
-        assertThat(nodeDefinitions.get(2).refName(), is("end"));
     }
 
     @Test

@@ -1,6 +1,7 @@
 project.dependencies {
     implementation(
             project(':definition'),
-            project(':support')
+            project(':support'),
+            "org.mvel:mvel2:$mvelVersion"
     )
 }

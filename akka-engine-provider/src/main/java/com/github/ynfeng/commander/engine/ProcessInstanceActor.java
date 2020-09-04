@@ -38,7 +38,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private ProcessId processId;
     private ProcessFuture processFuture;
     private EngineEnvironment environment;
-    private final Variables variables = new Variables();
+    private final Variables input = new Variables();
     private final ExecutorActors executorActors = new ExecutorActors();
     private final ReadyNodes readyNodes = new ReadyNodes();
     private final RunningNodes runningNodes = new RunningNodes();
@@ -228,8 +228,8 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         this.processId = processId;
     }
 
-    protected void setVariables(Variables variables) {
-        this.variables.merge(variables);
+    protected void setInput(Variables variables) {
+        input.merge(variables);
     }
 
     public void setProcessFuture(ProcessFuture processFuture) {
@@ -242,5 +242,9 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     private NodeExecutors getNodeExecutors() {
         return environment.getNodeExecutors();
+    }
+
+    public Variables getInput() {
+        return input;
     }
 }

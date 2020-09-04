@@ -17,7 +17,7 @@ public class ProcessInstanceActorBuilder {
     }
 
     public ProcessInstanceActorBuilder variables(Variables variables) {
-        processInstance.setVariables(variables);
+        processInstance.setInput(variables);
         return this;
     }
 
