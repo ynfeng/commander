@@ -27,7 +27,6 @@ public class AkkaProcessEngine implements ProcessEngine {
 
     @Override
     public ProcessFuture startProcess(String name, int version, Variables variables) {
-        //TODO exception process and definition repository should return Optional<ProcessDefinition>
         Optional<ProcessDefinition> candicate = definitionRepository.findProcessDefinition(
             Preconditions.checkNotNull(name, "process definition name is required."), version);
         ProcessDefinition processDefinition = candicate.orElseThrow(
