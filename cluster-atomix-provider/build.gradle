@@ -2,8 +2,8 @@ project.dependencies {
     implementation(
             project(':cluster'),
             project(':support'),
-            "io.atomix:atomix:$atomixVersion",
-            "io.atomix:atomix-raft:$atomixVersion",
+            "com.github.ynfeng:atomix:$atomixVersion",
+            "com.github.ynfeng:atomix-raft:$atomixVersion",
             "org.yaml:snakeyaml:$snakeyamlVersion",
             "org.mvel:mvel2:$mvelVersion"
     )
