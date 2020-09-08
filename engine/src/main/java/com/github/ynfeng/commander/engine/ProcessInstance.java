@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.engine;
 
 import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface ProcessInstance {
@@ -16,4 +17,6 @@ public interface ProcessInstance {
     CompletableFuture<NodeExecutingVariable> getNodeExecutingVariable(String refName);
 
     CompletableFuture<NodeExecutingVariable> setNodeExecutingVariable(String refName, String key, Object val);
+
+    CompletableFuture<List<String>> executedNodes();
 }

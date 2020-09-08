@@ -3,20 +3,20 @@ package com.github.ynfeng.commander.engine.executor;
 import com.github.ynfeng.commander.definition.ForkBranch;
 import com.github.ynfeng.commander.definition.ForkDefinition;
 import com.github.ynfeng.commander.definition.NodeDefinition;
-import com.github.ynfeng.commander.engine.context.ProcessContext;
+import com.github.ynfeng.commander.engine.ProcessInstance;
 import java.util.Iterator;
 
 public class ForkNodeExecutor implements NodeExecutor {
 
     @Override
-    public void execute(ProcessContext context, NodeDefinition nodeDefinition) {
+    public void execute(ProcessInstance processInstance, NodeDefinition nodeDefinition) {
         ForkDefinition forkDefinition = (ForkDefinition) nodeDefinition;
         Iterator<ForkBranch> branchIterator = forkDefinition.branchs().iterator();
         while (branchIterator.hasNext()) {
             ForkBranch branch = branchIterator.next();
-            context.addReadyNode(branch.next());
+            processInstance.addReadyNode(branch.next());
         }
-        context.completeNode(nodeDefinition);
+        processInstance.nodeComplete(nodeDefinition);
     }
 
     @Override

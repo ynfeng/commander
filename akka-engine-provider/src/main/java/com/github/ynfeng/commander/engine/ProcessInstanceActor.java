@@ -13,6 +13,8 @@ import com.github.ynfeng.commander.engine.command.ContineExecute;
 import com.github.ynfeng.commander.engine.command.ContinueNodeExecute;
 import com.github.ynfeng.commander.engine.command.EngineCommand;
 import com.github.ynfeng.commander.engine.command.ExecuteNode;
+import com.github.ynfeng.commander.engine.command.GetExecutedNodes;
+import com.github.ynfeng.commander.engine.command.GetExecutedNodesResponse;
 import com.github.ynfeng.commander.engine.command.GetExecutingVariableSuccess;
 import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariable;
 import com.github.ynfeng.commander.engine.command.GetNodeExecutingVariableResponse;
@@ -30,6 +32,7 @@ import com.google.common.collect.Lists;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -87,6 +90,26 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         return doSetNodeExecutingVariable(key, val, executorRef);
     }
 
+    @Override
+    public CompletableFuture<List<String>> executedNodes() {
+        CompletableFuture<List<String>> future = new CompletableFuture<>();
+        doGetExecuteNodes(future);
+        return future;
+    }
+
+    @SuppressWarnings("checkstyle:MethodLength")
+    private void doGetExecuteNodes(CompletableFuture<List<String>> future) {
+        getContext().ask(
+            GetExecutedNodesResponse.class,
+            getContext().getSelf(),
+            Duration.ofSeconds(5),
+            ref -> new GetExecutedNodes(ref),
+            (response, throwable) -> {
+                future.complete(response.executedNodes());
+                return null;
+            });
+    }
+
     private CompletableFuture<NodeExecutingVariable> doSetNodeExecutingVariable(String key,
                                                                                 Object val,
                                                                                 ActorRef<EngineCommand> executorRef) {
@@ -118,9 +141,15 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
             .onMessage(ContinueNodeExecute.class, this::onContinueNodeExecute)
             .onMessage(GetExecutingVariableSuccess.class, this::onGetExecutingVariableSuccess)
             .onMessage(SetExecutingVariableSuccess.class, this::onSetExecutingVariableSuccess)
+            .onMessage(GetExecutedNodes.class, this::onGetExecutedNodes)
 //            .onSignal(ChildFailed.class, this::onChildFailed)
             .onSignal(Terminated.class, this::onTerminated)
             .build();
+    }
+
+    private Behavior<EngineCommand> onGetExecutedNodes(GetExecutedNodes cmd) {
+        cmd.replyTo().tell(new GetExecutedNodesResponse(Lists.newArrayList(executedNodes)));
+        return this;
     }
 
     private Behavior<EngineCommand> onSetExecutingVariableSuccess(SetExecutingVariableSuccess cmd) {
@@ -170,9 +199,11 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private Behavior<EngineCommand> onNodeComplete(NodeComplete cmd) {
         NodeDefinition nodeDefinition = cmd.nodeDefinition();
         ActorRef<EngineCommand> executorActorRef = executorActors.remove(nodeDefinition.refName());
-        runningNodes.remove(cmd.nodeDefinition().refName());
-        executedNodes.add(nodeDefinition);
-        executorActorRef.tell(new CloseExecutorActor());
+        if (Objects.nonNull(executorActorRef)) {
+            runningNodes.remove(cmd.nodeDefinition().refName());
+            executedNodes.add(nodeDefinition);
+            executorActorRef.tell(new CloseExecutorActor());
+        }
         return this;
     }
 
@@ -204,14 +235,28 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private void executeWithActor(NodeDefinition nextNode) {
-        Behavior<EngineCommand> executorActor = ExecutorActor.create(this, getNodeExecutors().getExecutor(nextNode));
-        ActorRef<EngineCommand> executorRef = getContext().spawn(executorActor,
-            String.format("executor-%s", nextNode.refName()));
-        runningNodes.add(nextNode);
-        executorActors.add(nextNode.refName(), executorRef);
-        getContext().watch(executorRef);
+        ActorRef<EngineCommand> executorRef = getOrCreateActor(nextNode);
         LOGGER.debug(String.format("Execute node %s with actor %s", nextNode.refName(), executorRef.path()));
         executorRef.tell(new ExecuteNode(nextNode));
+    }
+
+    private ActorRef<EngineCommand> getOrCreateActor(NodeDefinition nextNode) {
+        ActorRef<EngineCommand> ref = executorActors.get(nextNode.refName());
+        if (Objects.isNull(ref)) {
+            ref = createActor(nextNode);
+            getContext().watch(ref);
+        }
+        return ref;
+    }
+
+    private ActorRef<EngineCommand> createActor(NodeDefinition nextNode) {
+        String actorName = String.format("executor-%s", nextNode.refName());
+        Behavior<EngineCommand> executorActor = ExecutorActor.create(this, getNodeExecutors().getExecutor(nextNode));
+        ActorRef<EngineCommand> executorRef = getContext().spawn(executorActor, actorName);
+        runningNodes.add(nextNode);
+        executorActors.add(nextNode.refName(), executorRef);
+        LOGGER.debug("Create actor {}", actorName);
+        return executorRef;
     }
 
     private Behavior<EngineCommand> onProcessInstanceStart(ProcessInstanceStart cmd) {
