@@ -7,14 +7,14 @@ import com.github.ynfeng.commander.support.env.Environment;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 
-public class CommanderBootrstap {
+public class CommanderServer {
     private static final CmderLogger LOG = CmderLoggerFactory.getSystemLogger();
     private final ClusterProvider clusterProvider;
     private final StartSteps startSteps = new StartSteps();
     private ShutdownSteps shutdownSteps = new ShutdownSteps();
     private Cluster cluster;
 
-    public CommanderBootrstap(ClusterProviderLoader clusterProviderLoader) {
+    public CommanderServer(ClusterProviderLoader clusterProviderLoader) {
         clusterProvider = getProviderOrThrowException(clusterProviderLoader);
     }
 
@@ -43,6 +43,6 @@ public class CommanderBootrstap {
 
     private static ClusterProvider getProviderOrThrowException(ClusterProviderLoader clusterProviderLoader) {
         return clusterProviderLoader.load()
-            .orElseThrow(() -> new BootstrapException("No cluster provider found."));
+            .orElseThrow(() -> new ServerException("No cluster provider found."));
     }
 }
