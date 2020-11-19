@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.AbstractCluster;
 import com.github.ynfeng.commander.cluster.ClusterContext;
+import com.github.ynfeng.commander.cluster.PartitionManager;
 import com.github.ynfeng.commander.support.env.Environment;
 import com.google.common.collect.Lists;
 import io.atomix.cluster.MemberId;
@@ -31,8 +32,8 @@ public class AtomixCluster extends AbstractCluster {
     private void initAtomix() {
         int broadcastIntervalSeconds = env.getProperty(PropertyKey.CLUSTER_DISCOVERY_BROADCAST_INTERVAL_SECONDS, 1);
         String clusterId = env.getProperty(PropertyKey.CLUSTER_ID);
-        String nodeId = env.getProperty(PropertyKey.CLUSTER_NODE_ID);
         String addressId = env.getProperty(PropertyKey.CLUSTER_NODE_ADDRESS);
+        String nodeId = env.getProperty(PropertyKey.CLUSTER_NODE_ID);
         int port = env.getProperty(PropertyKey.CLUSTER_NODE_PORT, 0);
         atomix = Atomix.builder()
             .withClusterId(clusterId)
@@ -112,6 +113,11 @@ public class AtomixCluster extends AbstractCluster {
     @Override
     public void stop() {
         atomix.stop().join();
+    }
+
+    @Override
+    public PartitionManager createPartitionManager() {
+        return new AtomixPartitionManager(atomix);
     }
 
     @Override

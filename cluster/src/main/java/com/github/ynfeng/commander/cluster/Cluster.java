@@ -5,5 +5,7 @@ public interface Cluster {
 
     void shutdown();
 
+    PartitionManager createPartitionManager();
+
     ClusterContext getContext();
 }

@@ -7,9 +7,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterContext;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
+import com.github.ynfeng.commander.cluster.Partition;
+import com.github.ynfeng.commander.cluster.PartitionManager;
 import com.github.ynfeng.commander.cluster.SPIClusterProviderLoader;
 import com.github.ynfeng.commander.support.env.Environment;
 import com.google.common.collect.Lists;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +43,26 @@ class AtomixClusterTest {
         cluster.shutdown();
 
         assertThat(context, notNullValue());
+    }
+
+    @Test
+    public void should_create_partition_manager(){
+        Cluster cluster = getCluster();
+
+        PartitionManager pm = cluster.createPartitionManager();
+
+        assertThat(pm, notNullValue());
+    }
+
+    @Test
+    public void should_get_local_leader_partitions(){
+        Cluster cluster = getCluster();
+        cluster.startup();
+        PartitionManager pm = cluster.createPartitionManager();
+        List<Partition> localLeaderPartitions = pm.getLocalLeaderPartitions();
+
+        assertThat(localLeaderPartitions.size(), is(7));
+        cluster.shutdown();
     }
 
     private Cluster getCluster() {
