@@ -38,6 +38,7 @@ public class AtomixPartitionManager implements PartitionManager {
     @Override
     public List<Partition> getLocalLeaderPartitions() {
         return owningPartitions.stream()
+            .filter(RaftPartition::isLeader)
             .map(rp -> new Partition(rp.name()))
             .collect(Collectors.toList());
     }
