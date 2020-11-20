@@ -2,7 +2,7 @@ package com.github.ynfeng.commander.engine;
 
 import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
 
-public class UpdatebleNodeExecutingVariable extends NodeExecutingVariable {
+public class UpdatableNodeExecutingVariable extends NodeExecutingVariable {
 
     public void put(String key, Object value) {
         super.put(key, value);

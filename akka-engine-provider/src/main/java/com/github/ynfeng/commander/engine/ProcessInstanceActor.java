@@ -223,7 +223,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         NodeDefinition nextNode = readyNodes.poll();
         while (nextNode != null) {
             if (canExecute(nextNode)) {
-                executeWithActor(nextNode);
+                executeWithExecutorActor(nextNode);
             }
             nextNode = readyNodes.poll();
         }
@@ -234,22 +234,22 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         return nextNode != NodeDefinition.NULL;
     }
 
-    private void executeWithActor(NodeDefinition nextNode) {
-        ActorRef<EngineCommand> executorRef = getOrCreateActor(nextNode);
+    private void executeWithExecutorActor(NodeDefinition nextNode) {
+        ActorRef<EngineCommand> executorRef = getOrCreateExecutorActor(nextNode);
         LOGGER.debug(String.format("Execute node %s with actor %s", nextNode.refName(), executorRef.path()));
         executorRef.tell(new ExecuteNode(nextNode));
     }
 
-    private ActorRef<EngineCommand> getOrCreateActor(NodeDefinition nextNode) {
+    private ActorRef<EngineCommand> getOrCreateExecutorActor(NodeDefinition nextNode) {
         ActorRef<EngineCommand> ref = executorActors.get(nextNode.refName());
         if (Objects.isNull(ref)) {
-            ref = createActor(nextNode);
+            ref = createExecutorActor(nextNode);
             getContext().watch(ref);
         }
         return ref;
     }
 
-    private ActorRef<EngineCommand> createActor(NodeDefinition nextNode) {
+    private ActorRef<EngineCommand> createExecutorActor(NodeDefinition nextNode) {
         String actorName = String.format("executor-%s", nextNode.refName());
         Behavior<EngineCommand> executorActor = ExecutorActor.create(this, getNodeExecutors().getExecutor(nextNode));
         ActorRef<EngineCommand> executorRef = getContext().spawn(executorActor, actorName);

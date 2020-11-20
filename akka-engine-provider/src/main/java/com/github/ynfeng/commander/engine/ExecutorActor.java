@@ -18,7 +18,7 @@ import com.github.ynfeng.commander.engine.executor.NodeExecutor;
 public class ExecutorActor extends AbstractBehavior<EngineCommand> {
     private final ProcessInstance processInstance;
     private final NodeExecutor executor;
-    private final UpdatebleNodeExecutingVariable variable = new UpdatebleNodeExecutingVariable();
+    private final UpdatableNodeExecutingVariable variable = new UpdatableNodeExecutingVariable();
 
     private ExecutorActor(ActorContext<EngineCommand> context,
                           ProcessInstance processInstance,
