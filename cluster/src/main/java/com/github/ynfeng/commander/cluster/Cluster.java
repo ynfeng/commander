@@ -7,5 +7,7 @@ public interface Cluster {
 
     PartitionManager createPartitionManager();
 
+    <K, V> ConsistentMap<K, V> getConsistenMap(String name);
+
     ClusterContext getContext();
 }
