@@ -45,7 +45,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private final ExecutorActors executorActors = new ExecutorActors();
     private final ReadyNodes readyNodes = new ReadyNodes();
     private final RunningNodes runningNodes = new RunningNodes();
-    private final List<NodeDefinition> executedNodes = Lists.newArrayList();
+    private final ExecutedNodes executedNodes = new ExecutedNodes();
 
     protected ProcessInstanceActor(ActorContext<EngineCommand> context) {
         super(context);
@@ -80,7 +80,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
             GetNodeExecutingVariableResponse.class,
             executorRef,
             Duration.ofSeconds(5),
-            ref -> new GetNodeExecutingVariable(ref),
+            GetNodeExecutingVariable::new,
             (response, throwable) -> new GetExecutingVariableSuccess(future, response.variable()));
     }
 
@@ -148,7 +148,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private Behavior<EngineCommand> onGetExecutedNodes(GetExecutedNodes cmd) {
-        cmd.replyTo().tell(new GetExecutedNodesResponse(Lists.newArrayList(executedNodes)));
+        cmd.replyTo().tell(new GetExecutedNodesResponse(Lists.newArrayList(executedNodes.toList())));
         return this;
     }
 
@@ -214,7 +214,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     private Behavior<EngineCommand> onComplete(ProcessComplete cmd) {
         ProcessInstanceInfo processInstanceInfo = new ProcessInstanceInfo(
-            Collections.unmodifiableList(executedNodes));
+            Collections.unmodifiableList(executedNodes.toList()));
         processFuture.complete(processInstanceInfo);
         return Behaviors.stopped();
     }
