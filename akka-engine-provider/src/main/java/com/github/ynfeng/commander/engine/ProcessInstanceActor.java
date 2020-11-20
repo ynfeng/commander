@@ -42,10 +42,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private ProcessFuture processFuture;
     private EngineEnvironment environment;
     private final Variables input = new Variables();
-    private final ExecutorActors executorActors = new ExecutorActors();
-    private final ReadyNodes readyNodes = new ReadyNodes();
-    private final RunningNodes runningNodes = new RunningNodes();
-    private final ExecutedNodes executedNodes = new ExecutedNodes();
+    private final ProcessInstanceRuntimeContext context = new ProcessInstanceRuntimeContext();
 
     protected ProcessInstanceActor(ActorContext<EngineCommand> context) {
         super(context);
@@ -68,7 +65,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     @Override
     public CompletableFuture<NodeExecutingVariable> getNodeExecutingVariable(String refName) {
-        ActorRef<EngineCommand> executorRef = executorActors.get(refName);
+        ActorRef<EngineCommand> executorRef = context.getExecutorActor(refName);
         CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<>();
         doGetNodeExecutingVariable(executorRef, future);
         return future;
@@ -86,7 +83,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     @Override
     public CompletableFuture<NodeExecutingVariable> setNodeExecutingVariable(String refName, String key, Object val) {
-        ActorRef<EngineCommand> executorRef = executorActors.get(refName);
+        ActorRef<EngineCommand> executorRef = context.getExecutorActor(refName);
         return doSetNodeExecutingVariable(key, val, executorRef);
     }
 
@@ -148,7 +145,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private Behavior<EngineCommand> onGetExecutedNodes(GetExecutedNodes cmd) {
-        cmd.replyTo().tell(new GetExecutedNodesResponse(Lists.newArrayList(executedNodes.toList())));
+        cmd.replyTo().tell(new GetExecutedNodesResponse(Lists.newArrayList(context.getExecuteNodeList())));
         return this;
     }
 
@@ -175,7 +172,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 //    }
 
     private Behavior<EngineCommand> onContinueNodeExecute(ContinueNodeExecute cmd) {
-        Optional<NodeDefinition> nodeDefinitionOptional = runningNodes.get(cmd.nodeRefName());
+        Optional<NodeDefinition> nodeDefinitionOptional = context.getRunningNode(cmd.nodeRefName());
         if (nodeDefinitionOptional.isPresent()) {
             continueExecute(cmd, nodeDefinitionOptional);
         } else {
@@ -192,40 +189,40 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
 
     private void continueExecute(ContinueNodeExecute cmd, Optional<NodeDefinition> nodeDefinitionOptional) {
         processFuture = cmd.processFuture();
-        ActorRef<EngineCommand> ref = executorActors.get(cmd.nodeRefName());
+        ActorRef<EngineCommand> ref = context.getExecutorActor(cmd.nodeRefName());
         ref.tell(new ContineExecute(nodeDefinitionOptional.get(), cmd.variables()));
     }
 
     private Behavior<EngineCommand> onNodeComplete(NodeComplete cmd) {
         NodeDefinition nodeDefinition = cmd.nodeDefinition();
-        ActorRef<EngineCommand> executorActorRef = executorActors.remove(nodeDefinition.refName());
+        ActorRef<EngineCommand> executorActorRef = context.removeExecutorActor(nodeDefinition.refName());
         if (Objects.nonNull(executorActorRef)) {
-            runningNodes.remove(cmd.nodeDefinition().refName());
-            executedNodes.add(nodeDefinition);
+            context.removeRunningNode(cmd.nodeDefinition().refName());
+            context.addExecutedNode(nodeDefinition);
             executorActorRef.tell(new CloseExecutorActor());
         }
         return this;
     }
 
     private Behavior<EngineCommand> onAddReadyNode(AddReadyNode cmd) {
-        readyNodes.add(cmd.nextNode());
+        context.addReadyNode(cmd.nextNode());
         return this;
     }
 
     private Behavior<EngineCommand> onComplete(ProcessComplete cmd) {
         ProcessInstanceInfo processInstanceInfo = new ProcessInstanceInfo(
-            Collections.unmodifiableList(executedNodes.toList()));
+            Collections.unmodifiableList(context.getExecuteNodeList()));
         processFuture.complete(processInstanceInfo);
         return Behaviors.stopped();
     }
 
     private Behavior<EngineCommand> onRunNodes(RunNodes cmd) {
-        NodeDefinition nextNode = readyNodes.poll();
+        NodeDefinition nextNode = context.nextReadyNode();
         while (nextNode != null) {
             if (canExecute(nextNode)) {
                 executeWithExecutorActor(nextNode);
             }
-            nextNode = readyNodes.poll();
+            nextNode = context.nextReadyNode();
         }
         return this;
     }
@@ -241,7 +238,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     }
 
     private ActorRef<EngineCommand> getOrCreateExecutorActor(NodeDefinition nextNode) {
-        ActorRef<EngineCommand> ref = executorActors.get(nextNode.refName());
+        ActorRef<EngineCommand> ref = context.getExecutorActor(nextNode.refName());
         if (Objects.isNull(ref)) {
             ref = createExecutorActor(nextNode);
             getContext().watch(ref);
@@ -253,8 +250,8 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
         String actorName = String.format("executor-%s", nextNode.refName());
         Behavior<EngineCommand> executorActor = ExecutorActor.create(this, getNodeExecutors().getExecutor(nextNode));
         ActorRef<EngineCommand> executorRef = getContext().spawn(executorActor, actorName);
-        runningNodes.add(nextNode);
-        executorActors.add(nextNode.refName(), executorRef);
+        context.addRunningNode(nextNode);
+        context.addExecutorActors(nextNode.refName(), executorRef);
         LOGGER.debug("Create actor {}", actorName);
         return executorRef;
     }
