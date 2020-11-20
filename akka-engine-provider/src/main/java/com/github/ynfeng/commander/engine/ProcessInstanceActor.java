@@ -100,7 +100,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
             GetExecutedNodesResponse.class,
             getContext().getSelf(),
             Duration.ofSeconds(5),
-            ref -> new GetExecutedNodes(ref),
+            GetExecutedNodes::new,
             (response, throwable) -> {
                 future.complete(response.executedNodes());
                 return null;
@@ -174,7 +174,7 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
     private Behavior<EngineCommand> onContinueNodeExecute(ContinueNodeExecute cmd) {
         Optional<NodeDefinition> nodeDefinitionOptional = context.getRunningNode(cmd.nodeRefName());
         if (nodeDefinitionOptional.isPresent()) {
-            continueExecute(cmd, nodeDefinitionOptional);
+            continueExecute(cmd, nodeDefinitionOptional.get());
         } else {
             completeExceptionally(cmd);
         }
@@ -187,10 +187,11 @@ public class ProcessInstanceActor extends AbstractBehavior<EngineCommand> implem
                 String.format("No such executing node[%s]", cmd.nodeRefName())));
     }
 
-    private void continueExecute(ContinueNodeExecute cmd, Optional<NodeDefinition> nodeDefinitionOptional) {
+    private void continueExecute(ContinueNodeExecute cmd,
+                                 NodeDefinition nodeDefinition) {
         processFuture = cmd.processFuture();
         ActorRef<EngineCommand> ref = context.getExecutorActor(cmd.nodeRefName());
-        ref.tell(new ContineExecute(nodeDefinitionOptional.get(), cmd.variables()));
+        ref.tell(new ContineExecute(nodeDefinition, cmd.variables()));
     }
 
     private Behavior<EngineCommand> onNodeComplete(NodeComplete cmd) {
