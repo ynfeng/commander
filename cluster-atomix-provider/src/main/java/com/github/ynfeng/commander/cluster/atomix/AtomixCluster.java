@@ -2,9 +2,8 @@ package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.AbstractCluster;
 import com.github.ynfeng.commander.cluster.ClusterContext;
-import com.github.ynfeng.commander.cluster.atomix.primitive.AtomixConsistenMap;
-import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
 import com.github.ynfeng.commander.cluster.PartitionManager;
+import com.github.ynfeng.commander.cluster.primitive.PrimitiveFactory;
 import com.github.ynfeng.commander.support.env.Environment;
 import com.google.common.collect.Lists;
 import io.atomix.cluster.MemberId;
@@ -24,6 +23,7 @@ public class AtomixCluster extends AbstractCluster {
     private final Environment env;
     private Atomix atomix;
     private volatile AtomixClusterContext context;
+    private PrimitiveFactory primitiveFactory;
 
     public AtomixCluster(Environment environment) {
         env = environment;
@@ -47,6 +47,7 @@ public class AtomixCluster extends AbstractCluster {
             .withPartitionGroups(buildRaftPartition())
             .setBroadcastInterval(Duration.ofSeconds(Long.valueOf(broadcastIntervalSeconds)))
             .build();
+        primitiveFactory = new AtomixPrimitiveFactory(atomix);
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
@@ -123,8 +124,8 @@ public class AtomixCluster extends AbstractCluster {
     }
 
     @Override
-    public DistributedMap getConsistenMap(String name) {
-        return new AtomixConsistenMap(atomix, name);
+    public PrimitiveFactory getGetPrimitiveFactory() {
+        return primitiveFactory;
     }
 
     @Override

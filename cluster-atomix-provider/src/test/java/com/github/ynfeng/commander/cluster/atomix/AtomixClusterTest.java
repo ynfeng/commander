@@ -1,14 +1,11 @@
 package com.github.ynfeng.commander.cluster.atomix;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterContext;
-import com.github.ynfeng.commander.cluster.atomix.primitive.AtomixConsistenMap;
-import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
 import com.github.ynfeng.commander.cluster.Partition;
 import com.github.ynfeng.commander.cluster.PartitionManager;
 import java.util.List;
@@ -42,17 +39,6 @@ class AtomixClusterTest extends AtomixClusterTestSupport{
         PartitionManager pm = cluster.createPartitionManager();
 
         assertThat(pm, notNullValue());
-    }
-
-    @Test
-    public void should_get_consistent_map() {
-        Cluster cluster = getCluster();
-        cluster.startup();
-
-        DistributedMap<String, String> store = cluster.getConsistenMap("test store");
-        assertThat(store, instanceOf(AtomixConsistenMap.class));
-
-        cluster.shutdown();
     }
 
     @Test

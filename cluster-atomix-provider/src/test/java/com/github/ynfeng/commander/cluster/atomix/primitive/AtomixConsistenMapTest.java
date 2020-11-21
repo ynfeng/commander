@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.atomix.AtomixClusterTestSupport;
 import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
+import com.github.ynfeng.commander.cluster.primitive.PrimitiveFactory;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +46,8 @@ class AtomixConsistenMapTest extends AtomixClusterTestSupport {
     private <K, V> void doWithMap(Consumer<DistributedMap<K, V>> consumer) {
         Cluster cluster = getCluster();
         cluster.startup();
-        DistributedMap<K, V> map = cluster.getConsistenMap("test");
+        PrimitiveFactory primitiveFactory = cluster.getGetPrimitiveFactory();
+        DistributedMap<K, V> map = primitiveFactory.createConsistenMap("test");
         consumer.accept(map);
         map.destory();
         cluster.shutdown();

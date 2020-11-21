@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.cluster;
 
-import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
+import com.github.ynfeng.commander.cluster.primitive.PrimitiveFactory;
 
 public interface Cluster {
     void startup();
@@ -9,7 +9,7 @@ public interface Cluster {
 
     PartitionManager createPartitionManager();
 
-    <K, V> DistributedMap<K, V> getConsistenMap(String name);
+    PrimitiveFactory getGetPrimitiveFactory();
 
     ClusterContext getContext();
 }
