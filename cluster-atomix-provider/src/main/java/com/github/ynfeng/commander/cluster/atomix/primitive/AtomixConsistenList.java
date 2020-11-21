@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.cluster.atomix.primitive;
 
-import com.github.ynfeng.commander.cluster.primitive.DistributedList;
+import com.github.ynfeng.commander.primitive.DistributedList;
 import io.atomix.core.Atomix;
 import io.atomix.protocols.raft.MultiRaftProtocol;
 import io.atomix.protocols.raft.ReadConsistency;

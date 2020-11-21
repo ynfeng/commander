@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.primitive;
+package com.github.ynfeng.commander.primitive;
 
 public interface DistributedMap<K, V> extends Destroyable {
     void put(K k, V v);

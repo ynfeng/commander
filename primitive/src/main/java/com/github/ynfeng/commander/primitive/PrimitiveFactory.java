@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.primitive;
+package com.github.ynfeng.commander.primitive;
 
 public interface PrimitiveFactory {
     <K, V> DistributedMap<K, V> createDistributedMap(String name);

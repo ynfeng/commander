@@ -6,8 +6,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.atomix.AtomixClusterTestSupport;
-import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
-import com.github.ynfeng.commander.cluster.primitive.PrimitiveFactory;
+import com.github.ynfeng.commander.primitive.DistributedMap;
+import com.github.ynfeng.commander.primitive.PrimitiveFactory;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 

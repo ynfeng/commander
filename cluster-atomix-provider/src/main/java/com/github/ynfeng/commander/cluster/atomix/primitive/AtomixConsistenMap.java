@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.cluster.atomix.primitive;
 
-import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
+import com.github.ynfeng.commander.primitive.DistributedMap;
 import io.atomix.core.Atomix;
 import io.atomix.core.map.AtomicMap;
 import io.atomix.core.map.AtomicMapBuilder;

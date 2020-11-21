@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.primitive;
+package com.github.ynfeng.commander.primitive;
 
 import java.util.List;
 

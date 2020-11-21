@@ -2,9 +2,9 @@ package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.atomix.primitive.AtomixConsistenList;
 import com.github.ynfeng.commander.cluster.atomix.primitive.AtomixConsistenMap;
-import com.github.ynfeng.commander.cluster.primitive.DistributedList;
-import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
-import com.github.ynfeng.commander.cluster.primitive.PrimitiveFactory;
+import com.github.ynfeng.commander.primitive.DistributedList;
+import com.github.ynfeng.commander.primitive.DistributedMap;
+import com.github.ynfeng.commander.primitive.PrimitiveFactory;
 import io.atomix.core.Atomix;
 
 public class AtomixPrimitiveFactory implements PrimitiveFactory {
