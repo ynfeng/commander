@@ -47,7 +47,7 @@ class AtomixConsistenMapTest extends AtomixClusterTestSupport {
         Cluster cluster = getCluster();
         cluster.startup();
         PrimitiveFactory primitiveFactory = cluster.getGetPrimitiveFactory();
-        DistributedMap<K, V> map = primitiveFactory.createDistributedMap("test");
+        DistributedMap<K, V> map = primitiveFactory.createDistributedMap("test_map");
         consumer.accept(map);
         map.destory();
         cluster.shutdown();

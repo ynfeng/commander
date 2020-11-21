@@ -48,6 +48,7 @@ public class AtomixConsistenMap<K, V> implements DistributedMap<K, V> {
 
     @Override
     public void destory() {
+        map.clear();
         map.close();
     }
 }

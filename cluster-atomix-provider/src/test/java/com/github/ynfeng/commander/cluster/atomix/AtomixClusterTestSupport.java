@@ -9,6 +9,7 @@ import com.github.ynfeng.commander.cluster.SPIClusterProviderLoader;
 import com.github.ynfeng.commander.support.env.Environment;
 import com.google.common.collect.Lists;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
@@ -21,6 +22,7 @@ public class AtomixClusterTestSupport {
     }
 
     protected Environment mockEnvironment() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         Environment env = Mockito.mock(Environment.class);
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_DISCOVERY_BROADCAST_INTERVAL_SECONDS, 1)).thenReturn(1);
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_ID)).thenReturn("testCluster");
@@ -40,7 +42,7 @@ public class AtomixClusterTestSupport {
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_DATA_DIR, "./commander-raft-partition-data")).thenReturn("/tmp/atomix-raft-partition");
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_RAFT_PARTITION_PARTITION_SIZE, 0)).thenReturn(1);
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_ADDRESS)).thenReturn("127.0.0.1");
-        Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_PORT, 0)).thenReturn(8098);
+        Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_PORT, 0)).thenReturn(random.nextInt(10000, 65535));
         Mockito.when(env.getProperty(PropertyKey.CLUSTER_NODE_ID)).thenReturn("local");
         return env;
     }
