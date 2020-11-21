@@ -1,7 +1,7 @@
 package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.atomix.primitive.AtomixConsistenMap;
-import com.github.ynfeng.commander.cluster.primitive.ConsistenDistributedMap;
+import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
 import com.github.ynfeng.commander.cluster.primitive.PrimitiveFactory;
 import io.atomix.core.Atomix;
 
@@ -13,7 +13,7 @@ public class AtomixPrimitiveFactory implements PrimitiveFactory {
     }
 
     @Override
-    public <K, V> ConsistenDistributedMap<K, V> createConsistenMap(String name) {
+    public <K, V> DistributedMap<K, V> createDistributedMap(String name) {
         return new AtomixConsistenMap<>(atomix, name);
     }
 }

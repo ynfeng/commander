@@ -1,6 +1,6 @@
 package com.github.ynfeng.commander.cluster.atomix.primitive;
 
-import com.github.ynfeng.commander.cluster.primitive.ConsistenDistributedMap;
+import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
 import io.atomix.core.Atomix;
 import io.atomix.core.map.AtomicMap;
 import io.atomix.core.map.AtomicMapBuilder;
@@ -9,7 +9,7 @@ import io.atomix.protocols.raft.ReadConsistency;
 import io.atomix.utils.time.Versioned;
 import java.util.Objects;
 
-public class AtomixConsistenMap<K, V> implements ConsistenDistributedMap<K, V> {
+public class AtomixConsistenMap<K, V> implements DistributedMap<K, V> {
     private final AtomicMap<K, V> map;
 
     public AtomixConsistenMap(Atomix atomix, String name) {
