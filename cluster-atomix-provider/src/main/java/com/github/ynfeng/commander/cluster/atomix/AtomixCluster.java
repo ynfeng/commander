@@ -2,7 +2,8 @@ package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.AbstractCluster;
 import com.github.ynfeng.commander.cluster.ClusterContext;
-import com.github.ynfeng.commander.cluster.ConsistentMap;
+import com.github.ynfeng.commander.cluster.atomix.primitive.AtomixConsistenMap;
+import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
 import com.github.ynfeng.commander.cluster.PartitionManager;
 import com.github.ynfeng.commander.support.env.Environment;
 import com.google.common.collect.Lists;
@@ -122,7 +123,7 @@ public class AtomixCluster extends AbstractCluster {
     }
 
     @Override
-    public ConsistentMap getConsistenMap(String name) {
+    public DistributedMap getConsistenMap(String name) {
         return new AtomixConsistenMap(atomix, name);
     }
 

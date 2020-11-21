@@ -1,11 +1,12 @@
-package com.github.ynfeng.commander.cluster.atomix;
+package com.github.ynfeng.commander.cluster.atomix.primitive;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.cluster.Cluster;
-import com.github.ynfeng.commander.cluster.ConsistentMap;
+import com.github.ynfeng.commander.cluster.atomix.AtomixClusterTestSupport;
+import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
@@ -41,10 +42,10 @@ class AtomixConsistenMapTest extends AtomixClusterTestSupport {
         });
     }
 
-    private <K, V> void doWithMap(Consumer<ConsistentMap<K, V>> consumer) {
+    private <K, V> void doWithMap(Consumer<DistributedMap<K, V>> consumer) {
         Cluster cluster = getCluster();
         cluster.startup();
-        ConsistentMap<K, V> map = cluster.getConsistenMap("test");
+        DistributedMap<K, V> map = cluster.getConsistenMap("test");
         consumer.accept(map);
         map.destory();
         cluster.shutdown();

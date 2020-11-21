@@ -7,7 +7,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterContext;
-import com.github.ynfeng.commander.cluster.ConsistentMap;
+import com.github.ynfeng.commander.cluster.atomix.primitive.AtomixConsistenMap;
+import com.github.ynfeng.commander.cluster.primitive.DistributedMap;
 import com.github.ynfeng.commander.cluster.Partition;
 import com.github.ynfeng.commander.cluster.PartitionManager;
 import java.util.List;
@@ -48,7 +49,7 @@ class AtomixClusterTest extends AtomixClusterTestSupport{
         Cluster cluster = getCluster();
         cluster.startup();
 
-        ConsistentMap<String, String> store = cluster.getConsistenMap("test store");
+        DistributedMap<String, String> store = cluster.getConsistenMap("test store");
         assertThat(store, instanceOf(AtomixConsistenMap.class));
 
         cluster.shutdown();
