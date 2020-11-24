@@ -9,6 +9,7 @@ include 'testutil'
 include 'dist'
 include 'intergration-test'
 include 'akka-engine-provider'
+include 'rx-engine-provider'
 include 'engine'
 include 'primitive'
 

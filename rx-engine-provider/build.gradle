@@ -1,0 +1,12 @@
+project.dependencies {
+    implementation(
+            project(':definition'),
+            project(':engine'),
+            project(':support'),
+            "com.typesafe.akka:akka-actor-typed_2.13:$akkaVersion"
+    )
+
+    testImplementation(
+            project(':testutil')
+    )
+}
