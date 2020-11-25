@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class AkkaForkJoinNodeExecutorTest extends EngineTestSupport {
+public class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
     @Test
     public void should_execute_fork_node() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()

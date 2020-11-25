@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class AkkaServiceNodeExecutorTest extends EngineTestSupport {
+public class ReactorServiceNodeExecutorTest extends EngineTestSupport {
     @Test
     public void should_execute_service_node() throws InterruptedException {
         ProcessDefinition processDefinition = ProcessDefinition.builder()

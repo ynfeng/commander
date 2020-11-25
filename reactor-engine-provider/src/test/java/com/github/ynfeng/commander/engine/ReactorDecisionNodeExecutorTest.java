@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class AkkaDecisionNodeExecutorTest extends EngineTestSupport {
+public class ReactorDecisionNodeExecutorTest extends EngineTestSupport {
     @Test
     public void should_execute_decision_node() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()

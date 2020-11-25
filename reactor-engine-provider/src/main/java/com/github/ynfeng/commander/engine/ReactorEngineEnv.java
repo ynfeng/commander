@@ -21,6 +21,6 @@ public class ReactorEngineEnv extends EngineEnvironment {
 
     @Override
     public String name() {
-        return "akka-engine";
+        return "reactor-engine";
     }
 }

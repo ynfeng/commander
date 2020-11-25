@@ -13,7 +13,7 @@ class ReactorEngineEnvTest {
     public void should_create_akka_engine_environment() {
         ReactorEngineEnv engineEnv = new ReactorEngineEnv(null);
 
-        assertThat(engineEnv.name(), is("akka-engine"));
+        assertThat(engineEnv.name(), is("reactor-engine"));
         assertThat(engineEnv.getProcessIdGenerator(), instanceOf(UUIDProcessIdGenerator.class));
         assertThat(engineEnv.getNodeExecutors(), instanceOf(SPINodeExecutors.class));
     }

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-class AkkaEngineProviderTest {
+class ReactorEngineProviderTest {
     private ReactorEngineProvider provider;
     private EngineEnvironment env;
 
@@ -32,7 +32,7 @@ class AkkaEngineProviderTest {
         Environment env = provider.prepareEnvironment();
 
         assertThat(env, instanceOf(ReactorEngineEnv.class));
-        assertThat(env.name(), is("akka-engine"));
+        assertThat(env.name(), is("reactor-engine"));
     }
 
 }
