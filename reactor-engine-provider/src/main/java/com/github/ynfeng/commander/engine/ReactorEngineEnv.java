@@ -4,8 +4,8 @@ import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.engine.executor.SPINodeExecutors;
 import com.github.ynfeng.commander.support.env.PropertySource;
 
-public class AkkaEngineEnv extends EngineEnvironment {
-    protected AkkaEngineEnv(PropertySource propertySource) {
+public class ReactorEngineEnv extends EngineEnvironment {
+    protected ReactorEngineEnv(PropertySource propertySource) {
         super(propertySource);
     }
 

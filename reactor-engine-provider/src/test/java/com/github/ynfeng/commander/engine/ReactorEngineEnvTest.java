@@ -7,11 +7,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.github.ynfeng.commander.engine.executor.SPINodeExecutors;
 import org.junit.jupiter.api.Test;
 
-class AkkaEngineEnvTest {
+class ReactorEngineEnvTest {
 
     @Test
     public void should_create_akka_engine_environment() {
-        AkkaEngineEnv engineEnv = new AkkaEngineEnv(null);
+        ReactorEngineEnv engineEnv = new ReactorEngineEnv(null);
 
         assertThat(engineEnv.name(), is("akka-engine"));
         assertThat(engineEnv.getProcessIdGenerator(), instanceOf(UUIDProcessIdGenerator.class));

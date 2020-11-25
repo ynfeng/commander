@@ -3,15 +3,15 @@ package com.github.ynfeng.commander.engine;
 import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
 import com.github.ynfeng.commander.support.env.Environment;
 
-public class RxEngineProvider implements EngineProvider {
+public class ReactorEngineProvider implements EngineProvider {
 
     @Override
     public ProcessEngine getEngine(EngineEnvironment environment, ProcessDefinitionRepository definitionRepository) {
-        return new AkkaProcessEngine(environment, definitionRepository);
+        return new ReactorProcessEngine(environment, definitionRepository);
     }
 
     @Override
     public Environment prepareEnvironment() {
-        return new AkkaEngineEnv(null);
+        return new ReactorEngineEnv(null);
     }
 }

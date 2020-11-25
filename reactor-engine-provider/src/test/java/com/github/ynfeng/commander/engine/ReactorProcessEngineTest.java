@@ -20,7 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-class AkkaProcessEngineTest extends EngineTestSupport {
+class ReactorProcessEngineTest extends EngineTestSupport {
     @AfterEach
     public void destory() {
         engine.shutdown();

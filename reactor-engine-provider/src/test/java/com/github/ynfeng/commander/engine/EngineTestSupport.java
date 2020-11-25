@@ -8,7 +8,7 @@ import org.mockito.Mockito;
 public class EngineTestSupport {
     protected ProcessDefinitionRepository repository;
     protected EngineEnvironment environment;
-    protected AkkaProcessEngine engine;
+    protected ReactorProcessEngine engine;
 
     @BeforeEach
     public void setup() {
@@ -23,7 +23,7 @@ public class EngineTestSupport {
                 }
             });
         repository = Mockito.mock(ProcessDefinitionRepository.class);
-        engine = new AkkaProcessEngine(environment, repository);
+        engine = new ReactorProcessEngine(environment, repository);
         engine.startup();
     }
 }

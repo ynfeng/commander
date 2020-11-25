@@ -9,13 +9,13 @@ import com.github.ynfeng.commander.engine.command.StartProcess;
 import com.google.common.base.Preconditions;
 import java.util.Optional;
 
-public class AkkaProcessEngine implements ProcessEngine {
+public class ReactorProcessEngine implements ProcessEngine {
     private EngineEnvironment environment;
     private final ProcessDefinitionRepository definitionRepository;
     private ActorSystem<EngineCommand> engineActor;
 
-    public AkkaProcessEngine(EngineEnvironment environment,
-                             ProcessDefinitionRepository definitionRepository) {
+    public ReactorProcessEngine(EngineEnvironment environment,
+                                ProcessDefinitionRepository definitionRepository) {
         this.environment = environment;
         this.definitionRepository = definitionRepository;
     }
