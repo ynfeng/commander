@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.Optional;
 
 public class RunningNodes {
-    private final Map<String, NodeDefinition> runningNodes = Maps.newHashMap();
+    private final Map<String, NodeDefinition> runningNodes = Maps.newConcurrentMap();
 
     public void add(NodeDefinition nodeDefinition) {
-        runningNodes.put(nodeDefinition.refName(), nodeDefinition);
+        if (nodeDefinition != null && nodeDefinition != NodeDefinition.NULL) {
+            runningNodes.put(nodeDefinition.refName(), nodeDefinition);
+        }
     }
 
     public void remove(String refName) {
@@ -18,5 +20,9 @@ public class RunningNodes {
 
     public Optional<NodeDefinition> get(String refName) {
         return Optional.ofNullable(runningNodes.get(refName));
+    }
+
+    public int size() {
+        return runningNodes.size();
     }
 }

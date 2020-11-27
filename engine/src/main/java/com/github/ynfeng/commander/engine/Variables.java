@@ -1,8 +1,8 @@
 package com.github.ynfeng.commander.engine;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class Variables extends HashMap<String, Object> {
+public class Variables extends ConcurrentHashMap<String, Object> {
     public static final Variables EMPTY = new Variables();
 
     public static Variables copy(Variables input) {

@@ -1,18 +1,20 @@
 package com.github.ynfeng.commander.engine;
 
-import akka.actor.typed.ActorSystem;
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
-import com.github.ynfeng.commander.engine.command.ContinueProcess;
-import com.github.ynfeng.commander.engine.command.EngineCommand;
-import com.github.ynfeng.commander.engine.command.StartProcess;
-import com.google.common.base.Preconditions;
+import com.github.ynfeng.commander.support.logger.CmderLogger;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.Optional;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+import reactor.core.scheduler.Schedulers;
 
 public class ReactorProcessEngine implements ProcessEngine {
-    private EngineEnvironment environment;
+    private static final CmderLogger LOGGER = CmderLoggerFactory.getSystemLogger();
+    private final EngineEnvironment environment;
     private final ProcessDefinitionRepository definitionRepository;
-    private ActorSystem<EngineCommand> engineActor;
+    private final EngineContext context = new EngineContext();
+    private Sinks.Many<EngineCommand> cmdSinks;
 
     public ReactorProcessEngine(EngineEnvironment environment,
                                 ProcessDefinitionRepository definitionRepository) {
@@ -22,18 +24,54 @@ public class ReactorProcessEngine implements ProcessEngine {
 
     @Override
     public void startup() {
-        engineActor = ActorSystem.create(EngineActor.create(environment), "process-engine");
+        cmdSinks = Sinks.many().unicast().onBackpressureBuffer();
+        cmdSinks.asFlux()
+            .publishOn(Schedulers.newParallel("process acceptor"))
+            .subscribe(EngineCommand::execute);
     }
 
     @Override
     public ProcessFuture startProcess(String name, int version, Variables variables) {
-        Optional<ProcessDefinition> candidate = definitionRepository.findProcessDefinition(
-            Preconditions.checkNotNull(name, "process definition name is required."), version);
-        ProcessDefinition processDefinition = candidate.orElseThrow(
-            () -> new ProcessEngineException("process definition was not exists."));
         ProcessFuture future = new ProcessFuture();
-        engineActor.tell(new StartProcess(processDefinition, future, variables));
+        if (name == null) {
+            future.completeExceptionally(new NullPointerException(
+                "process definition name is required."));
+        }
+        cmdSinks.emitNext(() -> startNewProcess(name, version, variables, future),
+            Sinks.EmitFailureHandler.FAIL_FAST);
         return future;
+    }
+
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    private void startNewProcess(String name, int version, Variables variables, ProcessFuture future) {
+        LOGGER.debug("start new process[{},{}] ,variables:{}", name, version, variables);
+        Mono.justOrEmpty(name)
+            .map(defName -> loadProcessDefinition(defName, version))
+            .map(def -> newProcessInstance(def, variables, future))
+            .doOnError(error -> future.completeExceptionally(error))
+            .doOnNext(instance -> saveInstanceToContext(instance))
+            .subscribe(instance -> instance.run());
+    }
+
+    private void saveInstanceToContext(ReactorProcessInstance instance) {
+        context.addProcessInstance(instance);
+    }
+
+    private ReactorProcessInstance newProcessInstance(ProcessDefinition processDefinition,
+                                                      Variables variables,
+                                                      ProcessFuture future) {
+        return ReactorProcessInstance.builder()
+            .environment(environment)
+            .processFuture(future)
+            .variables(variables)
+            .processDefinition(processDefinition)
+            .processId(environment.getProcessIdGenerator().nextId())
+            .build();
+    }
+
+    private ProcessDefinition loadProcessDefinition(String name, int version) {
+        return definitionRepository.findProcessDefinition(name, version)
+            .orElseThrow(() -> new ProcessEngineException("process definition was not exists."));
     }
 
     @Override
@@ -43,13 +81,25 @@ public class ReactorProcessEngine implements ProcessEngine {
 
     @Override
     public void shutdown() {
-        engineActor.terminate();
+        cmdSinks.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
     }
 
+    @SuppressWarnings("checkstyle:MethodLength")
     @Override
-    public ProcessFuture continueProcess(ProcessId processId, String nodeRefName, Variables variables) {
-        ContinueProcess continueProcess = new ContinueProcess(processId, nodeRefName, variables);
-        engineActor.tell(continueProcess);
-        return continueProcess.processFuture();
+    public ContinueFuture continueProcess(ProcessId processId, String nodeRefName, Variables variables) {
+        ContinueFuture continueFuture = new ContinueFuture();
+        cmdSinks.emitNext(() -> {
+            Optional<ReactorProcessInstance> processInstance = context.getProcessInstance(processId);
+            ProcessFuture future = null;
+            if (processInstance.isPresent()) {
+                future = processInstance.get().continueRunningNode(nodeRefName, variables);
+                continueFuture.complete(future);
+            } else {
+                continueFuture.completeExceptionally(
+                    new ProcessEngineException("no such process instance to contine."));
+            }
+        }, Sinks.EmitFailureHandler.FAIL_FAST);
+        return continueFuture;
     }
+
 }

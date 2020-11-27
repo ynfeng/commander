@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class NodeExecutingVariable {
-    private final Map<String, Object> vars = Maps.newHashMap();
+    private final Map<String, Object> vars = Maps.newConcurrentMap();
 
     public <T> T get(String key, T t) {
         Optional<T> optional = (Optional<T>) Optional.ofNullable(vars.get(key));

@@ -35,11 +35,10 @@ public class ReactorServiceNodeExecutorTest extends EngineTestSupport {
         Mockito.when(repository.findProcessDefinition("test", 1))
             .thenReturn(Optional.of(processDefinition));
 
-        try {
-            engine.startProcess("test", 1).get(1, TimeUnit.SECONDS);
-        } catch (Exception e) {
-        }
-        ProcessInstanceInfo info = engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY).join();
+        engine.startProcess("test", 1).waitNodeStart("aService", 1, TimeUnit.MINUTES);
+        ProcessInstanceResult info = engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY)
+            .getProcessFuture()
+            .join();
 
         List<NodeDefinition> nodeDefinitions = info.executedNodes();
         assertThat(nodeDefinitions.get(0).refName(), is("start"));

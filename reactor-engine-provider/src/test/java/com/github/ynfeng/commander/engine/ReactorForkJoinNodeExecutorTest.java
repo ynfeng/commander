@@ -15,13 +15,14 @@ import com.github.ynfeng.commander.definition.ServiceDefinition;
 import com.github.ynfeng.commander.definition.StartDefinition;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
     @Test
-    public void should_execute_fork_node() {
+    public void should_execute_fork_node() throws ExecutionException, InterruptedException {
         ProcessDefinition processDefinition = ProcessDefinition.builder()
             .withName("test")
             .withVersion(1)
@@ -44,12 +45,13 @@ public class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
         Mockito.when(repository.findProcessDefinition("test", 1))
             .thenReturn(Optional.of(processDefinition));
 
-        try {
-            engine.startProcess("test", 1).get(1, TimeUnit.SECONDS);
-        } catch (Exception e) {
-        }
+        ProcessFuture future = engine.startProcess("test", 1)
+            .waitNodeStart("aService", 1, TimeUnit.DAYS)
+            .waitNodeStart("otherService", 1, TimeUnit.DAYS);
+
         engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY);
-        ProcessInstanceInfo info = engine.continueProcess(ProcessId.of("1"), "otherService", Variables.EMPTY).join();
+        engine.continueProcess(ProcessId.of("1"), "otherService", Variables.EMPTY);
+        ProcessInstanceResult info = future.waitNodeComplete("end", 1, TimeUnit.DAYS).get();
 
         List<NodeDefinition> executedNodes = info.executedNodes();
         assertThat(executedNodes.get(0).refName(), is("start"));

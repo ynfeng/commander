@@ -49,10 +49,10 @@ public class ReactorDecisionNodeExecutorTest extends EngineTestSupport {
         } catch (Exception e) {
         }
         try {
-            engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY).get(1, TimeUnit.SECONDS);
+            engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY).getProcessFuture().get(1,TimeUnit.SECONDS);
         } catch (Exception e) {
         }
-        ProcessInstanceInfo info = engine.continueProcess(ProcessId.of("1"), "bService", Variables.EMPTY).join();
+        ProcessInstanceResult info = engine.continueProcess(ProcessId.of("1"), "bService", Variables.EMPTY).getProcessFuture().join();
         List<NodeDefinition> executedNodes = info.executedNodes();
         assertThat(executedNodes.get(2).refName(), is("aService"));
         assertThat(executedNodes.get(3).refName(), is("bService"));
@@ -91,7 +91,7 @@ public class ReactorDecisionNodeExecutorTest extends EngineTestSupport {
             engine.startProcess("test", 1, variables).get(1, TimeUnit.SECONDS);
         } catch (Exception e) {
         }
-        ProcessInstanceInfo info = engine.continueProcess(ProcessId.of("1"), "defaultService", Variables.EMPTY).join();
+        ProcessInstanceResult info = engine.continueProcess(ProcessId.of("1"), "defaultService", Variables.EMPTY).getProcessFuture().join();
         List<NodeDefinition> executedNodes = info.executedNodes();
         assertThat(executedNodes.get(2).refName(), is("defaultService"));
     }

@@ -1,28 +1,18 @@
 package com.github.ynfeng.commander.engine;
 
-import akka.actor.typed.ActorRef;
 import com.github.ynfeng.commander.definition.NodeDefinition;
-import com.github.ynfeng.commander.engine.command.EngineCommand;
+import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
+import com.google.common.collect.Maps;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class ProcessInstanceRuntimeContext {
-    private final ExecutorActors executorActors = new ExecutorActors();
     private final ReadyNodes readyNodes = new ReadyNodes();
     private final RunningNodes runningNodes = new RunningNodes();
     private final ExecutedNodes executedNodes = new ExecutedNodes();
-
-    public void addExecutorActors(String refName, ActorRef<EngineCommand> executorRef) {
-        executorActors.add(refName, executorRef);
-    }
-
-    public ActorRef<EngineCommand> getExecutorActor(String refName) {
-        return executorActors.get(refName);
-    }
-
-    public ActorRef<EngineCommand> removeExecutorActor(String refName) {
-        return executorActors.remove(refName);
-    }
+    private final Map<String, UpdatableNodeExecutingVariable> nodeExecutingVariables = Maps.newConcurrentMap();
 
     public void addReadyNode(NodeDefinition nextNode) {
         readyNodes.add(nextNode);
@@ -50,5 +40,22 @@ public class ProcessInstanceRuntimeContext {
 
     public List<NodeDefinition> getExecuteNodeList() {
         return executedNodes.toList();
+    }
+
+    public List<String> getExecuteNodeRefNames() {
+        return getExecuteNodeList()
+            .stream()
+            .map(NodeDefinition::refName)
+            .collect(Collectors.toList());
+    }
+
+    public void setNodeExecutingVariable(String refName, String key, Object val) {
+        nodeExecutingVariables.get(refName).put(key, val);
+    }
+
+    public NodeExecutingVariable getNodeExecutingVariable(String refName) {
+        return nodeExecutingVariables.computeIfAbsent(refName, k -> {
+            return new UpdatableNodeExecutingVariable();
+        });
     }
 }

@@ -9,5 +9,5 @@ public interface ProcessEngine {
 
     void shutdown();
 
-    ProcessFuture continueProcess(ProcessId processId, String nodeRefName, Variables variables);
+    ContinueFuture continueProcess(ProcessId processId, String nodeRefName, Variables variables);
 }

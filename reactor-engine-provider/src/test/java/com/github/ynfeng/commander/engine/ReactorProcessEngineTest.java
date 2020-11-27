@@ -43,7 +43,7 @@ class ReactorProcessEngineTest extends EngineTestSupport {
         Mockito.when(repository.findProcessDefinition("test", 1))
             .thenReturn(Optional.of(processDefinition));
 
-        ProcessInstanceInfo info = engine.startProcess("test", 1).join();
+        ProcessInstanceResult info = engine.startProcess("test", 1).join();
 
         List<NodeDefinition> nodeDefinitions = info.executedNodes();
         assertThat(nodeDefinitions.get(0).refName(), is("start"));
@@ -73,9 +73,9 @@ class ReactorProcessEngineTest extends EngineTestSupport {
         } catch (Exception e) {
         }
 
-        ProcessFuture processFuture = engine.continueProcess(ProcessId.of("1"), "notExists", Variables.EMPTY);
+        ContinueFuture future = engine.continueProcess(ProcessId.of("1"), "notExists", Variables.EMPTY);
         try {
-            processFuture.join();
+            future.getProcessFuture().join();
             fail("Should throw exception.");
         } catch (CompletionException e) {
             assertThat(e.getCause(), instanceOf(ProcessEngineException.class));
@@ -107,24 +107,24 @@ class ReactorProcessEngineTest extends EngineTestSupport {
         } catch (Exception e) {
         }
 
-        ProcessFuture processFuture = engine.continueProcess(ProcessId.of("2"), "aService", Variables.EMPTY);
+        ContinueFuture future = engine.continueProcess(ProcessId.of("2"), "aService", Variables.EMPTY);
         try {
-            processFuture.join();
+            future.getProcessFuture();
             fail("Should throw exception.");
         } catch (CompletionException e) {
             assertThat(e.getCause(), instanceOf(ProcessEngineException.class));
             ProcessEngineException pe = (ProcessEngineException) e.getCause();
-            assertThat(pe.getMessage(), is("No such process instance [2]"));
+            assertThat(pe.getMessage(), is("no such process instance to contine."));
         }
     }
 
     @Test
     public void should_throw_exception_when_process_definition_name_was_null() {
         try {
-            engine.startProcess(null, 1);
+            engine.startProcess(null, 1).join();
             fail("Should throw exception.");
-        } catch (NullPointerException e) {
-            assertThat(e.getMessage(), is("process definition name is required."));
+        } catch (Exception e) {
+            assertThat(e.getCause().getMessage(), is("process definition name is required."));
         }
     }
 
@@ -133,10 +133,10 @@ class ReactorProcessEngineTest extends EngineTestSupport {
         try {
             Mockito.when(repository.findProcessDefinition("test", 1))
                 .thenReturn(Optional.empty());
-            engine.startProcess("test", 1);
+            engine.startProcess("test", 1).join();
             fail("Should throw exception.");
-        } catch (ProcessEngineException e) {
-            assertThat(e.getMessage(), is("process definition was not exists."));
+        } catch (Exception e) {
+            assertThat(e.getCause().getMessage(), is("process definition was not exists."));
         }
     }
 
