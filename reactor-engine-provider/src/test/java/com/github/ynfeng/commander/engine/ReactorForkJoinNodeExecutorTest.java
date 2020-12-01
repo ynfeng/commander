@@ -13,10 +13,10 @@ import com.github.ynfeng.commander.definition.RelationShips;
 import com.github.ynfeng.commander.definition.ServiceCoordinate;
 import com.github.ynfeng.commander.definition.ServiceDefinition;
 import com.github.ynfeng.commander.definition.StartDefinition;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -46,12 +46,12 @@ public class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
             .thenReturn(Optional.of(processDefinition));
 
         ProcessFuture future = engine.startProcess("test", 1)
-            .waitNodeStart("aService", 1, TimeUnit.DAYS)
-            .waitNodeStart("otherService", 1, TimeUnit.DAYS);
+            .waitNodeStart("aService", Duration.ofMinutes(1))
+            .waitNodeStart("otherService", Duration.ofMinutes(1));
 
         engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY);
         engine.continueProcess(ProcessId.of("1"), "otherService", Variables.EMPTY);
-        ProcessInstanceResult info = future.waitNodeComplete("end", 1, TimeUnit.DAYS).get();
+        ProcessInstanceResult info = future.waitNodeComplete("end", Duration.ofMinutes(1)).get();
 
         List<NodeDefinition> executedNodes = info.executedNodes();
         assertThat(executedNodes.get(0).refName(), is("start"));

@@ -1,5 +1,6 @@
 package com.github.ynfeng.commander.engine;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -10,9 +11,9 @@ public class ContinueFuture {
         return future.join();
     }
 
-    public ProcessFuture getProcessFuture(long timeout, TimeUnit timeUnit)  {
+    public ProcessFuture getProcessFuture(Duration duration)  {
         try {
-            return future.get(timeout, timeUnit);
+            return future.get(duration.toMillis(), TimeUnit.MILLISECONDS);
         } catch (Throwable t) {
             throw new ProcessFutureException(t);
         }

@@ -10,9 +10,9 @@ import com.github.ynfeng.commander.definition.RelationShips;
 import com.github.ynfeng.commander.definition.ServiceCoordinate;
 import com.github.ynfeng.commander.definition.ServiceDefinition;
 import com.github.ynfeng.commander.definition.StartDefinition;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -35,7 +35,7 @@ public class ReactorServiceNodeExecutorTest extends EngineTestSupport {
         Mockito.when(repository.findProcessDefinition("test", 1))
             .thenReturn(Optional.of(processDefinition));
 
-        engine.startProcess("test", 1).waitNodeStart("aService", 1, TimeUnit.MINUTES);
+        engine.startProcess("test", 1).waitNodeStart("aService", Duration.ofMinutes(1));
         ProcessInstanceResult info = engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY)
             .getProcessFuture()
             .join();
