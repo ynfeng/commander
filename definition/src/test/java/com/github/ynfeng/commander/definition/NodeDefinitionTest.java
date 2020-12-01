@@ -39,4 +39,10 @@ class NodeDefinitionTest {
         assertThat(n1.hashCode(), is(0));
     }
 
+    @Test
+    public void should_not_equals_with_null() {
+        ForkDefinition n1 = new ForkDefinition(null);
+        assertThat(n1.equals(null), is(false));
+    }
+
 }
