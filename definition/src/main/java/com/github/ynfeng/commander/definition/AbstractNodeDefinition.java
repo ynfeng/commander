@@ -16,9 +16,11 @@ public abstract class AbstractNodeDefinition implements NodeDefinition {
 
     @Override
     public boolean equals(Object o) {
+        if (getClass() != o.getClass()) {
+            return false;
+        }
         AbstractNodeDefinition that = (AbstractNodeDefinition) o;
-        return  getClass() == that.getClass()
-            && Objects.equals(refName, that.refName);
+        return Objects.equals(refName, that.refName);
     }
 
     @Override

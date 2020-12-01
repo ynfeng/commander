@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.definition;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,12 @@ class NodeDefinitionTest {
     }
 
     @Test
+    public void should_not_equals_with_different_class() {
+        ForkDefinition fork = new ForkDefinition("aFork");
+        assertThat(fork, not("fork"));
+    }
+
+    @Test
     public void should_equals_when_same_ref_name() {
         ForkDefinition n1 = new ForkDefinition("aFork");
         ForkDefinition n2 = new ForkDefinition("aFork");
@@ -20,14 +27,14 @@ class NodeDefinitionTest {
     }
 
     @Test
-    public void should_same_hash_code_when_same_ref_name(){
+    public void should_same_hash_code_when_same_ref_name() {
         ForkDefinition n1 = new ForkDefinition("aFork");
         ForkDefinition n2 = new ForkDefinition("aFork");
         assertThat(n1.hashCode(), is(n2.hashCode()));
     }
 
     @Test
-    public void should_0_when_null_ref_name(){
+    public void should_0_when_null_ref_name() {
         ForkDefinition n1 = new ForkDefinition(null);
         assertThat(n1.hashCode(), is(0));
     }
