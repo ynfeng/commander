@@ -7,8 +7,6 @@ public interface Cluster {
 
     void shutdown();
 
-    PartitionManager createPartitionManager();
-
     PrimitiveFactory getGetPrimitiveFactory();
 
     ClusterContext getContext();

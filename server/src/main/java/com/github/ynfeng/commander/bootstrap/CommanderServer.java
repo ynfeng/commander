@@ -3,7 +3,6 @@ package com.github.ynfeng.commander.bootstrap;
 import com.github.ynfeng.commander.cluster.Cluster;
 import com.github.ynfeng.commander.cluster.ClusterProvider;
 import com.github.ynfeng.commander.cluster.ClusterProviderLoader;
-import com.github.ynfeng.commander.cluster.PartitionManager;
 import com.github.ynfeng.commander.support.env.Environment;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
@@ -22,14 +21,7 @@ public class CommanderServer {
     public void bootstrap() throws Exception {
         startSteps.add(new StartStep("Cluster protocol", this::initCluster));
         startSteps.add(new StartStep("Cluster services", this::startCluster));
-        startSteps.add(new StartStep("Partition manager", this::createPartitionManager));
         shutdownSteps = startSteps.execute();
-    }
-
-    private AutoCloseable createPartitionManager() {
-        PartitionManager pm = cluster.createPartitionManager();
-        return () -> {
-        };
     }
 
     private AutoCloseable startCluster() {

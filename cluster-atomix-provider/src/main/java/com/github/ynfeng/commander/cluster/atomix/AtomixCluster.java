@@ -2,7 +2,6 @@ package com.github.ynfeng.commander.cluster.atomix;
 
 import com.github.ynfeng.commander.cluster.AbstractCluster;
 import com.github.ynfeng.commander.cluster.ClusterContext;
-import com.github.ynfeng.commander.cluster.PartitionManager;
 import com.github.ynfeng.commander.primitive.PrimitiveFactory;
 import com.github.ynfeng.commander.support.env.Environment;
 import com.google.common.collect.Lists;
@@ -116,11 +115,6 @@ public class AtomixCluster extends AbstractCluster {
     @Override
     public void stop() {
         atomix.stop().join();
-    }
-
-    @Override
-    public PartitionManager createPartitionManager() {
-        return new AtomixPartitionManager(atomix);
     }
 
     @Override
