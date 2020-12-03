@@ -113,9 +113,7 @@ public class ReactorProcessInstance implements ProcessInstance {
     }
 
     @Override
-    public CompletableFuture<NodeExecutingVariable> setNodeExecutingVariable(String refName,
-                                                                             String key,
-                                                                             Object val) {
+    public CompletableFuture<NodeExecutingVariable> setNodeExecutingVariable(String refName, String key, Object val) {
         CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<NodeExecutingVariable>();
         commandSinks.emitNext(() -> {
             context.setNodeExecutingVariable(refName, key, val);
