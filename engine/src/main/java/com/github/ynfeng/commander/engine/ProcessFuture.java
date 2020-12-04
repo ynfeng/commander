@@ -34,7 +34,7 @@ public class ProcessFuture {
     public ProcessFuture waitNodeComplete(String refName, Duration duration) {
         return doWithException(() -> {
             CompletableFuture<?> condition = conditions
-                .computeIfAbsent(refName, k -> new CompletableFuture<>());
+                .computeIfAbsent(getCompleteNotificationKey(refName), k -> new CompletableFuture<>());
             checkOccurredException(condition);
             condition.get(duration.toMillis(), TimeUnit.MILLISECONDS);
         });
@@ -59,7 +59,7 @@ public class ProcessFuture {
     }
 
     protected void notifyNodeComplete(String refName) {
-        conditions.get(refName)
+        conditions.get(getCompleteNotificationKey(refName))
             .complete(null);
     }
 
@@ -72,11 +72,15 @@ public class ProcessFuture {
         return String.format("%s##start##", refName);
     }
 
+    private static String getCompleteNotificationKey(String refName) {
+        return String.format("%s##complete##", refName);
+    }
+
     protected void makeNotifyCondition(String refName) {
         conditions
             .computeIfAbsent(getStartNotificationKey(refName), k -> new CompletableFuture<>());
         conditions
-            .computeIfAbsent(refName, k -> new CompletableFuture<>());
+            .computeIfAbsent(getCompleteNotificationKey(refName), k -> new CompletableFuture<>());
     }
 
     private ProcessFuture doWithException(UnsafeRunner runner) {
