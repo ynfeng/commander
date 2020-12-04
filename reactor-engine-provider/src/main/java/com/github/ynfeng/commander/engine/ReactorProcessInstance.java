@@ -28,13 +28,18 @@ public class ReactorProcessInstance implements ProcessInstance {
             .publishOn(scheduler)
             .doOnNext(EngineCommand::execute)
             .doOnComplete(() -> assemblyResult())
-            .doOnError(error -> future.completeExceptionally(error))
+            .doOnError(error -> assemblyException(error))
             .subscribe();
     }
 
+    private void assemblyException(Throwable error) {
+        future.notifyProcessCompleteExceptionally(error);
+    }
+
     private void assemblyResult() {
-        future.complete(
-            new ProcessInstanceResult(context.getExecuteNodeList()));
+        ProcessResult.ProcessResultBuilder builder = ProcessResult.builder()
+            .executedNodes(context.getExecuteNodeRefNames());
+        future.notifyProcessComplete(builder.build());
     }
 
     @Override

@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.definition.EndDefinition;
-import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.RelationShips;
 import com.github.ynfeng.commander.definition.ServiceCoordinate;
@@ -36,13 +35,12 @@ public class ReactorServiceNodeExecutorTest extends EngineTestSupport {
             .thenReturn(Optional.of(processDefinition));
 
         engine.startProcess("test", 1).waitNodeStart("aService", Duration.ofMinutes(1));
-        ProcessInstanceResult info = engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY)
-            .getProcessFuture()
-            .join();
+        List<String> executedNodes = engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY)
+            .waitProcessComplete(Duration.ofMinutes(1))
+            .executedNodes();
 
-        List<NodeDefinition> nodeDefinitions = info.executedNodes();
-        assertThat(nodeDefinitions.get(0).refName(), is("start"));
-        assertThat(nodeDefinitions.get(1).refName(), is("aService"));
-        assertThat(nodeDefinitions.get(2).refName(), is("end"));
+        assertThat(executedNodes.get(0), is("start"));
+        assertThat(executedNodes.get(1), is("aService"));
+        assertThat(executedNodes.get(2), is("end"));
     }
 }

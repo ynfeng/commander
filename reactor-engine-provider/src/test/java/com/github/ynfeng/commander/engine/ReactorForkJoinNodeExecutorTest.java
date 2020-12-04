@@ -7,7 +7,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.github.ynfeng.commander.definition.EndDefinition;
 import com.github.ynfeng.commander.definition.ForkDefinition;
 import com.github.ynfeng.commander.definition.JoinDefinition;
-import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.RelationShips;
 import com.github.ynfeng.commander.definition.ServiceCoordinate;
@@ -16,13 +15,12 @@ import com.github.ynfeng.commander.definition.StartDefinition;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
     @Test
-    public void should_execute_fork_node() throws ExecutionException, InterruptedException {
+    public void should_execute_fork_node() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()
             .withName("test")
             .withVersion(1)
@@ -51,15 +49,14 @@ public class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
 
         engine.continueProcess(ProcessId.of("1"), "aService", Variables.EMPTY);
         engine.continueProcess(ProcessId.of("1"), "otherService", Variables.EMPTY);
-        ProcessInstanceResult info = future.waitNodeComplete("end", Duration.ofMinutes(1)).get();
+        List<String> executedNodes = future.waitProcessComplete(Duration.ofMinutes(1)).executedNodes();
 
-        List<NodeDefinition> executedNodes = info.executedNodes();
-        assertThat(executedNodes.get(0).refName(), is("start"));
-        assertThat(executedNodes.get(1).refName(), is("aFork"));
-        assertThat(executedNodes.get(2).refName(), containsString("Service"));
-        assertThat(executedNodes.get(3).refName(), containsString("Service"));
-        assertThat(executedNodes.get(4).refName(), is("aJoin"));
-        assertThat(executedNodes.get(5).refName(), is("end"));
+        assertThat(executedNodes.get(0), is("start"));
+        assertThat(executedNodes.get(1), is("aFork"));
+        assertThat(executedNodes.get(2), containsString("Service"));
+        assertThat(executedNodes.get(3), containsString("Service"));
+        assertThat(executedNodes.get(4), is("aJoin"));
+        assertThat(executedNodes.get(5), is("end"));
     }
 
 }

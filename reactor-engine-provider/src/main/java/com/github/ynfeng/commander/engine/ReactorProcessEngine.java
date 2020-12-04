@@ -34,7 +34,7 @@ public class ReactorProcessEngine implements ProcessEngine {
     public ProcessFuture startProcess(String name, int version, Variables variables) {
         ProcessFuture future = new ProcessFuture();
         if (name == null) {
-            future.completeExceptionally(new NullPointerException(
+            future.notifyProcessCompleteExceptionally(new NullPointerException(
                 "process definition name is required."));
         }
         cmdSinks.emitNext(() -> startNewProcess(name, version, variables, future),
@@ -48,7 +48,7 @@ public class ReactorProcessEngine implements ProcessEngine {
         Mono.justOrEmpty(name)
             .map(defName -> loadProcessDefinition(defName, version))
             .map(def -> newProcessInstance(def, variables, future))
-            .doOnError(error -> future.completeExceptionally(error))
+            .doOnError(error -> future.notifyProcessCompleteExceptionally(error))
             .doOnNext(instance -> saveInstanceToContext(instance))
             .subscribe(instance -> instance.run());
     }
