@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.engine;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -48,6 +49,29 @@ class ReactorProcessEngineTest extends EngineTestSupport {
 
         assertThat(executedNodes.get(0), is("start"));
         assertThat(executedNodes.get(1), is("end"));
+    }
+
+    @Test
+    public void should_get_process_id_after_start_process() {
+        ProcessDefinition processDefinition = ProcessDefinition.builder()
+            .withVersion(1)
+            .withName("test")
+            .withNodes(
+                new StartDefinition(),
+                new EndDefinition("end")
+            ).withRelationShips(
+                RelationShips.builder()
+                    .withLink("start", "end")
+                    .build()
+            ).build();
+
+        Mockito.when(repository.findProcessDefinition("test", 1))
+            .thenReturn(Optional.of(processDefinition));
+
+        ProcessId processId = engine.startProcess("test", 1)
+            .processId(Duration.ofMinutes(1));
+
+        assertThat(processId, notNullValue());
     }
 
     @Test
@@ -126,7 +150,8 @@ class ReactorProcessEngineTest extends EngineTestSupport {
         try {
             Mockito.when(repository.findProcessDefinition("test", 1))
                 .thenReturn(Optional.empty());
-            engine.startProcess("test", 1).waitNodeStart("start", Duration.ofMinutes(1));
+            engine.startProcess("test", 1)
+                .waitNodeStart("start", Duration.ofSeconds(1));
             fail("Should throw exception.");
         } catch (Exception e) {
             assertThat(e.getCause().getCause().getMessage(), is("process definition was not exists."));

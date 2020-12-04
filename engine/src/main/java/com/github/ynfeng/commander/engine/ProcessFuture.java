@@ -10,11 +10,25 @@ import java.util.concurrent.TimeUnit;
 public class ProcessFuture {
     private final Map<String, CompletableFuture<?>> conditions = Maps.newConcurrentMap();
     private final CompletableFuture<ProcessResult> completeFuture = new CompletableFuture<>();
+    private final CompletableFuture<ProcessId> processIdFuture = new CompletableFuture<>();
 
     public ProcessFuture() {
-        completeFuture.whenComplete((r, t) -> {
-            conditions.forEach((key, value) -> value.completeExceptionally(t));
+        completeFuture.whenComplete((v, t) -> {
+            if (t != null) {
+                conditions.forEach((key, value) -> value.completeExceptionally(t));
+            }
         });
+    }
+
+    private void checkOccurredException(CompletableFuture<?> condition) {
+        if (completeFuture.isCompletedExceptionally()) {
+            try {
+                completeFuture.get();
+            } catch (Exception e) {
+                condition.completeExceptionally(e);
+                conditions.forEach((key, value) -> value.completeExceptionally(e));
+            }
+        }
     }
 
     public ProcessFuture waitNodeComplete(String refName, Duration duration) {
@@ -26,20 +40,19 @@ public class ProcessFuture {
         });
     }
 
-    private void checkOccurredException(CompletableFuture<?> condition) {
-        if (completeFuture.isCompletedExceptionally()) {
-            try {
-                completeFuture.get();
-            } catch (Exception e) {
-                condition.completeExceptionally(e);
-            }
+    public ProcessId processId(Duration waitTime) {
+        try {
+            checkOccurredException(processIdFuture);
+            return processIdFuture.get(waitTime.toMillis(), TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            throw new ProcessFutureException(e);
         }
     }
 
     public ProcessFuture waitNodeStart(String refName, Duration duration) {
         return doWithException(() -> {
             CompletableFuture<?> condition = conditions
-                .computeIfAbsent(getStartNodeKey(refName), k -> new CompletableFuture<>());
+                .computeIfAbsent(getStartNotificationKey(refName), k -> new CompletableFuture<>());
             checkOccurredException(condition);
             condition.get(duration.toMillis(), TimeUnit.MILLISECONDS);
         });
@@ -51,17 +64,17 @@ public class ProcessFuture {
     }
 
     protected void notifyNodeStart(String refName) {
-        conditions.get(getStartNodeKey(refName))
+        conditions.get(getStartNotificationKey(refName))
             .complete(null);
     }
 
-    private String getStartNodeKey(String refName) {
+    private static String getStartNotificationKey(String refName) {
         return String.format("%s##start##", refName);
     }
 
     protected void makeNotifyCondition(String refName) {
         conditions
-            .computeIfAbsent(getStartNodeKey(refName), k -> new CompletableFuture<>());
+            .computeIfAbsent(getStartNotificationKey(refName), k -> new CompletableFuture<>());
         conditions
             .computeIfAbsent(refName, k -> new CompletableFuture<>());
     }
@@ -95,5 +108,9 @@ public class ProcessFuture {
 
     public void notifyProcessCompleteExceptionally(Throwable t) {
         completeFuture.completeExceptionally(t);
+    }
+
+    public void notifyProcessId(ProcessId processId) {
+        processIdFuture.complete(processId);
     }
 }

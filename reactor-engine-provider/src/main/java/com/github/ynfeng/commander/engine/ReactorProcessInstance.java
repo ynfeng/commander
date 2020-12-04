@@ -140,6 +140,7 @@ public class ReactorProcessInstance implements ProcessInstance {
     public void run() {
         addReadyNode(processDefinition.firstNode());
         runReadyNodes();
+        future.notifyProcessId(processId);
     }
 
     @SuppressWarnings("checkstyle:MethodLength")

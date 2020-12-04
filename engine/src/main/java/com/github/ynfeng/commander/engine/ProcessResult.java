@@ -6,8 +6,6 @@ import java.util.List;
 
 public class ProcessResult {
     private final List<String> executedNodes = Lists.newArrayList();
-    private Throwable exception;
-
     private ProcessResult() {
 
     }
