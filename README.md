@@ -13,11 +13,9 @@ A microservice orchestration engine.
 
  * [X] Flow definitions 
  * [X] Flow engine
- * [ ] Cluster support [Developing]
- * [X] Actor model support
+ * [ ] Cluster [Developing]
  * [ ] RPC support
  * [ ] Flow DSL
  * [ ] Command line cluster controller
- * [ ] Alpha version release
 
 
