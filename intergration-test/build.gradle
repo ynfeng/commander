@@ -2,6 +2,5 @@ project.dependencies {
     implementation(
             project(':server'),
             project(':cluster'),
-            project(':cluster-atomix-provider')
     )
 }
