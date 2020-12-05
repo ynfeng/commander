@@ -1,5 +1,6 @@
 package com.github.ynfeng.commander.engine;
 
+import com.github.ynfeng.commander.support.CheckedRunnable;
 import com.google.common.collect.Maps;
 import java.time.Duration;
 import java.util.List;
@@ -83,7 +84,7 @@ public class ProcessFuture {
             .computeIfAbsent(getCompleteNotificationKey(refName), k -> new CompletableFuture<>());
     }
 
-    private ProcessFuture doWithException(UnsafeRunner runner) {
+    private ProcessFuture doWithException(CheckedRunnable runner) {
         try {
             runner.run();
         } catch (Throwable e) {
