@@ -41,7 +41,7 @@ public class ModuleTest {
             fail("should throw exception.");
         } catch (Exception e) {
             assertThat(e, instanceOf(ModuleException.class));
-            assertThat(e.getMessage(), is("component[NotExistsComponent] not found in module[test]"));
+            assertThat(e.getMessage(), is("component 'com.github.commander.module.NotExistsComponent' not found in module 'test'"));
         }
     }
 }

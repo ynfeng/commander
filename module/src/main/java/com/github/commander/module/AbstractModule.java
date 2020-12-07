@@ -9,8 +9,8 @@ public abstract class AbstractModule<C extends ModuleConfig> implements Module<C
     @Override
     public <T extends Component> Component getComponent(Class<T> componentType) {
         if (componentRegistry.get(componentType) == null) {
-            throw new ModuleException(String.format("component[%s] not found in module[%s]",
-                componentType.getSimpleName(), name()));
+            throw new ModuleException(String.format("component '%s' not found in module '%s'",
+                componentType.getName(), name()));
         }
         return componentRegistry.get(componentType);
     }
