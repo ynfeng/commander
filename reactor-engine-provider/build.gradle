@@ -3,13 +3,11 @@ project.dependencies {
             project(':definition'),
             project(':engine'),
             project(':support'),
-            "com.typesafe.akka:akka-actor-typed_2.13:$akkaVersion",
             platform('io.projectreactor:reactor-bom:2020.0.2-SNAPSHOT'),
             'io.projectreactor:reactor-core',
     )
 
     testImplementation(
-            project(':testutil')
-
+            project(':testtools')
     )
 }

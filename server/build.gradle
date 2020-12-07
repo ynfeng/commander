@@ -4,6 +4,6 @@ project.dependencies {
             project(':support')
     )
     testImplementation(
-            project(':testutil')
+            project(':testtools')
     )
 }

@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.testutil;
+package com.github.ynfeng.commander.testtools;
 
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;

@@ -207,7 +207,9 @@ public class CmderLogger implements Logger {
 
     @Override
     public void info(String msg, Throwable t) {
-
+        if (logger.isInfoEnabled()) {
+            logger.info(msg, t);
+        }
     }
 
     @Override
