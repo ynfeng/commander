@@ -1,8 +1,8 @@
 package com.github.ynfeng.commander.cluster.discovery;
 
 public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
-    private final MulticastDiscoveryConfig config;
     public static final Type TYPE = new Type();
+    private final MulticastDiscoveryConfig config;
 
     public MulticastDiscoveryProtocol(MulticastDiscoveryConfig config) {
         this.config = config;

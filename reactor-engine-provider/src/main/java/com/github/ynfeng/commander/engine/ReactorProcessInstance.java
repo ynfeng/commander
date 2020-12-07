@@ -13,13 +13,13 @@ import reactor.core.scheduler.Schedulers;
 
 public class ReactorProcessInstance implements ProcessInstance {
     private static final CmderLogger LOGGER = CmderLoggerFactory.getSystemLogger();
+    private final Sinks.Many<EngineCommand> commandSinks;
+    private final Variables input = new Variables();
+    private final ProcessInstanceRuntimeContext context = new ProcessInstanceRuntimeContext();
     private ProcessId processId;
     private ProcessFuture future;
     private EngineEnvironment environment;
     private ProcessDefinition processDefinition;
-    private final Sinks.Many<EngineCommand> commandSinks;
-    private final Variables input = new Variables();
-    private final ProcessInstanceRuntimeContext context = new ProcessInstanceRuntimeContext();
 
     protected ReactorProcessInstance() {
         commandSinks = Sinks.many().unicast().onBackpressureBuffer();
@@ -30,6 +30,10 @@ public class ReactorProcessInstance implements ProcessInstance {
             .doOnComplete(() -> assemblyResult())
             .doOnError(error -> assemblyException(error))
             .subscribe();
+    }
+
+    public static ProcessInstanceBuilder builder() {
+        return new ProcessInstanceBuilder();
     }
 
     private void assemblyException(Throwable error) {
@@ -165,10 +169,6 @@ public class ReactorProcessInstance implements ProcessInstance {
         this.processId = processId;
     }
 
-    protected void setInput(Variables variables) {
-        input.merge(variables);
-    }
-
     protected void setProcessFuture(ProcessFuture processFuture) {
         future = processFuture;
     }
@@ -181,11 +181,11 @@ public class ReactorProcessInstance implements ProcessInstance {
         this.processDefinition = processDefinition;
     }
 
-    public static ProcessInstanceBuilder builder() {
-        return new ProcessInstanceBuilder();
-    }
-
     public Variables getInput() {
         return input;
+    }
+
+    protected void setInput(Variables variables) {
+        input.merge(variables);
     }
 }

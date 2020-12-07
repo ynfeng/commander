@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class ReadyNodesTest {
 
     @Test
-    public void should_not_add_null_and_null_NULL_definition(){
+    public void should_not_add_null_and_null_NULL_definition() {
         ReadyNodes readyNodes = new ReadyNodes();
         readyNodes.add(null);
         readyNodes.add(NodeDefinition.NULL);

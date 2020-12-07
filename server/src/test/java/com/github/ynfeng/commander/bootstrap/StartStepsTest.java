@@ -14,6 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 class StartStepsTest {
+    private static String getLogMessage(int index) {
+        List<LoggingEvent> events = TestableLoggerAppender.getEvents();
+        LoggingEvent loggingEvent = events.get(index);
+        return loggingEvent.getFormattedMessage();
+    }
+
     @BeforeEach
     public void setup() {
         TestableLoggerAppender.reset();
@@ -47,12 +53,5 @@ class StartStepsTest {
         }
 
         assertThat(getLogMessage(0), is("Bootstrap test [1/1] failed with unexpected exception."));
-    }
-
-
-    private static String getLogMessage(int index) {
-        List<LoggingEvent> events = TestableLoggerAppender.getEvents();
-        LoggingEvent loggingEvent = events.get(index);
-        return loggingEvent.getFormattedMessage();
     }
 }

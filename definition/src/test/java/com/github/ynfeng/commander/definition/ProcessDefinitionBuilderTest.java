@@ -211,6 +211,6 @@ public class ProcessDefinitionBuilderTest {
         assertThat(otherService.next().refName(), is("aJoin"));
         assertThat(joinDefinition, sameInstance(otherService.next()));
         assertThat(joinDefinition.next().refName(), is("end"));
-        assertThat(joinDefinition.ons(), is(Arrays.asList("aService","otherService")));
+        assertThat(joinDefinition.ons(), is(Arrays.asList("aService", "otherService")));
     }
 }

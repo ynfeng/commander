@@ -14,6 +14,12 @@ import org.mockito.Mockito;
 
 class ShutdownStepsTest {
 
+    private static String getLogMessage(int index) {
+        List<LoggingEvent> events = TestableLoggerAppender.getEvents();
+        LoggingEvent loggingEvent = events.get(index);
+        return loggingEvent.getFormattedMessage();
+    }
+
     @BeforeEach
     public void setup() {
         TestableLoggerAppender.reset();
@@ -47,11 +53,5 @@ class ShutdownStepsTest {
         }
 
         assertThat(getLogMessage(0), is("Shutdown test [1/1] failed with unexpected exception."));
-    }
-
-    private static String getLogMessage(int index) {
-        List<LoggingEvent> events = TestableLoggerAppender.getEvents();
-        LoggingEvent loggingEvent = events.get(index);
-        return loggingEvent.getFormattedMessage();
     }
 }

@@ -21,6 +21,14 @@ public class ProcessFuture {
         });
     }
 
+    private static String getStartNotificationKey(String refName) {
+        return String.format("%s##start##", refName);
+    }
+
+    private static String getCompleteNotificationKey(String refName) {
+        return String.format("%s##complete##", refName);
+    }
+
     private void checkOccurredException(CompletableFuture<?> condition) {
         if (completeFuture.isCompletedExceptionally()) {
             try {
@@ -67,14 +75,6 @@ public class ProcessFuture {
     protected void notifyNodeStart(String refName) {
         conditions.get(getStartNotificationKey(refName))
             .complete(null);
-    }
-
-    private static String getStartNotificationKey(String refName) {
-        return String.format("%s##start##", refName);
-    }
-
-    private static String getCompleteNotificationKey(String refName) {
-        return String.format("%s##complete##", refName);
     }
 
     protected void makeNotifyCondition(String refName) {

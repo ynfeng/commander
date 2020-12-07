@@ -12,6 +12,10 @@ public class ProcessDefinition {
         firstNode = NodeDefinition.NULL;
     }
 
+    public static ProcessDefinitionBuilder builder() {
+        return new ProcessDefinitionBuilder();
+    }
+
     public String name() {
         return name;
     }
@@ -26,9 +30,5 @@ public class ProcessDefinition {
 
     public void firstNode(NextableNodeDefinition startDefinition) {
         firstNode = startDefinition;
-    }
-
-    public static ProcessDefinitionBuilder builder() {
-        return new ProcessDefinitionBuilder();
     }
 }

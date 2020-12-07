@@ -3,7 +3,7 @@ package com.github.commander.module;
 import com.google.common.collect.Maps;
 import java.util.Map;
 
-public abstract class AbstractModule implements Module {
+public abstract class AbstractModule<C extends ModuleConfig> implements Module<C> {
     private final Map<Class<? extends Component>, Component> componentRegistry = Maps.newHashMap();
 
     @Override

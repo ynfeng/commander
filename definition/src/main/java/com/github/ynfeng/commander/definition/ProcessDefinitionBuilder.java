@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import java.util.Arrays;
 
 public class ProcessDefinitionBuilder {
-    private ProcessDefinition processDefinition;
     private final NodeDefinitions nodeDefinitions = NodeDefinitions.create();
+    private ProcessDefinition processDefinition;
     private String name;
     private int version;
     private RelationShips relationShips = new RelationShips(Lists.newArrayList());
