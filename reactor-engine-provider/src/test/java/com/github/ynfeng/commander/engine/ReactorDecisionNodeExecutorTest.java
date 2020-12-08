@@ -13,11 +13,13 @@ import com.github.ynfeng.commander.definition.StartDefinition;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class ReactorDecisionNodeExecutorTest extends EngineTestSupport {
-    @Test
+
+    @RepeatedTest(200)
     public void should_execute_decision_node() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()
             .withName("test")

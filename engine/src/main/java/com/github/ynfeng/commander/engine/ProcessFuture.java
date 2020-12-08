@@ -115,7 +115,7 @@ public class ProcessFuture {
         completeFuture.completeExceptionally(t);
     }
 
-    public void notifyProcessId(ProcessId processId) {
+    public void notifyProcessStarted(ProcessId processId) {
         processIdFuture.complete(processId);
     }
 }

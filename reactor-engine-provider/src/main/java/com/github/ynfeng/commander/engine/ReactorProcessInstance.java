@@ -9,8 +9,6 @@ import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import reactor.core.publisher.Sinks;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 
 public class ReactorProcessInstance implements ProcessInstance {
     private static final CmderLogger LOGGER = CmderLoggerFactory.getSystemLogger();
@@ -24,9 +22,7 @@ public class ReactorProcessInstance implements ProcessInstance {
 
     protected ReactorProcessInstance() {
         commandSinks = Sinks.many().unicast().onBackpressureBuffer();
-        Scheduler scheduler = Schedulers.newParallel("instance-executor");
         commandSinks.asFlux()
-            .publishOn(scheduler)
             .doOnNext(EngineCommand::execute)
             .doOnComplete(() -> assemblyResult())
             .doOnError(error -> assemblyException(error))
@@ -55,10 +51,9 @@ public class ReactorProcessInstance implements ProcessInstance {
     @Override
     public void addReadyNode(NodeDefinition nodeDefinition) {
         commandSinks.emitNext(() -> {
-                context.addReadyNode(nodeDefinition);
-                future.makeNotifyCondition(nodeDefinition.refName());
-            },
-            Sinks.EmitFailureHandler.FAIL_FAST);
+            context.addReadyNode(nodeDefinition);
+            future.makeNotifyCondition(nodeDefinition.refName());
+        }, Sinks.EmitFailureHandler.FAIL_FAST);
     }
 
     @Override
@@ -94,15 +89,9 @@ public class ReactorProcessInstance implements ProcessInstance {
                 context.addRunningNode(nextNode);
                 nodeExecutors.getExecutor(nextNode)
                     .execute(this, nextNode);
-                notifyNodeStart(nextNode);
+                future.notifyNodeStart(nextNode.refName());
                 nextNode = context.nextReadyNode();
             }
-        }, Sinks.EmitFailureHandler.FAIL_FAST);
-    }
-
-    private void notifyNodeStart(NodeDefinition nodeDefinition) {
-        commandSinks.emitNext(() -> {
-            future.notifyNodeStart(nodeDefinition.refName());
         }, Sinks.EmitFailureHandler.FAIL_FAST);
     }
 
@@ -116,7 +105,6 @@ public class ReactorProcessInstance implements ProcessInstance {
     public CompletableFuture<NodeExecutingVariable> getNodeExecutingVariable(String refName) {
         CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<NodeExecutingVariable>();
         commandSinks.emitNext(() -> {
-            context.getNodeExecutingVariable(refName);
             future.complete(context.getNodeExecutingVariable(refName));
         }, Sinks.EmitFailureHandler.FAIL_FAST);
         return future;
@@ -145,7 +133,7 @@ public class ReactorProcessInstance implements ProcessInstance {
     public void run() {
         addReadyNode(processDefinition.firstNode());
         runReadyNodes();
-        future.notifyProcessId(processId);
+        future.notifyProcessStarted(processId);
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
@@ -157,8 +145,8 @@ public class ReactorProcessInstance implements ProcessInstance {
                     String.format("No such executing node[%s]", refName)));
             input.merge(variables);
             context.addReadyNode(node);
-            runReadyNodes();
         }, Sinks.EmitFailureHandler.FAIL_FAST);
+        runReadyNodes();
         return future;
     }
 

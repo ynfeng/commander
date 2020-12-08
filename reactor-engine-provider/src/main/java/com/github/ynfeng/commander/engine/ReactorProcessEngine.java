@@ -8,6 +8,7 @@ import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.Optional;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 public class ReactorProcessEngine implements ProcessEngine {
@@ -29,8 +30,9 @@ public class ReactorProcessEngine implements ProcessEngine {
     @Override
     public void startup() {
         cmdSinks = Sinks.many().unicast().onBackpressureBuffer();
+        Scheduler scheduler = Schedulers.boundedElastic();
         cmdSinks.asFlux()
-            .publishOn(Schedulers.newParallel("process acceptor"))
+            .publishOn(scheduler)
             .subscribe(EngineCommand::execute);
     }
 
