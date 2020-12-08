@@ -1,13 +1,12 @@
 package com.github.ynfeng.commander.engine;
 
-public interface ProcessEngine {
-    void startup();
+import com.github.ynfeng.commander.support.Manageable;
+
+public interface ProcessEngine extends Manageable {
 
     ProcessFuture startProcess(String name, int version, Variables variables);
 
     ProcessFuture startProcess(String name, int version);
-
-    void shutdown();
 
     ContinueFuture continueProcess(ProcessId processId, String nodeRefName, Variables variables);
 }

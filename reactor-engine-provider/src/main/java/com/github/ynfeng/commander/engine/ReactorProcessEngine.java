@@ -6,6 +6,7 @@ import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Scheduler;
@@ -14,6 +15,7 @@ import reactor.core.scheduler.Schedulers;
 public class ReactorProcessEngine implements ProcessEngine {
     private static final CmderLogger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final EngineModule module;
+    private final AtomicBoolean isStart = new AtomicBoolean();
     private final ProcessIdGenerator processIdGenerator;
     private final ProcessDefinitionRepository definitionRepository;
     private final NodeExecutors nodeExecutors;
@@ -28,12 +30,14 @@ public class ReactorProcessEngine implements ProcessEngine {
     }
 
     @Override
-    public void startup() {
-        cmdSinks = Sinks.many().unicast().onBackpressureBuffer();
-        Scheduler scheduler = Schedulers.boundedElastic();
-        cmdSinks.asFlux()
-            .publishOn(scheduler)
-            .subscribe(EngineCommand::execute);
+    public void start() {
+        if (isStart.compareAndSet(false, true)) {
+            cmdSinks = Sinks.many().unicast().onBackpressureBuffer();
+            Scheduler scheduler = Schedulers.boundedElastic();
+            cmdSinks.asFlux()
+                .publishOn(scheduler)
+                .subscribe(EngineCommand::execute);
+        }
     }
 
     @Override
@@ -87,7 +91,14 @@ public class ReactorProcessEngine implements ProcessEngine {
 
     @Override
     public void shutdown() {
-        cmdSinks.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
+        if (isStart.compareAndSet(true, false)) {
+            cmdSinks.emitComplete(Sinks.EmitFailureHandler.FAIL_FAST);
+        }
+    }
+
+    @Override
+    public boolean isStarted() {
+        return isStart.get();
     }
 
     @SuppressWarnings("checkstyle:MethodLength")

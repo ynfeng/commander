@@ -1,5 +1,8 @@
 package com.github.ynfeng.commander.engine;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -21,6 +24,8 @@ public class EngineTestSupport {
             }
         });
         engine = engineModule.getEngine();
-        engine.startup();
+        engine.start();
+
+        assertThat(engine.isStarted(), is(true));
     }
 }

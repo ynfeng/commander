@@ -1,11 +1,34 @@
 package com.github.ynfeng.commander.cluster.discovery;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     public static final Type TYPE = new Type();
+
     private final MulticastDiscoveryConfig config;
+    private final AtomicBoolean isStart = new AtomicBoolean();
 
     public MulticastDiscoveryProtocol(MulticastDiscoveryConfig config) {
         this.config = config;
+    }
+
+    @Override
+    public void start() {
+        if (isStart.compareAndSet(false, true)) {
+            System.out.println();
+        }
+    }
+
+    @Override
+    public void shutdown() {
+        if (isStart.compareAndSet(true, false)) {
+            System.out.println();
+        }
+    }
+
+    @Override
+    public boolean isStarted() {
+        return isStart.get();
     }
 
     public static class Type
