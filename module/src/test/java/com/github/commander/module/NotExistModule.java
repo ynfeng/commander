@@ -1,8 +1,8 @@
 package com.github.commander.module;
 
-public class NotExistModule extends AbstractModule<TestModuleConfig> {
+public class NotExistModule extends AbstractModule {
     @Override
-    public void init(TestModuleConfig config) {
+    public void init() {
 
     }
 

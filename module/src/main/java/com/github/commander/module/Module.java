@@ -2,8 +2,8 @@ package com.github.commander.module;
 
 import com.github.ynfeng.commander.support.Named;
 
-public interface Module<C extends ModuleConfig> extends Named {
-    void init(C config);
+public interface Module extends Named {
+    void init();
 
     <T extends Component> Component getComponent(Class<T> componentType);
 }

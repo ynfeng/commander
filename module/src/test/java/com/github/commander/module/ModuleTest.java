@@ -20,7 +20,7 @@ public class ModuleTest {
     @Test
     public void should_get_component() {
         TestModule testModule = new TestModule();
-        testModule.init(new TestModuleConfig());
+        testModule.init();
 
         Component component = testModule.getComponent(TestComponent.class);
         assertThat(component, instanceOf(TestComponent.class));
@@ -34,7 +34,7 @@ public class ModuleTest {
     @Test
     public void should_throw_exception_when_get_not_exists_component() {
         TestModule testModule = new TestModule();
-        testModule.init(new TestModuleConfig());
+        testModule.init();
 
         try {
             testModule.getComponent(NotExistsComponent.class);
