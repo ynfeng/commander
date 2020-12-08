@@ -5,5 +5,7 @@ import com.github.ynfeng.commander.support.Named;
 public interface Module extends Named {
     void init();
 
-    <T extends Component> Component getComponent(Class<T> componentType);
+    <T> T getComponent(Class<T> componentType);
+
+    <T> void registerComponent(Class<T> componentType, T component);
 }

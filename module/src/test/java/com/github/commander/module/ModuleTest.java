@@ -22,13 +22,13 @@ public class ModuleTest {
         TestModule testModule = new TestModule();
         testModule.init();
 
-        Component component = testModule.getComponent(TestComponent.class);
+        TestComponent component = testModule.getComponent(TestComponent.class);
         assertThat(component, instanceOf(TestComponent.class));
         assertThat(component.name(), is("testComponent"));
 
-        component = testModule.getComponent(TestComponent1.class);
-        assertThat(component, instanceOf(TestComponent1.class));
-        assertThat(component.name(), is("testComponent1"));
+        TestComponent1 component1 = testModule.getComponent(TestComponent1.class);
+        assertThat(component1, instanceOf(TestComponent1.class));
+        assertThat(component1.name(), is("testComponent1"));
     }
 
     @Test

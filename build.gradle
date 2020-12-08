@@ -44,5 +44,8 @@ subprojects {
     apply from: "$rootDir/gradle/scripts/checkstyle.gradle"
     apply from: "$rootDir/gradle/scripts/coveralls.gradle"
 
-    coverage.excludeClasses = ["com.github.ynfeng.commander.support.logger.CmderLogger"]
+    coverage.excludeClasses = [
+            "com.github.ynfeng.commander.support.logger.CmderLogger",
+            "com.github.commander.module.SPIModuleManager"
+    ]
 }

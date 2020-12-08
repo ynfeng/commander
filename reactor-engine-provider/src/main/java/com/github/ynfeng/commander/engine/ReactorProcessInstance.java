@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.engine;
 import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
+import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.List;
@@ -18,8 +19,8 @@ public class ReactorProcessInstance implements ProcessInstance {
     private final ProcessInstanceRuntimeContext context = new ProcessInstanceRuntimeContext();
     private ProcessId processId;
     private ProcessFuture future;
-    private EngineEnvironment environment;
     private ProcessDefinition processDefinition;
+    private NodeExecutors nodeExecutors;
 
     protected ReactorProcessInstance() {
         commandSinks = Sinks.many().unicast().onBackpressureBuffer();
@@ -91,7 +92,7 @@ public class ReactorProcessInstance implements ProcessInstance {
             while (nextNode != null) {
                 LOGGER.debug("ready to run process[{}] node[{}]", processId, nextNode.refName());
                 context.addRunningNode(nextNode);
-                environment.getNodeExecutors().getExecutor(nextNode)
+                nodeExecutors.getExecutor(nextNode)
                     .execute(this, nextNode);
                 notifyNodeStart(nextNode);
                 nextNode = context.nextReadyNode();
@@ -173,8 +174,8 @@ public class ReactorProcessInstance implements ProcessInstance {
         future = processFuture;
     }
 
-    protected void setEnvironment(EngineEnvironment environment) {
-        this.environment = environment;
+    protected void setNodeExecutors(NodeExecutors nodeExecutors) {
+        this.nodeExecutors = nodeExecutors;
     }
 
     protected void setProcessDefinition(ProcessDefinition processDefinition) {

@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.engine;
 
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
+import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.Optional;
@@ -11,15 +12,18 @@ import reactor.core.scheduler.Schedulers;
 
 public class ReactorProcessEngine implements ProcessEngine {
     private static final CmderLogger LOGGER = CmderLoggerFactory.getSystemLogger();
-    private final EngineEnvironment environment;
+    private final EngineModule module;
+    private final ProcessIdGenerator processIdGenerator;
     private final ProcessDefinitionRepository definitionRepository;
+    private final NodeExecutors nodeExecutors;
     private final EngineContext context = new EngineContext();
     private Sinks.Many<EngineCommand> cmdSinks;
 
-    public ReactorProcessEngine(EngineEnvironment environment,
-                                ProcessDefinitionRepository definitionRepository) {
-        this.environment = environment;
-        this.definitionRepository = definitionRepository;
+    public ReactorProcessEngine(EngineModule module) {
+        this.module = module;
+        processIdGenerator = module.getComponent(ProcessIdGenerator.class);
+        definitionRepository = module.getComponent(ProcessDefinitionRepository.class);
+        nodeExecutors = module.getComponent(NodeExecutors.class);
     }
 
     @Override
@@ -34,8 +38,8 @@ public class ReactorProcessEngine implements ProcessEngine {
     public ProcessFuture startProcess(String name, int version, Variables variables) {
         ProcessFuture future = new ProcessFuture();
         if (name == null) {
-            future.notifyProcessCompleteExceptionally(new NullPointerException(
-                "process definition name is required."));
+            future.notifyProcessCompleteExceptionally(
+                new NullPointerException("process definition name is required."));
         }
         cmdSinks.emitNext(() -> startNewProcess(name, version, variables, future),
             Sinks.EmitFailureHandler.FAIL_FAST);
@@ -61,11 +65,11 @@ public class ReactorProcessEngine implements ProcessEngine {
                                                       Variables variables,
                                                       ProcessFuture future) {
         return ReactorProcessInstance.builder()
-            .environment(environment)
+            .nodeExecutors(nodeExecutors)
             .processFuture(future)
             .variables(variables)
             .processDefinition(processDefinition)
-            .processId(environment.getProcessIdGenerator().nextId())
+            .processId(processIdGenerator.nextId())
             .build();
     }
 
@@ -90,7 +94,7 @@ public class ReactorProcessEngine implements ProcessEngine {
         ContinueFuture continueFuture = new ContinueFuture();
         cmdSinks.emitNext(() -> {
             Optional<ReactorProcessInstance> processInstance = context.getProcessInstance(processId);
-            ProcessFuture future = null;
+            ProcessFuture future;
             if (processInstance.isPresent()) {
                 future = processInstance.get().continueRunningNode(nodeRefName, variables);
                 continueFuture.complete(future);
@@ -101,5 +105,4 @@ public class ReactorProcessEngine implements ProcessEngine {
         }, Sinks.EmitFailureHandler.FAIL_FAST);
         return continueFuture;
     }
-
 }

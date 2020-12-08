@@ -1,6 +1,8 @@
 package com.github.commander.module;
 
-public class TestComponent implements Component {
+import com.github.ynfeng.commander.support.Named;
+
+public class TestComponent implements Named {
     @Override
     public String name() {
         return "testComponent";

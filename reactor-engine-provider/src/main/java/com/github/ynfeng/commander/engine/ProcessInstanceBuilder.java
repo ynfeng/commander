@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.engine;
 
 import com.github.ynfeng.commander.definition.ProcessDefinition;
+import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 
 public class ProcessInstanceBuilder {
     private final ReactorProcessInstance processInstance;
@@ -28,13 +29,13 @@ public class ProcessInstanceBuilder {
         return this;
     }
 
-    public ProcessInstanceBuilder environment(EngineEnvironment environment) {
-        processInstance.setEnvironment(environment);
+    public ProcessInstanceBuilder processDefinition(ProcessDefinition processDefinition) {
+        processInstance.setProcessDefinition(processDefinition);
         return this;
     }
 
-    public ProcessInstanceBuilder processDefinition(ProcessDefinition processDefinition) {
-        processInstance.setProcessDefinition(processDefinition);
+    public ProcessInstanceBuilder nodeExecutors(NodeExecutors nodeExecutors) {
+        processInstance.setNodeExecutors(nodeExecutors);
         return this;
     }
 }
