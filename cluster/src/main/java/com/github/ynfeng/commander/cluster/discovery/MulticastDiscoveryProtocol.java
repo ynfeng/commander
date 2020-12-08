@@ -4,7 +4,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     public static final Type TYPE = new Type();
-
     private final MulticastDiscoveryConfig config;
     private final AtomicBoolean isStart = new AtomicBoolean();
 
