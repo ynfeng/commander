@@ -45,4 +45,10 @@ class NodeDefinitionTest {
         assertThat(n1.equals(null), is(false));
     }
 
+    @Test
+    public void should_equals_with_same_instance() {
+        ForkDefinition n1 = new ForkDefinition(null);
+        assertThat(n1, is(n1));
+    }
+
 }

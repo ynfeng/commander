@@ -3,6 +3,7 @@ project.dependencies {
             project(':definition'),
             project(':engine'),
             project(':support'),
+            project(':module'),
             platform('io.projectreactor:reactor-bom:2020.0.2-SNAPSHOT'),
             'io.projectreactor:reactor-core',
     )
