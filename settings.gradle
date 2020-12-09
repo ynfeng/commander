@@ -11,4 +11,5 @@ include 'reactor-engine-provider'
 include 'engine'
 include 'primitive'
 include 'module'
+include 'serializer'
 

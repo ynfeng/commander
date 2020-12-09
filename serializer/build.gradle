@@ -1,0 +1,5 @@
+project.dependencies {
+    implementation(
+            "com.esotericsoftware:kryo:$kryoVersion",
+    )
+}
