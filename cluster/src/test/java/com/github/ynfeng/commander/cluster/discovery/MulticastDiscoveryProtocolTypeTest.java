@@ -21,9 +21,11 @@ class MulticastDiscoveryProtocolTypeTest {
         MulticastDiscoveryConfig config = new MulticastDiscoveryConfig();
         MulticastDiscoveryProtocol protocol = MulticastDiscoveryProtocol.TYPE.newProtocol(config);
         protocol.start();
+        protocol.start();
 
         assertThat(protocol.isStarted(), is(true));
 
+        protocol.shutdown();
         protocol.shutdown();
         assertThat(protocol.isStarted(), is(false));
     }

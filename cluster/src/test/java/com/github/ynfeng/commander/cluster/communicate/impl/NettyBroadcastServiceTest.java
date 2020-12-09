@@ -1,0 +1,61 @@
+package com.github.ynfeng.commander.cluster.communicate.impl;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import com.github.ynfeng.commander.support.Address;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+class NettyBroadcastServiceTest {
+    private NettyBroadcastService broadcastService;
+
+    @BeforeEach
+    public void setup() {
+        broadcastService = new NettyBroadcastService(
+            Address.of("127.0.0.1", 1234), Address.of("230.0.0.1", 1234));
+    }
+
+    @Test
+    public void should_start_and_shutdown() {
+        broadcastService.start();
+        assertThat(broadcastService.isStarted(), is(true));
+
+        broadcastService.shutdown();
+        assertThat(broadcastService.isStarted(), is(false));
+    }
+
+    @Test
+    public void should_add_and_remove_listener() {
+        Consumer<byte[]> listener = bytes -> {
+        };
+        broadcastService.addListener("testSubject", listener);
+        assertThat(broadcastService.numOfSubjectOfListeners("testSubject"), is(1));
+
+        broadcastService.removeListener("testSubject", listener);
+        assertThat(broadcastService.numOfSubjectOfListeners("testSubject"), is(0));
+    }
+
+    @Test
+    public void should_broadcast_and_receive() throws InterruptedException {
+        Object waitObj = new Object();
+        broadcastService.start();
+        AtomicReference<String> actual = new AtomicReference<>();
+        broadcastService.addListener("test", bytes -> {
+            synchronized (waitObj) {
+                actual.set(new String(bytes));
+                waitObj.notify();
+            }
+        });
+
+        broadcastService.broadcast("test", "test".getBytes());
+        synchronized (waitObj) {
+            waitObj.wait(1000);
+        }
+        broadcastService.shutdown();
+
+        assertThat(actual.get(), is("test"));
+    }
+}

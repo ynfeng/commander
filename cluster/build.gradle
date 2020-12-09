@@ -2,6 +2,7 @@ project.dependencies {
     implementation(
             project(':support'),
             project(':primitive'),
+            project(':module'),
             "io.netty:netty-all:$nettyVersion",
     )
 }

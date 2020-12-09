@@ -1,9 +1,12 @@
 package com.github.ynfeng.commander.cluster.discovery;
 
+import com.github.ynfeng.commander.support.logger.CmderLogger;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     public static final Type TYPE = new Type();
+    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
     private final MulticastDiscoveryConfig config;
     private final AtomicBoolean isStart = new AtomicBoolean();
 

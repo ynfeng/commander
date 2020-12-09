@@ -331,7 +331,9 @@ public class CmderLogger implements Logger {
 
     @Override
     public void error(String msg, Throwable t) {
-
+        if (logger.isErrorEnabled()) {
+            logger.error(msg, t);
+        }
     }
 
     @Override

@@ -46,6 +46,9 @@ subprojects {
 
     coverage.excludeClasses = [
             "com.github.ynfeng.commander.support.logger.CmderLogger",
-            "com.github.commander.module.SPIModuleManager"
+            "com.github.commander.module.SPIModuleManager",
+            "com.github.ynfeng.commander.cluster.communicate.impl.NettyBroadcastService",
+            "com.github.ynfeng.commander.cluster.communicate.impl.EmptyChannelInboundHandler",
+            "com.github.ynfeng.commander.cluster.ClusterException"
     ]
 }
