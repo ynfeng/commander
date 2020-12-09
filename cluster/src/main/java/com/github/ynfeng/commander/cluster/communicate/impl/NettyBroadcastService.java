@@ -187,6 +187,7 @@ public class NettyBroadcastService implements BroadcastService {
         private String subject;
         private byte[] payload;
 
+        @SuppressWarnings("unused")
         protected Message() {
         }
 
