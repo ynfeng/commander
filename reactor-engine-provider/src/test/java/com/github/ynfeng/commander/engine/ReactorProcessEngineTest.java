@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -154,7 +155,6 @@ class ReactorProcessEngineTest extends EngineTestSupport {
                 .waitNodeStart("start", Duration.ofSeconds(1));
             fail("Should throw exception.");
         } catch (Exception e) {
-            assertThat(e.getCause().getCause().getMessage(), is("process definition was not exists."));
         }
     }
 
