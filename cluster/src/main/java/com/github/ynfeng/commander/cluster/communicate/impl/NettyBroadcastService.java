@@ -123,9 +123,10 @@ public class NettyBroadcastService implements BroadcastService {
                     byte[] payload = new byte[packet.content().readInt()];
                     packet.content().readBytes(payload);
                     Message message = serializer.decode(payload);
-                    listeners
-                        .getOrDefault(message.subject, Sets.newCopyOnWriteArraySet())
-                        .forEach(listener -> listener.accept(message.payload));
+                    Set<Consumer<byte[]>> subcribedListeners = listeners.get(message.subject);
+                    if (subcribedListeners != null) {
+                        subcribedListeners.forEach(listener -> listener.accept(message.payload));
+                    }
                 }
             })
             .option(ChannelOption.IP_MULTICAST_IF, iface)
@@ -191,7 +192,7 @@ public class NettyBroadcastService implements BroadcastService {
 
         protected Message(String subject, byte[] payload) {
             this.subject = subject;
-            this.payload = payload;
+            this.payload = payload.clone();
         }
     }
 }
