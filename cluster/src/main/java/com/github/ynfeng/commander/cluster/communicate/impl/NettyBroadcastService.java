@@ -2,6 +2,8 @@ package com.github.ynfeng.commander.cluster.communicate.impl;
 
 import com.github.ynfeng.commander.cluster.ClusterException;
 import com.github.ynfeng.commander.cluster.communicate.BroadcastService;
+import com.github.ynfeng.commander.serializer.SerializationTypes;
+import com.github.ynfeng.commander.serializer.Serializer;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
@@ -33,8 +35,13 @@ public class NettyBroadcastService implements BroadcastService {
     private final Address localAddress;
     private final AtomicBoolean started = new AtomicBoolean();
     private final Map<String, Set<Consumer<byte[]>>> listeners = Maps.newConcurrentMap();
-    private NioEventLoopGroup group;
-    private NetworkInterface iface;
+    private final Serializer serializer = Serializer.create(SerializationTypes.builder()
+        .startId(SerializationTypes.BEGIN_ID)
+        .add(Message.class)
+        .add(byte[].class)
+        .build());
+    private final NioEventLoopGroup group;
+    private final NetworkInterface iface;
     private Channel serverChannel;
     private DatagramChannel clientChannel;
 
@@ -46,9 +53,11 @@ public class NettyBroadcastService implements BroadcastService {
     }
 
     @Override
-    public void broadcast(String subject, byte[] message) {
-        ByteBuf buf = serverChannel.alloc().buffer(message.length);
-        buf.writeBytes(message);
+    public void broadcast(String subject, byte[] payload) {
+        Message message = new Message(subject, payload);
+        byte[] bytes = serializer.encode(message);
+        ByteBuf buf = serverChannel.alloc().buffer(4 + bytes.length);
+        buf.writeInt(bytes.length).writeBytes(bytes);
         serverChannel.writeAndFlush(new DatagramPacket(buf, groupAddress.toInetSocketAddress()));
     }
 
@@ -111,16 +120,12 @@ public class NettyBroadcastService implements BroadcastService {
             .handler(new SimpleChannelInboundHandler<DatagramPacket>() {
                 @Override
                 protected void channelRead0(ChannelHandlerContext context, DatagramPacket packet) throws Exception {
-                    int readableBytes = packet.content().readableBytes();
-                    byte[] payload = new byte[readableBytes];
+                    byte[] payload = new byte[packet.content().readInt()];
                     packet.content().readBytes(payload);
-                    listeners.entrySet()
-                        .forEach(each -> {
-                            each.getValue()
-                                .forEach(c -> {
-                                    c.accept(payload);
-                                });
-                        });
+                    Message message = serializer.decode(payload);
+                    listeners
+                        .getOrDefault(message.subject, Sets.newCopyOnWriteArraySet())
+                        .forEach(listener -> listener.accept(message.payload));
                 }
             })
             .option(ChannelOption.IP_MULTICAST_IF, iface)
@@ -175,5 +180,18 @@ public class NettyBroadcastService implements BroadcastService {
     @Override
     public boolean isStarted() {
         return started.get();
+    }
+
+    static class Message {
+        private String subject;
+        private byte[] payload;
+
+        protected Message() {
+        }
+
+        protected Message(String subject, byte[] payload) {
+            this.subject = subject;
+            this.payload = payload;
+        }
     }
 }

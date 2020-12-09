@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class SerializationTypes {
+    public static final int BEGIN_ID = 1;
     private final List<Class<?>> supportTypes = Lists.newArrayList();
     private int startId;
 

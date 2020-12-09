@@ -41,11 +41,11 @@ public class KryoSerializer implements Serializer {
         }, () -> kryoPool.free(kryo), () -> inputPool.free(input));
     }
 
-    public <T> T runAndRecyle(Supplier<T> provider, Runnable... cleaner) {
+    public <T> T runAndRecyle(Supplier<T> provider, Runnable... cleaners) {
         try {
             return provider.get();
         } finally {
-            Arrays.stream(cleaner).forEach(Runnable::run);
+            Arrays.stream(cleaners).forEach(Runnable::run);
         }
     }
 }

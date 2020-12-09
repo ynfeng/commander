@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.support.Address;
@@ -57,5 +58,26 @@ class NettyBroadcastServiceTest {
         broadcastService.shutdown();
 
         assertThat(actual.get(), is("test"));
+    }
+
+    @Test
+    public void should_not_receive_not_subscribed_subject() throws InterruptedException {
+        Object waitObj = new Object();
+        broadcastService.start();
+        AtomicReference<String> actual = new AtomicReference<>();
+        broadcastService.addListener("test", bytes -> {
+            synchronized (waitObj) {
+                actual.set(new String(bytes));
+                waitObj.notify();
+            }
+        });
+
+        broadcastService.broadcast("notSubscribe", "test".getBytes());
+        synchronized (waitObj) {
+            waitObj.wait(100);
+        }
+        broadcastService.shutdown();
+
+        assertThat(actual.get(), nullValue());
     }
 }

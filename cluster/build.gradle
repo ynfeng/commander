@@ -3,6 +3,7 @@ project.dependencies {
             project(':support'),
             project(':primitive'),
             project(':module'),
+            project(':serializer'),
             "io.netty:netty-all:$nettyVersion",
     )
 }
