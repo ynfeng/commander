@@ -87,11 +87,8 @@ public class NettyBroadcastService implements BroadcastService {
         }
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     private void joinGroup() {
-        boolean success = clientChannel
-            .joinGroup(groupAddress.toInetSocketAddress(), iface)
-            .isSuccess();
+        boolean success = clientChannel.joinGroup(groupAddress.toInetSocketAddress(), iface).isSuccess();
         if (!success) {
             throw new ClusterException(
                 String.format("%s failed to join group %s on port %d",
@@ -120,18 +117,22 @@ public class NettyBroadcastService implements BroadcastService {
             .handler(new SimpleChannelInboundHandler<DatagramPacket>() {
                 @Override
                 protected void channelRead0(ChannelHandlerContext context, DatagramPacket packet) throws Exception {
-                    byte[] payload = new byte[packet.content().readInt()];
-                    packet.content().readBytes(payload);
-                    Message message = serializer.decode(payload);
-                    Set<Consumer<byte[]>> subcribedListeners = listeners.get(message.subject);
-                    if (subcribedListeners != null) {
-                        subcribedListeners.forEach(listener -> listener.accept(message.payload));
-                    }
+                    notifySubcribedListeners(packet);
                 }
             })
             .option(ChannelOption.IP_MULTICAST_IF, iface)
             .option(ChannelOption.SO_REUSEADDR, true)
             .localAddress(localAddress.port());
+    }
+
+    private void notifySubcribedListeners(DatagramPacket packet) {
+        byte[] payload = new byte[packet.content().readInt()];
+        packet.content().readBytes(payload);
+        Message message = serializer.decode(payload);
+        Set<Consumer<byte[]>> subcribedListeners = listeners.get(message.subject);
+        if (subcribedListeners != null) {
+            subcribedListeners.forEach(listener -> listener.accept(message.payload));
+        }
     }
 
     private void bootServer() {
@@ -145,7 +146,6 @@ public class NettyBroadcastService implements BroadcastService {
         }
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     private Bootstrap serverBootstrap() {
         return new Bootstrap()
             .group(group)
