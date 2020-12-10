@@ -7,6 +7,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.github.ynfeng.commander.support.Address;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,15 +18,12 @@ class NettyBroadcastServiceTest {
     public void setup() {
         broadcastService = new NettyBroadcastService(
             Address.of("127.0.0.1", 1234), Address.of("230.0.0.1", 1234));
+        broadcastService.start();
     }
 
-    @Test
-    public void should_start_and_shutdown() {
-        broadcastService.start();
-        assertThat(broadcastService.isStarted(), is(true));
-
+    @AfterEach
+    public void destory() {
         broadcastService.shutdown();
-        assertThat(broadcastService.isStarted(), is(false));
     }
 
     @Test
@@ -42,7 +40,6 @@ class NettyBroadcastServiceTest {
     @Test
     public void should_broadcast_and_receive() throws InterruptedException {
         Object waitObj = new Object();
-        broadcastService.start();
         AtomicReference<String> actual = new AtomicReference<>();
         broadcastService.addListener("test", bytes -> {
             synchronized (waitObj) {
@@ -55,7 +52,6 @@ class NettyBroadcastServiceTest {
         synchronized (waitObj) {
             waitObj.wait(1000);
         }
-        broadcastService.shutdown();
 
         assertThat(actual.get(), is("test"));
     }
@@ -63,7 +59,6 @@ class NettyBroadcastServiceTest {
     @Test
     public void should_not_receive_not_subscribed_subject() throws InterruptedException {
         Object waitObj = new Object();
-        broadcastService.start();
         AtomicReference<String> actual = new AtomicReference<>();
         broadcastService.addListener("test", bytes -> {
             synchronized (waitObj) {
@@ -76,7 +71,6 @@ class NettyBroadcastServiceTest {
         synchronized (waitObj) {
             waitObj.wait(100);
         }
-        broadcastService.shutdown();
 
         assertThat(actual.get(), nullValue());
     }

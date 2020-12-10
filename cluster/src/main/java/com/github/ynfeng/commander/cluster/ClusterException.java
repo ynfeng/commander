@@ -8,4 +8,8 @@ public class ClusterException extends RuntimeException {
     public ClusterException(String msg) {
         super(msg);
     }
+
+    public ClusterException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

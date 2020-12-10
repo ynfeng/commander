@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class SerializationTypes {
-    public static final int BEGIN_ID = 1;
+    public static final int CUSTOM_ID = 200;
     private final List<Class<?>> supportTypes = Lists.newArrayList();
-    private int startId;
+    private int startId = CUSTOM_ID;
 
     public static SerializationTypesBuilder builder() {
         return new SerializationTypesBuilder();
@@ -22,7 +22,7 @@ public class SerializationTypes {
     }
 
     public static class SerializationTypesBuilder {
-        private SerializationTypes types = new SerializationTypes();
+        private final SerializationTypes types = new SerializationTypes();
 
         public SerializationTypesBuilder startId(int id) {
             types.startId = id;

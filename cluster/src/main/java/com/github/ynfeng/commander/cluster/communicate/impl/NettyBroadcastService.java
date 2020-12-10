@@ -35,7 +35,6 @@ public class NettyBroadcastService implements BroadcastService {
     private final AtomicBoolean started = new AtomicBoolean();
     private final Map<String, Set<Consumer<byte[]>>> listeners = Maps.newConcurrentMap();
     private final Serializer serializer = Serializer.create(SerializationTypes.builder()
-        .startId(SerializationTypes.BEGIN_ID)
         .add(Message.class)
         .add(byte[].class)
         .build());
@@ -165,7 +164,10 @@ public class NettyBroadcastService implements BroadcastService {
     @Override
     public void shutdown() {
         if (started.compareAndSet(true, false)) {
-            System.out.println();
+            clientChannel
+                .leaveGroup(groupAddress.toInetSocketAddress(), iface)
+                .syncUninterruptibly();
+            serverChannel.close().syncUninterruptibly();
         }
     }
 

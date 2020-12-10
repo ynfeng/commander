@@ -6,8 +6,11 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 public class Address {
-    private final String ip;
-    private final int port;
+    private String ip;
+    private int port;
+
+    private Address() {
+    }
 
     private Address(String ip, int port) {
         this.ip = ip;

@@ -15,7 +15,7 @@ A microservice orchestration engine.
 * [X] Flow engine
 * [ ] Cluster
     * [ ] communicate [Developing]
-    * [ ] Raft protocol 
+    * [ ] Raft protocol
 * [ ] RPC support
 * [ ] Flow DSL
 * [ ] Command line cluster controller
