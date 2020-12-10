@@ -5,6 +5,8 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ThreadFactory;
 
 public class Threads {
+    private Threads() {
+    }
 
     public static ThreadFactory namedThreads(String patten, CmderLogger logger) {
         return new ThreadFactoryBuilder()

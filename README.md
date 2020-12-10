@@ -14,6 +14,8 @@ A microservice orchestration engine.
 * [X] Flow definitions
 * [X] Flow engine
 * [ ] Cluster [Developing]
+    * [ ] communicate [Developing]
+    * [ ] Raft protocol 
 * [ ] RPC support
 * [ ] Flow DSL
 * [ ] Command line cluster controller
