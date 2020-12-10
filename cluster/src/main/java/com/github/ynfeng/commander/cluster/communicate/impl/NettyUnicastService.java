@@ -133,6 +133,7 @@ public class NettyUnicastService implements UnicastService {
         private final String subject;
         private final byte[] payload;
 
+        @SuppressWarnings("unused")
         protected Message() {
             this(null, null, null);
         }
@@ -140,7 +141,7 @@ public class NettyUnicastService implements UnicastService {
         Message(Address source, String subject, byte[] payload) {
             this.source = source;
             this.subject = subject;
-            this.payload = payload;
+            this.payload = payload.clone();
         }
     }
 }
