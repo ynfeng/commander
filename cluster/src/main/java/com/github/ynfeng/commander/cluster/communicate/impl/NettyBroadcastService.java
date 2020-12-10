@@ -168,6 +168,7 @@ public class NettyBroadcastService implements BroadcastService {
                 .leaveGroup(groupAddress.toInetSocketAddress(), iface)
                 .syncUninterruptibly();
             serverChannel.close().syncUninterruptibly();
+            group.shutdownGracefully().syncUninterruptibly();
         }
     }
 

@@ -81,6 +81,7 @@ public class NettyUnicastService implements UnicastService {
     public void shutdown() {
         if (started.compareAndSet(true, false)) {
             channel.close().syncUninterruptibly();
+            group.shutdownGracefully();
         }
     }
 
