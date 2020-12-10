@@ -129,13 +129,13 @@ public class NettyUnicastService implements UnicastService {
     }
 
     static class Message {
-        private final Address source;
-        private final String subject;
-        private final byte[] payload;
+        private Address source;
+        private String subject;
+        private byte[] payload;
 
         @SuppressWarnings("unused")
         protected Message() {
-            this(null, null, null);
+
         }
 
         Message(Address source, String subject, byte[] payload) {
