@@ -13,7 +13,7 @@ A microservice orchestration engine.
 
 * [X] Flow definitions
 * [X] Flow engine
-* [ ] Cluster [Developing]
+* [ ] Cluster
     * [ ] communicate [Developing]
     * [ ] Raft protocol 
 * [ ] RPC support
