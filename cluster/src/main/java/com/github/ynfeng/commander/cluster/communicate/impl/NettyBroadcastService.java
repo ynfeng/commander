@@ -5,11 +5,11 @@ import com.github.ynfeng.commander.cluster.communicate.BroadcastService;
 import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
 import com.github.ynfeng.commander.support.Address;
+import com.github.ynfeng.commander.support.Threads;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -25,7 +25,6 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -49,7 +48,7 @@ public class NettyBroadcastService implements BroadcastService {
         this.localAddress = localAddress;
         this.groupAddress = groupAddress;
         iface = getIface();
-        group = new NioEventLoopGroup(0, namedThreads("netty-broadcast-event-nio-client-%d"));
+        group = new NioEventLoopGroup(0, Threads.namedThreads("netty-broadcast-event-nio-client-%d", logger));
     }
 
     @Override
@@ -161,14 +160,6 @@ public class NettyBroadcastService implements BroadcastService {
         } catch (SocketException e) {
             throw new ClusterException(e);
         }
-    }
-
-    private ThreadFactory namedThreads(String patten) {
-        return new ThreadFactoryBuilder()
-            .setNameFormat(patten)
-            .setThreadFactory(Thread::new)
-            .setUncaughtExceptionHandler((t, e) -> logger.error("Uncaught exception on " + t.getName(), e))
-            .build();
     }
 
     @Override
