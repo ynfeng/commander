@@ -33,9 +33,9 @@ public class NettyUnicastService implements UnicastService {
     private final NioEventLoopGroup group;
     private final int port;
     private final Serializer serializer = Serializer.create(SerializationTypes.builder()
+        .add(SerializationTypes.BASIC)
         .add(Message.class)
         .add(Address.class)
-        .add(byte[].class)
         .build());
     private Channel channel;
 

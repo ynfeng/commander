@@ -35,8 +35,8 @@ public class NettyBroadcastService implements BroadcastService {
     private final AtomicBoolean started = new AtomicBoolean();
     private final Map<String, Set<Consumer<byte[]>>> listeners = Maps.newConcurrentMap();
     private final Serializer serializer = Serializer.create(SerializationTypes.builder()
+        .add(SerializationTypes.BASIC)
         .add(Message.class)
-        .add(byte[].class)
         .build());
     private final NioEventLoopGroup group;
     private final NetworkInterface iface;

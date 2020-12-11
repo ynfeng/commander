@@ -22,4 +22,17 @@ class SerializationTypesTest {
         assertThat(types, notNullValue());
     }
 
+    @Test
+    public void should_create_serialization_with_basic_types() {
+        SerializationTypes types = SerializationTypes
+            .builder()
+            .startId(1)
+            .add(SerializationTypes.BASIC)
+            .build();
+
+        assertThat(types.startId(), is(1));
+        assertThat(types.supportTypes(), is(Lists.newArrayList(byte[].class)));
+        assertThat(types, notNullValue());
+    }
+
 }
