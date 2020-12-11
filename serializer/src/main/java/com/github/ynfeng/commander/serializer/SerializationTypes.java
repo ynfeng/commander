@@ -6,10 +6,9 @@ import java.util.List;
 
 public class SerializationTypes {
     public static final int CUSTOM_ID = 200;
-    public static final SerializationTypes BASIC =
-        SerializationTypes.builder()
-            .add(byte[].class)
-            .build();
+    public static final SerializationTypes BASIC = builder()
+        .add(byte[].class)
+        .build();
     private final List<Class<?>> supportTypes = Lists.newArrayList();
     private int startId = CUSTOM_ID;
 
