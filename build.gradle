@@ -49,6 +49,7 @@ subprojects {
             "com.github.ynfeng.commander.cluster.communicate.impl.NettyBroadcastService",
             "com.github.ynfeng.commander.cluster.communicate.impl.EmptyChannelInboundHandler",
             "com.github.ynfeng.commander.cluster.communicate.impl.NettyUnicastService",
+            "com.github.ynfeng.commander.cluster.communicate.impl.NettyMessagingService",
             "com.github.ynfeng.commander.cluster.ClusterException"
     ]
 

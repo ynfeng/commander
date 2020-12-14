@@ -14,6 +14,7 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -148,7 +149,7 @@ public class NettyBroadcastService implements BroadcastService {
         return new Bootstrap()
             .group(group)
             .channelFactory(() -> new NioDatagramChannel(InternetProtocolFamily.IPv4))
-            .handler(new EmptyChannelInboundHandler())
+            .handler(new ChannelInboundHandlerAdapter())
             .option(ChannelOption.IP_MULTICAST_IF, iface)
             .option(ChannelOption.SO_REUSEADDR, true);
     }

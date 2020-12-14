@@ -5,5 +5,7 @@ project.dependencies {
             project(':module'),
             project(':serializer'),
             "io.netty:netty-all:$nettyVersion",
+            "io.netty:netty-transport-native-epoll:$nettyVersion:linux-x86_64",
+            "io.netty:netty-transport-native-kqueue:$nettyVersion:osx-x86_64",
     )
 }
