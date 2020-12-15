@@ -43,6 +43,21 @@ public class NettyMessagingService implements MessagingService {
 
     @SuppressWarnings("checkstyle:MethodLength")
     private void initEventLoopGroup() {
+        if (!tryInitEpoll()) {
+            initNio();
+        }
+    }
+
+    private void initNio() {
+        clientGroup = new NioEventLoopGroup(0,
+            Threads.namedThreads("netty-messaging-event-nio-client-%d", logger));
+        serverGroup = new NioEventLoopGroup(0,
+            Threads.namedThreads("netty-messaging-event-nio-server-%d", logger));
+        serverChannelClass = NioServerSocketChannel.class;
+        clientChannelClass = NioSocketChannel.class;
+    }
+
+    private boolean tryInitEpoll() {
         try {
             clientGroup = new EpollEventLoopGroup(0,
                 Threads.namedThreads("netty-messaging-event-epoll-client-%d", logger));
@@ -50,17 +65,12 @@ public class NettyMessagingService implements MessagingService {
                 Threads.namedThreads("netty-messaging-event-epoll-server-%d", logger));
             serverChannelClass = EpollServerSocketChannel.class;
             clientChannelClass = EpollSocketChannel.class;
-            return;
+            return true;
         } catch (Throwable e) {
             logger.debug("Failed to initialize native (epoll) transport. "
                 + "Reason: {}. Proceeding with nio.", e.getMessage());
+            return false;
         }
-        clientGroup = new NioEventLoopGroup(0,
-            Threads.namedThreads("netty-messaging-event-nio-client-%d", logger));
-        serverGroup = new NioEventLoopGroup(0,
-            Threads.namedThreads("netty-messaging-event-nio-server-%d", logger));
-        serverChannelClass = NioServerSocketChannel.class;
-        clientChannelClass = NioSocketChannel.class;
     }
 
     @Override
