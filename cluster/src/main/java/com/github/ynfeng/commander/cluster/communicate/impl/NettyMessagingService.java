@@ -41,14 +41,13 @@ public class NettyMessagingService implements MessagingService {
         initEventLoopGroup();
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     private void initEventLoopGroup() {
-        if (!tryInitEpoll()) {
-            initNio();
+        if (!tryInitEpollEventLoopGroup()) {
+            initNioEventLoopGroup();
         }
     }
 
-    private void initNio() {
+    private void initNioEventLoopGroup() {
         clientGroup = new NioEventLoopGroup(0,
             Threads.namedThreads("netty-messaging-event-nio-client-%d", logger));
         serverGroup = new NioEventLoopGroup(0,
@@ -57,7 +56,8 @@ public class NettyMessagingService implements MessagingService {
         clientChannelClass = NioSocketChannel.class;
     }
 
-    private boolean tryInitEpoll() {
+    @SuppressWarnings("checkstyle:MethodLength")
+    private boolean tryInitEpollEventLoopGroup() {
         try {
             clientGroup = new EpollEventLoopGroup(0,
                 Threads.namedThreads("netty-messaging-event-epoll-client-%d", logger));
