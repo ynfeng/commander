@@ -5,10 +5,10 @@ import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import io.netty.channel.ChannelHandlerContext;
 
-public class ClientHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapter {
+public class ServerHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapter {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
 
-    public ClientHandshakeHandlerAdapter(ProtocolVersion protocolVersion) {
+    public ServerHandshakeHandlerAdapter(ProtocolVersion protocolVersion) {
         super(protocolVersion);
     }
 
