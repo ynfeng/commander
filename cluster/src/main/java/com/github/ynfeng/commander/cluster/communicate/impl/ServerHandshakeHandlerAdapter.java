@@ -1,21 +1,31 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
 import com.github.ynfeng.commander.cluster.communicate.protocol.ProtocolVersion;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
-import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import java.util.Optional;
 
 public class ServerHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapter {
-    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
-
-    public ServerHandshakeHandlerAdapter(ProtocolVersion protocolVersion) {
-        super(protocolVersion);
+    public ServerHandshakeHandlerAdapter() {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.debug("Writing client protocol version {} for connection to {}",
-            protocolVersion(), ctx.channel().remoteAddress());
-        writeProtocolVersion(ctx);
+    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        ByteBuf byteBuf = (ByteBuf) msg;
+        Optional<ProtocolVersion> clientProtocolVersionOptional = readProtocolVersion(byteBuf);
+        if (clientProtocolVersionOptional.isPresent()) {
+            writeProtocolVersion(ctx, clientProtocolVersionOptional.get());
+        } else {
+            ctx.close();
+        }
+    }
+
+    private Optional<ProtocolVersion> readProtocolVersion(ByteBuf byteBuf) {
+        try {
+            byte version = byteBuf.readByte();
+            return ProtocolVersion.valueOf(version);
+        } finally {
+            byteBuf.release();
+        }
     }
 }
