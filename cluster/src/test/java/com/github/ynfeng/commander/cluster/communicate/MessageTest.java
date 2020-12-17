@@ -9,7 +9,7 @@ class MessageTest {
 
     @Test
     public void should_create_message() {
-        Message message = new Message("testType", new byte[] {0});
+        MessagingService.Message message = new MessagingService.Message("testType", new byte[] {0});
 
         assertThat(message.getType(), is("testType"));
         assertThat(message.getPayload(), is(new byte[] {0}));

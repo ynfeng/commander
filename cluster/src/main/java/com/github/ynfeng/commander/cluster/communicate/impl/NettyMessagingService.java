@@ -1,6 +1,5 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.cluster.communicate.Message;
 import com.github.ynfeng.commander.cluster.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Threads;
