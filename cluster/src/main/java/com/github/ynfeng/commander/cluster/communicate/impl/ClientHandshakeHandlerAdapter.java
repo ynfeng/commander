@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 public class ClientHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapter {
-    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
     private final String communicateId;
     private final ProtocolVersion protocolVersion;
 
@@ -18,8 +17,6 @@ public class ClientHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapte
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        logger.debug("Writing client protocol version {} for connection to {}",
-            protocolVersion, ctx.channel().remoteAddress());
         writeProtocolVersion(communicateId, ctx, protocolVersion);
     }
 
