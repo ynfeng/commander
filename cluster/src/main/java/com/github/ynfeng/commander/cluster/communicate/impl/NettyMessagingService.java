@@ -29,14 +29,16 @@ public class NettyMessagingService implements MessagingService {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
     private final AtomicBoolean started = new AtomicBoolean();
     private final Address localAddress;
+    private final String communicateId;
     private Channel serverChannel;
     private EventLoopGroup serverGroup;
     private EventLoopGroup clientGroup;
     private Class<? extends ServerChannel> serverChannelClass;
     private Class<? extends Channel> clientChannelClass;
 
-    public NettyMessagingService(Address localAddress) {
+    public NettyMessagingService(String communicateId, Address localAddress) {
         this.localAddress = localAddress;
+        this.communicateId = communicateId;
         initEventLoopGroup();
     }
 

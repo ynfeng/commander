@@ -18,7 +18,7 @@ class NettyMessagingServiceTest {
 
     @BeforeEach
     public void setup() {
-        messagingService = new NettyMessagingService(Address.of("127.0.0.1", 7892));
+        messagingService = new NettyMessagingService("test", Address.of("127.0.0.1", 7892));
         messagingService.start();
     }
 

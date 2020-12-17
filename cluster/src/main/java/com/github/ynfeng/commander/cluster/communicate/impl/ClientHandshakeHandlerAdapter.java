@@ -8,9 +8,11 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class ClientHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapter {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
+    private final String communicateId;
     private final ProtocolVersion protocolVersion;
 
-    public ClientHandshakeHandlerAdapter(ProtocolVersion protocolVersion) {
+    public ClientHandshakeHandlerAdapter(String communicateId, ProtocolVersion protocolVersion) {
+        this.communicateId = communicateId;
         this.protocolVersion = protocolVersion;
     }
 
@@ -18,12 +20,16 @@ public class ClientHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapte
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         logger.debug("Writing client protocol version {} for connection to {}",
             protocolVersion, ctx.channel().remoteAddress());
-        writeProtocolVersion(ctx, protocolVersion);
+        writeProtocolVersion(communicateId, ctx, protocolVersion);
     }
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        readProtocolVersion((ByteBuf) msg)
-            .ifPresent(version -> acceptProtocolVersion(ctx, version));
+        ByteBuf byteBuf = (ByteBuf) msg;
+        if (checkCommunicateIdOrCloseContext(ctx, communicateId, byteBuf)) {
+            readProtocolVersion(byteBuf)
+                .ifPresent(version -> acceptProtocolVersion(ctx, version));
+        }
     }
+
 }

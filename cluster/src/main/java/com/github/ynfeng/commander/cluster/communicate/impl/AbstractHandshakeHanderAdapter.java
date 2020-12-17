@@ -11,19 +11,17 @@ import java.util.Optional;
 public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandlerAdapter {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
 
-    protected void writeProtocolVersion(ChannelHandlerContext ctx, ProtocolVersion protocolVersion) {
-        ByteBuf buffer = ctx.alloc().buffer(1);
+    protected void writeProtocolVersion(String communicateId,
+                                        ChannelHandlerContext ctx,
+                                        ProtocolVersion protocolVersion) {
+        ByteBuf buffer = ctx.alloc().buffer(5);
+        buffer.writeInt(communicateId.hashCode());
         buffer.writeByte(protocolVersion.version());
         ctx.writeAndFlush(buffer);
     }
 
     protected Optional<ProtocolVersion> readProtocolVersion(ByteBuf byteBuf) {
-        try {
-            byte version = byteBuf.readByte();
-            return ProtocolVersion.valueOf(version);
-        } finally {
-            byteBuf.release();
-        }
+        return ProtocolVersion.valueOf(byteBuf.readByte());
     }
 
     protected void acceptProtocolVersion(ChannelHandlerContext ctx, ProtocolVersion protocolVersion) {
@@ -31,5 +29,15 @@ public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandl
         ctx.pipeline().remove(this);
         ctx.pipeline().addLast("encoder", protocolVersion.newEncoder());
         ctx.pipeline().addLast("decoder", protocolVersion.newDecoder());
+    }
+
+    protected boolean checkCommunicateIdOrCloseContext(ChannelHandlerContext ctx,
+                                                       String communicateId,
+                                                       ByteBuf byteBuf) {
+        if (communicateId.hashCode() != byteBuf.readInt()) {
+            ctx.close();
+            return false;
+        }
+        return true;
     }
 }

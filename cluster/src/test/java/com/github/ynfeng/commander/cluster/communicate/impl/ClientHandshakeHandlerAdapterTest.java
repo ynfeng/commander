@@ -12,19 +12,33 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.jupiter.api.Test;
 
 class ClientHandshakeHandlerAdapterTest {
+    private static final String COMMUNICATE_ID = "test";
 
     @Test
     public void should_send_protocol_version_when_connected() throws Exception {
-        EmbeddedChannel channel = createChannelAndRegister(ProtocolVersion.V1);
+        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID, ProtocolVersion.V1);
 
         ByteBuf byteBuf = channel.readOutbound();
+        assertThat(byteBuf.readInt(), is(COMMUNICATE_ID.hashCode()));
         assertThat(byteBuf.readByte(), is((byte) 1));
     }
 
     @Test
-    public void should_add_encode_and_decoder_when_protocol_accepted() throws Exception {
-        EmbeddedChannel channel = createChannelAndRegister(ProtocolVersion.V1);
+    public void should_close_when_connected_with_wrong_communicate_id() throws Exception {
+        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID, ProtocolVersion.V1);
         ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeInt("wrongId".hashCode());
+        byteBuf.writeByte(1);
+        channel.writeInbound(byteBuf);
+
+        assertThat(channel.isOpen(), is(false));
+    }
+
+    @Test
+    public void should_add_encode_and_decoder_when_protocol_accepted() throws Exception {
+        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID, ProtocolVersion.V1);
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeInt(COMMUNICATE_ID.hashCode());
         byteBuf.writeByte(1);
         channel.writeInbound(byteBuf);
 
@@ -37,9 +51,9 @@ class ClientHandshakeHandlerAdapterTest {
         assertThat(decoder, instanceOf(MessageDecoderV1.class));
     }
 
-    private EmbeddedChannel createChannelAndRegister(ProtocolVersion protocolVersion) throws Exception {
+    private EmbeddedChannel createChannelAndRegister(String communicateId, ProtocolVersion protocolVersion) throws Exception {
         EmbeddedChannel channel = new EmbeddedChannel(false, false);
-        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(protocolVersion));
+        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, protocolVersion));
         channel.register();
         return channel;
     }
