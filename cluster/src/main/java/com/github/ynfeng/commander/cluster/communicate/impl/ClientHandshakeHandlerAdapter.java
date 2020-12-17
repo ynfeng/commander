@@ -1,8 +1,6 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
 import com.github.ynfeng.commander.cluster.communicate.protocol.ProtocolVersion;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
-import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
