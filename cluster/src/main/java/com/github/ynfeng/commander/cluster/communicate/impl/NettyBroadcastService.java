@@ -1,6 +1,5 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.cluster.ClusterException;
 import com.github.ynfeng.commander.cluster.communicate.BroadcastService;
 import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
@@ -89,7 +88,7 @@ public class NettyBroadcastService implements BroadcastService {
     private void joinGroup() {
         boolean success = clientChannel.joinGroup(groupAddress.toInetSocketAddress(), iface).isSuccess();
         if (!success) {
-            throw new ClusterException(
+            throw new IllegalStateException(
                 String.format("%s failed to join group %s on port %d",
                     localAddress.ip(), groupAddress.ip(), groupAddress.port()));
         }
@@ -104,7 +103,7 @@ public class NettyBroadcastService implements BroadcastService {
                 .sync()
                 .channel();
         } catch (InterruptedException e) {
-            throw new ClusterException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -141,7 +140,7 @@ public class NettyBroadcastService implements BroadcastService {
                 .sync()
                 .channel();
         } catch (InterruptedException e) {
-            throw new ClusterException(e);
+            throw new IllegalStateException(e);
         }
     }
 
@@ -158,7 +157,7 @@ public class NettyBroadcastService implements BroadcastService {
         try {
             return NetworkInterface.getByInetAddress(localAddress.toInetAddress());
         } catch (SocketException e) {
-            throw new ClusterException(e);
+            throw new IllegalStateException(e);
         }
     }
 

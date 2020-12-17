@@ -1,6 +1,5 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.cluster.ClusterException;
 import com.github.ynfeng.commander.cluster.communicate.UnicastService;
 import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
@@ -105,7 +104,7 @@ public class NettyUnicastService implements UnicastService {
     private void bind(Bootstrap bootstrap) {
         ChannelFuture channelFuture = bootstrap.bind("0.0.0.0", port);
         if (!channelFuture.syncUninterruptibly().isSuccess()) {
-            throw new ClusterException(
+            throw new IllegalStateException(
                 String.format("Failed to bind UDP server to port %d", port),
                 channelFuture.cause());
         }

@@ -1,6 +1,5 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.cluster.ClusterException;
 import com.github.ynfeng.commander.cluster.communicate.Message;
 import com.github.ynfeng.commander.cluster.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
@@ -119,7 +118,7 @@ public class NettyMessagingService implements MessagingService {
         ChannelFuture channelFuture = bootstrap.bind(localAddress.ip(), localAddress.port());
         boolean success = channelFuture.syncUninterruptibly().isSuccess();
         if (!success) {
-            throw new ClusterException(
+            throw new IllegalStateException(
                 String.format("Failed to bind TCP server to port %s:%d",
                     localAddress.ip(), localAddress.port()));
         }
@@ -136,7 +135,7 @@ public class NettyMessagingService implements MessagingService {
                 serverGroup.shutdownGracefully().syncUninterruptibly();
                 clientGroup.shutdownGracefully().syncUninterruptibly();
             } catch (InterruptedException e) {
-                throw new ClusterException(e);
+                throw new IllegalStateException(e);
             }
         }
     }
