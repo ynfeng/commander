@@ -116,14 +116,14 @@ public class NettyMessagingService implements MessagingService {
 
     @SuppressWarnings("checkstyle:MethodLength")
     private void bind(ServerBootstrap bootstrap) {
-        ChannelFuture channelFuture = bootstrap.bind(localAddress.ip(), localAddress.port());
+        ChannelFuture channelFuture = bootstrap.bind(localAddress.host(), localAddress.port());
         boolean success = channelFuture.syncUninterruptibly().isSuccess();
         if (!success) {
             throw new IllegalStateException(
                 String.format("Failed to bind TCP server to port %s:%d",
-                    localAddress.ip(), localAddress.port()));
+                    localAddress.host(), localAddress.port()));
         }
-        logger.info("TCP server listening for connections on {}:{}", localAddress.ip(), localAddress.port());
+        logger.info("TCP server listening for connections on {}:{}", localAddress.host(), localAddress.port());
         serverChannel = channelFuture.channel();
     }
 

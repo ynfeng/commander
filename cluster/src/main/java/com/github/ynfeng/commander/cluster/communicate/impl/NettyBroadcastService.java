@@ -90,10 +90,10 @@ public class NettyBroadcastService implements BroadcastService {
         if (!success) {
             throw new IllegalStateException(
                 String.format("%s failed to join group %s on port %d",
-                    localAddress.ip(), groupAddress.ip(), groupAddress.port()));
+                    localAddress.host(), groupAddress.host(), groupAddress.port()));
         }
         logger.info("{} successfully joined multicast group {} on port {}",
-            localAddress.ip(), groupAddress.ip(), groupAddress.port());
+            localAddress.host(), groupAddress.host(), groupAddress.port());
     }
 
     private void bootClient() {

@@ -6,14 +6,14 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 
 public class Address {
-    private String ip;
+    private String host;
     private int port;
 
     private Address() {
     }
 
-    private Address(String ip, int port) {
-        this.ip = ip;
+    private Address(String host, int port) {
+        this.host = host;
         this.port = port;
     }
 
@@ -31,7 +31,7 @@ public class Address {
 
     private byte[] ipToBytes() {
         byte[] addrBytes = new byte[4];
-        String[] ipItems = ip.split("\\.");
+        String[] ipItems = host.split("\\.");
         for (int i = 0; i < addrBytes.length; i++) {
             addrBytes[i] = Byte.valueOf(ipItems[i]);
         }
@@ -42,25 +42,25 @@ public class Address {
     public boolean equals(Object obj) {
         if (obj instanceof Address) {
             Address that = (Address) obj;
-            return Objects.equal(ip, that.ip) && Objects.equal(port, that.port);
+            return Objects.equal(host, that.host) && Objects.equal(port, that.port);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(ip, port);
+        return Objects.hashCode(host, port);
     }
 
     public InetSocketAddress toInetSocketAddress() {
-        return new InetSocketAddress(ip, port);
+        return new InetSocketAddress(host, port);
     }
 
     public int port() {
         return port;
     }
 
-    public String ip() {
-        return ip;
+    public String host() {
+        return host;
     }
 }

@@ -43,7 +43,7 @@ class NettyMessagingServiceTest {
             }
         });
 
-        ChannelFuture f = bootstrap.connect(address.ip(), address.port()).syncUninterruptibly();
+        ChannelFuture f = bootstrap.connect(address.host(), address.port()).syncUninterruptibly();
         return f.channel();
     }
 

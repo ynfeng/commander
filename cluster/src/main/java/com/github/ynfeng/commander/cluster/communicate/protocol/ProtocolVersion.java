@@ -19,7 +19,7 @@ public enum ProtocolVersion {
             return new MessageDecoderV1();
         }
     };
-    private byte version;
+    private final byte version;
 
     ProtocolVersion(int version) {
         this.version = (byte) version;

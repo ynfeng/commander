@@ -57,7 +57,7 @@ class NettyUnicastServiceTest {
             waitObj.wait(1000);
         }
 
-        assertThat(recvAddress.get().ip(), is("127.0.0.1"));
+        assertThat(recvAddress.get().host(), is("127.0.0.1"));
         assertThat(recvBytes.get(), is("test".getBytes()));
     }
 
