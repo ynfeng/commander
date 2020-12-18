@@ -8,7 +8,6 @@ import com.github.ynfeng.commander.support.Address;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import org.junit.jupiter.api.Test;
 
 class MessageDecoderV1Test {
@@ -56,13 +55,7 @@ class MessageDecoderV1Test {
 
     private EmbeddedChannel createEmbeddedChannel() {
         EmbeddedChannel channel = new EmbeddedChannel();
-        channel.pipeline().addLast(new LengthFieldBasedFrameDecoder(
-            Integer.MAX_VALUE,
-            0,
-            4,
-            0,
-            4,
-            false));
+        channel.pipeline().addLast(new MessageFrameDecoderV1());
         channel.pipeline().addLast(new MessageDecoderV1());
         return channel;
     }
@@ -99,7 +92,7 @@ class MessageDecoderV1Test {
     }
 
 
-    private void assertMessage(ProtocolMessage protocolMessage) {
+    private static void assertMessage(ProtocolMessage protocolMessage) {
         assertThat(protocolMessage.address(), is(Address.of("127.0.0.1", 1988)));
         assertThat(protocolMessage.payload(), is("hello".getBytes()));
         assertThat(protocolMessage.subject(), is("test channel"));

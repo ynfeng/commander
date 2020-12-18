@@ -19,11 +19,13 @@ class NettyBroadcastServiceTest {
         broadcastService = new NettyBroadcastService(
             Address.of("127.0.0.1", 1234), Address.of("230.0.0.1", 1234));
         broadcastService.start();
+        assertThat(broadcastService.isStarted(), is(true));
     }
 
     @AfterEach
     public void destory() {
         broadcastService.shutdown();
+        assertThat(broadcastService.isStarted(), is(false));
     }
 
     @Test

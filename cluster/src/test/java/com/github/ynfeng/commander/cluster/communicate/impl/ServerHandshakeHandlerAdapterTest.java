@@ -41,10 +41,12 @@ class ServerHandshakeHandlerAdapterTest {
         int handlers = channel.pipeline().toMap().entrySet().size();
         ChannelHandler encoder = channel.pipeline().get("encoder");
         ChannelHandler decoder = channel.pipeline().get("decoder");
+        ChannelHandler frameDecoder = channel.pipeline().get("frameDecoder");
 
-        assertThat(handlers, is(2));
+        assertThat(handlers, is(3));
         assertThat(encoder, instanceOf(MessageEncoderV1.class));
         assertThat(decoder, instanceOf(MessageDecoderV1.class));
+        assertThat(frameDecoder, instanceOf(MessageFrameDecoderV1.class));
     }
 
     private EmbeddedChannel createChannelAndWriteProtocolVersion(String communicateId, String clientCommunicateId, int version) {

@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.cluster.communicate.protocol.ProtocolVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -45,10 +44,12 @@ class ClientHandshakeHandlerAdapterTest {
         int handlers = channel.pipeline().toMap().entrySet().size();
         ChannelHandler encoder = channel.pipeline().get("encoder");
         ChannelHandler decoder = channel.pipeline().get("decoder");
+        ChannelHandler frameDecoder = channel.pipeline().get("frameDecoder");
 
-        assertThat(handlers, is(2));
+        assertThat(handlers, is(3));
         assertThat(encoder, instanceOf(MessageEncoderV1.class));
         assertThat(decoder, instanceOf(MessageDecoderV1.class));
+        assertThat(frameDecoder, instanceOf(MessageFrameDecoderV1.class));
     }
 
     private EmbeddedChannel createChannelAndRegister(String communicateId, ProtocolVersion protocolVersion) throws Exception {

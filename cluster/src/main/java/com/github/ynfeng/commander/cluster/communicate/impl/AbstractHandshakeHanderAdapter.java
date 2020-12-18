@@ -1,6 +1,5 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.cluster.communicate.protocol.ProtocolVersion;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import io.netty.buffer.ByteBuf;
@@ -28,6 +27,7 @@ public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandl
         logger.debug("accepted protocol version {} to connection {}", protocolVersion, ctx.channel().remoteAddress());
         ctx.pipeline().remove(this);
         ctx.pipeline().addLast("encoder", protocolVersion.newEncoder());
+        ctx.pipeline().addLast("frameDecoder", protocolVersion.newFrameDecoder());
         ctx.pipeline().addLast("decoder", protocolVersion.newDecoder());
     }
 

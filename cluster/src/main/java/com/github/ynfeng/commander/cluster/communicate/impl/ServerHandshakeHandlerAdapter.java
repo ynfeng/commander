@@ -1,6 +1,5 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.cluster.communicate.protocol.ProtocolVersion;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.Optional;

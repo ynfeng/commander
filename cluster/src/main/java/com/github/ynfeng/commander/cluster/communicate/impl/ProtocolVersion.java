@@ -1,9 +1,5 @@
-package com.github.ynfeng.commander.cluster.communicate.protocol;
+package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.cluster.communicate.impl.AbstractMessageDecoder;
-import com.github.ynfeng.commander.cluster.communicate.impl.AbstractMessageEncoder;
-import com.github.ynfeng.commander.cluster.communicate.impl.MessageDecoderV1;
-import com.github.ynfeng.commander.cluster.communicate.impl.MessageEncoderV1;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -17,6 +13,11 @@ public enum ProtocolVersion {
         @Override
         public AbstractMessageDecoder newDecoder() {
             return new MessageDecoderV1();
+        }
+
+        @Override
+        public AbstractFrameMessageDecoder newFrameDecoder() {
+            return new MessageFrameDecoderV1();
         }
     };
     private final byte version;
@@ -34,6 +35,8 @@ public enum ProtocolVersion {
     public abstract AbstractMessageEncoder newEncoder();
 
     public abstract AbstractMessageDecoder newDecoder();
+
+    public abstract AbstractFrameMessageDecoder newFrameDecoder();
 
     public byte version() {
         return version;

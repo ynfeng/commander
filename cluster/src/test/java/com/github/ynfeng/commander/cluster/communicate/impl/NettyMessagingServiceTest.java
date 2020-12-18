@@ -1,5 +1,8 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+
 import com.github.ynfeng.commander.support.Address;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -20,11 +23,13 @@ class NettyMessagingServiceTest {
     public void setup() {
         messagingService = new NettyMessagingService("test", Address.of("127.0.0.1", 7892));
         messagingService.start();
+        assertThat(messagingService.isStarted(), is(true));
     }
 
     @AfterEach
     public void destory() {
         messagingService.shutdown();
+        assertThat(messagingService.isStarted(), is(false));
     }
 
     @Test
