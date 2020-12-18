@@ -19,7 +19,7 @@ class NettyUnicastServiceTest {
     public void setup() {
         unicastService = new NettyUnicastService(1985);
         unicastService.start();
-        assertThat(unicastService.isStarted(),is(true));
+        assertThat(unicastService.isStarted(), is(true));
     }
 
     @AfterEach

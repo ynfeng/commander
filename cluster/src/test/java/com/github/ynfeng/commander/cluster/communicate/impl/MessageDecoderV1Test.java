@@ -12,6 +12,12 @@ import org.junit.jupiter.api.Test;
 
 class MessageDecoderV1Test {
 
+    private static void assertMessage(ProtocolMessage protocolMessage) {
+        assertThat(protocolMessage.address(), is(Address.of("127.0.0.1", 1988)));
+        assertThat(protocolMessage.payload(), is("hello".getBytes()));
+        assertThat(protocolMessage.subject(), is("test channel"));
+    }
+
     @Test
     public void should_decode_protocol_message() {
         EmbeddedChannel channel = createEmbeddedChannel();
@@ -89,12 +95,5 @@ class MessageDecoderV1Test {
         byteBuf.writeInt("hello".length());
         byteBuf.writeBytes("hello".getBytes());
         return byteBuf;
-    }
-
-
-    private static void assertMessage(ProtocolMessage protocolMessage) {
-        assertThat(protocolMessage.address(), is(Address.of("127.0.0.1", 1988)));
-        assertThat(protocolMessage.payload(), is("hello".getBytes()));
-        assertThat(protocolMessage.subject(), is("test channel"));
     }
 }

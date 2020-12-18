@@ -26,6 +26,7 @@ public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandl
     protected void acceptProtocolVersion(ChannelHandlerContext ctx, ProtocolVersion protocolVersion) {
         logger.debug("accepted protocol version {} to connection {}", protocolVersion, ctx.channel().remoteAddress());
         ctx.pipeline().remove(this);
+        ctx.pipeline().remove("frameDecoder");
         ctx.pipeline().addLast("encoder", protocolVersion.newEncoder());
         ctx.pipeline().addLast("frameDecoder", protocolVersion.newFrameDecoder());
         ctx.pipeline().addLast("decoder", protocolVersion.newDecoder());
@@ -34,7 +35,8 @@ public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandl
     protected boolean checkCommunicateIdOrCloseContext(ChannelHandlerContext ctx,
                                                        String communicateId,
                                                        ByteBuf byteBuf) {
-        if (communicateId.hashCode() != byteBuf.readInt()) {
+        int peerId = byteBuf.readInt();
+        if (communicateId.hashCode() != peerId) {
             ctx.close();
             return false;
         }

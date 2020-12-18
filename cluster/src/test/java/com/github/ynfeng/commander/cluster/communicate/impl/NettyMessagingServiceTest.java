@@ -1,7 +1,7 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.support.Address;
 import io.netty.bootstrap.Bootstrap;

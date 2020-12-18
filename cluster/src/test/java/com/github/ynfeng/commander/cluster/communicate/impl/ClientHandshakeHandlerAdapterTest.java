@@ -2,16 +2,26 @@ package com.github.ynfeng.commander.cluster.communicate.impl;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
+import io.netty.handler.codec.FixedLengthFrameDecoder;
 import org.junit.jupiter.api.Test;
 
 class ClientHandshakeHandlerAdapterTest {
     private static final String COMMUNICATE_ID = "test";
+
+    private static EmbeddedChannel createChannelAndRegister(String communicateId, ProtocolVersion protocolVersion) throws Exception {
+        EmbeddedChannel channel = new EmbeddedChannel(false, false);
+        channel.pipeline().addLast("frameDecoder", new FixedLengthFrameDecoder(5));
+        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, protocolVersion));
+        channel.register();
+        return channel;
+    }
 
     @Test
     public void should_send_protocol_version_when_connected() throws Exception {
@@ -52,10 +62,23 @@ class ClientHandshakeHandlerAdapterTest {
         assertThat(frameDecoder, instanceOf(MessageFrameDecoderV1.class));
     }
 
-    private EmbeddedChannel createChannelAndRegister(String communicateId, ProtocolVersion protocolVersion) throws Exception {
-        EmbeddedChannel channel = new EmbeddedChannel(false, false);
-        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, protocolVersion));
-        channel.register();
-        return channel;
+    @Test
+    public void should_read_half_packet() throws Exception {
+        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID, ProtocolVersion.V1);
+        ByteBuf byteBuf = Unpooled.buffer();
+        byteBuf.writeInt(COMMUNICATE_ID.hashCode());
+        channel.writeInbound(byteBuf);
+
+        ChannelHandler encoder = channel.pipeline().get("encoder");
+        assertThat(encoder, nullValue());
+        assertThat(channel.isOpen(), is(true));
+
+        byteBuf = Unpooled.buffer();
+        byteBuf.writeByte(1);
+        channel.writeInbound(byteBuf);
+
+        encoder = channel.pipeline().get("encoder");
+        assertThat(encoder, instanceOf(MessageEncoderV1.class));
+        assertThat(channel.isOpen(), is(true));
     }
 }
