@@ -6,9 +6,11 @@ import java.util.Optional;
 
 public class ServerHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapter {
     private final String communicateId;
+    private final Connection connection;
 
-    public ServerHandshakeHandlerAdapter(String communicateId) {
+    public ServerHandshakeHandlerAdapter(String communicateId, Connection connection) {
         this.communicateId = communicateId;
+        this.connection = connection;
     }
 
     @Override
@@ -25,7 +27,7 @@ public class ServerHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapte
 
     private void accept(ChannelHandlerContext ctx, ProtocolVersion clientProtocolVersion) {
         writeProtocolVersion(communicateId, ctx, clientProtocolVersion);
-        acceptProtocolVersion(ctx, clientProtocolVersion);
+        acceptProtocolVersion(ctx, connection, clientProtocolVersion);
     }
 
 }

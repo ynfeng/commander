@@ -10,22 +10,23 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.Test;
 
 class ClientHandshakeHandlerAdapterTest {
     private static final String COMMUNICATE_ID = "test";
 
-    private static EmbeddedChannel createChannelAndRegister(String communicateId, ProtocolVersion protocolVersion) throws Exception {
+    private static EmbeddedChannel createChannelAndRegister(String communicateId) throws Exception {
         EmbeddedChannel channel = new EmbeddedChannel(false, false);
-        channel.pipeline().addLast("frameDecoder", new FixedLengthFrameDecoder(5));
-        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, protocolVersion));
+        channel.pipeline().addLast(NettyMessagingService.HANDSHAKE_FRAME_DECODER, new FixedLengthFrameDecoder(5));
+        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, new RemoteClientConnection(new EmbeddedChannel(), new Handlers()), new CompletableFuture<>()));
         channel.register();
         return channel;
     }
 
     @Test
     public void should_send_protocol_version_when_connected() throws Exception {
-        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID, ProtocolVersion.V1);
+        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID);
 
         ByteBuf byteBuf = channel.readOutbound();
         assertThat(byteBuf.readInt(), is(COMMUNICATE_ID.hashCode()));
@@ -34,7 +35,7 @@ class ClientHandshakeHandlerAdapterTest {
 
     @Test
     public void should_close_when_connected_with_wrong_communicate_id() throws Exception {
-        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID, ProtocolVersion.V1);
+        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt("wrongId".hashCode());
         byteBuf.writeByte(1);
@@ -45,7 +46,7 @@ class ClientHandshakeHandlerAdapterTest {
 
     @Test
     public void should_add_encode_and_decoder_when_protocol_accepted() throws Exception {
-        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID, ProtocolVersion.V1);
+        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt(COMMUNICATE_ID.hashCode());
         byteBuf.writeByte(1);
@@ -56,7 +57,7 @@ class ClientHandshakeHandlerAdapterTest {
         ChannelHandler decoder = channel.pipeline().get("decoder");
         ChannelHandler frameDecoder = channel.pipeline().get("frameDecoder");
 
-        assertThat(handlers, is(3));
+        assertThat(handlers, is(4));
         assertThat(encoder, instanceOf(MessageEncoderV1.class));
         assertThat(decoder, instanceOf(MessageDecoderV1.class));
         assertThat(frameDecoder, instanceOf(MessageFrameDecoderV1.class));
@@ -64,7 +65,7 @@ class ClientHandshakeHandlerAdapterTest {
 
     @Test
     public void should_read_half_packet() throws Exception {
-        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID, ProtocolVersion.V1);
+        EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt(COMMUNICATE_ID.hashCode());
         channel.writeInbound(byteBuf);

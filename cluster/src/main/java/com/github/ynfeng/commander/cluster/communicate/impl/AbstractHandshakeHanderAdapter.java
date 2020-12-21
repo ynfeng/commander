@@ -23,13 +23,16 @@ public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandl
         return ProtocolVersion.valueOf(byteBuf.readByte());
     }
 
-    protected void acceptProtocolVersion(ChannelHandlerContext ctx, ProtocolVersion protocolVersion) {
+    protected void acceptProtocolVersion(ChannelHandlerContext ctx,
+                                         Connection connection,
+                                         ProtocolVersion protocolVersion) {
         logger.debug("accepted protocol version {} to connection {}", protocolVersion, ctx.channel().remoteAddress());
         ctx.pipeline().remove(this);
-        ctx.pipeline().remove("frameDecoder");
+        ctx.pipeline().remove(NettyMessagingService.HANDSHAKE_FRAME_DECODER);
         ctx.pipeline().addLast("encoder", protocolVersion.newEncoder());
-        ctx.pipeline().addLast("frameDecoder", protocolVersion.newFrameDecoder());
+        ctx.pipeline().addLast(NettyMessagingService.HANDSHAKE_FRAME_DECODER, protocolVersion.newFrameDecoder());
         ctx.pipeline().addLast("decoder", protocolVersion.newDecoder());
+        ctx.pipeline().addLast("dispatcher", new MessageDispatcher(connection));
     }
 
     protected boolean checkCommunicateIdOrCloseContext(ChannelHandlerContext ctx,

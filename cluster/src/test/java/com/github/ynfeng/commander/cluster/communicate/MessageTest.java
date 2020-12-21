@@ -11,8 +11,8 @@ class MessageTest {
     public void should_create_message() {
         MessagingService.Message message = new MessagingService.Message("testType", new byte[] {0});
 
-        assertThat(message.getType(), is("testType"));
-        assertThat(message.getPayload(), is(new byte[] {0}));
+        assertThat(message.subject(), is("testType"));
+        assertThat(message.payload(), is(new byte[] {0}));
     }
 
 }

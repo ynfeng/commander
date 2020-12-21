@@ -5,11 +5,13 @@ import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Threads;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
+import com.google.common.collect.Maps;
+import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
@@ -20,15 +22,22 @@ import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.FixedLengthFrameDecoder;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 public class NettyMessagingService implements MessagingService {
+    public static final String HANDSHAKE_FRAME_DECODER = "frameDecoder";
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
     private final AtomicBoolean started = new AtomicBoolean();
     private final Address localAddress;
     private final String communicateId;
+    private final Map<Channel, RemoteClientConnection> clientConnections = Maps.newConcurrentMap();
+    private final Map<Address, Channel> channels = Maps.newConcurrentMap();
+    private final Handlers handlers = new Handlers();
     private Channel serverChannel;
     private EventLoopGroup serverGroup;
     private EventLoopGroup clientGroup;
@@ -39,6 +48,16 @@ public class NettyMessagingService implements MessagingService {
         this.localAddress = localAddress;
         this.communicateId = communicateId;
         initEventLoopGroup();
+    }
+
+    private static BiConsumer<Void, Throwable> completeSendAsync(CompletableFuture<Void> sendAsyncFuture) {
+        return (r, e) -> {
+            if (e == null) {
+                sendAsyncFuture.complete(null);
+            } else {
+                sendAsyncFuture.completeExceptionally(e);
+            }
+        };
     }
 
     private void initEventLoopGroup() {
@@ -75,7 +94,52 @@ public class NettyMessagingService implements MessagingService {
 
     @Override
     public CompletableFuture<Void> sendAsync(Address address, Message message, boolean keepAlive) {
-        return null;
+        CompletableFuture<Void> sendAsyncFuture = new CompletableFuture<>();
+        Channel channel = channels.computeIfAbsent(address, addr -> bootstrapClient(address).join());
+        RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
+        ProtocolMessage protocolMessage = buildProtocolMessage(message);
+        connection.sendAsync(protocolMessage).whenComplete(completeSendAsync(sendAsyncFuture));
+        return sendAsyncFuture;
+    }
+
+    private ProtocolMessage buildProtocolMessage(Message message) {
+        return ProtocolMessage.builder()
+            .address(localAddress)
+            .payload(message.payload())
+            .subject(message.subject())
+            .build();
+    }
+
+    private RemoteClientConnection getOrCreateRemoteClientConnection(Channel channel) {
+        return clientConnections.computeIfAbsent(channel, c -> new RemoteClientConnection(c, handlers));
+    }
+
+    @SuppressWarnings("checkstyle:MethodLength")
+    private CompletableFuture<Channel> bootstrapClient(Address address) {
+        CompletableFuture<Void> handshakeFuture = new CompletableFuture<>();
+        Bootstrap bootstrap = new Bootstrap();
+        bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+        bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK,
+            new WriteBufferWaterMark(10 * 32 * 1024, 10 * 64 * 1024));
+        bootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
+        bootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 1024);
+        bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+        bootstrap.option(ChannelOption.TCP_NODELAY, true);
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000);
+        bootstrap.group(clientGroup);
+        bootstrap.channel(clientChannelClass);
+        bootstrap.handler(new ChannelInitializer<Channel>() {
+            @Override
+            protected void initChannel(Channel ch) throws Exception {
+                RemoteClientConnection remoteClientConnection = getOrCreateRemoteClientConnection(ch);
+                ch.pipeline().addLast(HANDSHAKE_FRAME_DECODER,
+                    new FixedLengthFrameDecoder(5));
+                ch.pipeline().addLast(
+                    new ClientHandshakeHandlerAdapter(communicateId, remoteClientConnection, handshakeFuture));
+            }
+        });
+        ChannelFuture connectFuture = bootstrap.connect(address.toInetSocketAddress());
+        return handshakeFuture.thenApply(v -> connectFuture.channel());
     }
 
     @Override
@@ -85,12 +149,11 @@ public class NettyMessagingService implements MessagingService {
 
     @Override
     public void registerHandler(String type, BiFunction<Address, byte[], CompletableFuture<byte[]>> handler) {
-
+        handlers.registry(type, handler);
     }
 
     @Override
     public void unregisterHandler(String type) {
-
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
@@ -109,7 +172,15 @@ public class NettyMessagingService implements MessagingService {
             bootstrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             bootstrap.group(serverGroup, clientGroup);
             bootstrap.channel(serverChannelClass);
-            bootstrap.childHandler(new ChannelInboundHandlerAdapter());
+            bootstrap.childHandler(new ChannelInitializer<Channel>() {
+                @Override
+                protected void initChannel(Channel ch) throws Exception {
+                    ch.pipeline().addLast(HANDSHAKE_FRAME_DECODER,
+                        new FixedLengthFrameDecoder(5));
+                    ch.pipeline().addLast(
+                        new ServerHandshakeHandlerAdapter(communicateId, new ServerConnection(ch, handlers)));
+                }
+            });
             bind(bootstrap);
         }
     }
@@ -145,11 +216,4 @@ public class NettyMessagingService implements MessagingService {
     public boolean isStarted() {
         return started.get();
     }
-
-//    private static class BasicServerChannelInitializer extends ChannelInitializer<SocketChannel> {
-//        @Override
-//        protected void initChannel(SocketChannel channel) throws Exception {
-//            channel.pipeline().addLast("handshake", new ChannelInboundHandlerAdapter());
-//        }
-//    }
 }

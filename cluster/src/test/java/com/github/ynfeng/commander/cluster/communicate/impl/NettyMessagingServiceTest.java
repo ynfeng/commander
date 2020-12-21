@@ -3,53 +3,40 @@ package com.github.ynfeng.commander.cluster.communicate.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.ynfeng.commander.cluster.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
-import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 class NettyMessagingServiceTest {
-    private NettyMessagingService messagingService;
 
-    @BeforeEach
-    public void setup() {
-        messagingService = new NettyMessagingService("test", Address.of("127.0.0.1", 7892));
+    @Test
+    public void should_start_and_shutdown() {
+        NettyMessagingService messagingService = new NettyMessagingService("test", Address.of("127.0.0.1", 7892));
         messagingService.start();
         assertThat(messagingService.isStarted(), is(true));
-    }
 
-    @AfterEach
-    public void destory() {
         messagingService.shutdown();
         assertThat(messagingService.isStarted(), is(false));
     }
 
     @Test
-    public void should_response_protocol_version_when_client_connected() {
-        Channel channel = connect(Address.of("127.0.0.1", 7892));
-        channel.close().syncUninterruptibly();
+    public void should_send_and_listen_message() throws Exception {
+        NettyMessagingService peer1 = new NettyMessagingService("test", Address.of("127.0.0.1", 7892));
+        NettyMessagingService peer2 = new NettyMessagingService("test", Address.of("127.0.0.1", 1990));
+        peer1.start();
+        peer2.start();
+        CompletableFuture<byte[]> result = new CompletableFuture<>();
+        peer2.registerHandler("hello", (address, bytes) -> result);
+
+        MessagingService.Message greeting = new MessagingService.Message("hello", "Hello there!".getBytes());
+        peer1.sendAsync(Address.of("127.0.0.1", 1990), greeting).join();
+
+        byte[] receiveBytes = result.get(1, TimeUnit.SECONDS);
+        assertThat(receiveBytes, is("Hello there!".getBytes()));
+
+        peer1.shutdown();
+        peer2.shutdown();
     }
-
-    private Channel connect(Address address) {
-        Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(new NioEventLoopGroup());
-        bootstrap.channel(NioSocketChannel.class);
-        bootstrap.handler(new ChannelInitializer<SocketChannel>() {
-            @Override
-            protected void initChannel(@NotNull SocketChannel ch) throws Exception {
-            }
-        });
-
-        ChannelFuture f = bootstrap.connect(address.host(), address.port()).syncUninterruptibly();
-        return f.channel();
-    }
-
 }

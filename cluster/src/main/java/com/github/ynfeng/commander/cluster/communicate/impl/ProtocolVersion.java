@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Optional;
 
 public enum ProtocolVersion {
@@ -30,6 +31,10 @@ public enum ProtocolVersion {
         return Arrays.stream(values())
             .filter(pv -> pv.version == version)
             .findFirst();
+    }
+
+    public static ProtocolVersion lastest() {
+        return Arrays.stream(values()).max(Comparator.comparingInt(v -> v.version)).orElse(null);
     }
 
     public abstract AbstractMessageEncoder newEncoder();

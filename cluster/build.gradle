@@ -4,6 +4,7 @@ project.dependencies {
             project(':primitive'),
             project(':module'),
             project(':serializer'),
+            project(':testtools'),
             "io.netty:netty-all:$nettyVersion",
             "io.netty:netty-transport-native-epoll:$nettyVersion:linux-x86_64",
     )

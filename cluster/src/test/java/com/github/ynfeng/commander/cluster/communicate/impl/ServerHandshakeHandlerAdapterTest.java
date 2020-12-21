@@ -16,8 +16,8 @@ class ServerHandshakeHandlerAdapterTest {
 
     private static EmbeddedChannel createChannel(String communicateId) {
         EmbeddedChannel channel = new EmbeddedChannel(true, false);
-        channel.pipeline().addLast("frameDecoder", new FixedLengthFrameDecoder(5));
-        channel.pipeline().addLast(new ServerHandshakeHandlerAdapter(communicateId));
+        channel.pipeline().addLast(NettyMessagingService.HANDSHAKE_FRAME_DECODER, new FixedLengthFrameDecoder(5));
+        channel.pipeline().addLast(new ServerHandshakeHandlerAdapter(communicateId, new ServerConnection(new EmbeddedChannel(), new Handlers())));
         return channel;
     }
 
@@ -86,7 +86,7 @@ class ServerHandshakeHandlerAdapterTest {
         ChannelHandler decoder = channel.pipeline().get("decoder");
         ChannelHandler frameDecoder = channel.pipeline().get("frameDecoder");
 
-        assertThat(handlers, is(3));
+        assertThat(handlers, is(4));
         assertThat(encoder, instanceOf(MessageEncoderV1.class));
         assertThat(decoder, instanceOf(MessageDecoderV1.class));
         assertThat(frameDecoder, instanceOf(MessageFrameDecoderV1.class));

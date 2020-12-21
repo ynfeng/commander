@@ -23,19 +23,19 @@ public interface MessagingService extends Manageable {
     void unregisterHandler(String type);
 
     class Message {
-        private final String type;
+        private final String subject;
         private final byte[] payload;
 
-        public Message(String type, byte[] payload) {
-            this.type = type;
+        public Message(String subject, byte[] payload) {
+            this.subject = subject;
             this.payload = payload.clone();
         }
 
-        public String getType() {
-            return type;
+        public String subject() {
+            return subject;
         }
 
-        public byte[] getPayload() {
+        public byte[] payload() {
             return payload.clone();
         }
     }
