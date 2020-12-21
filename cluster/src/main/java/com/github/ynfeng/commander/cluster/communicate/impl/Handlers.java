@@ -13,7 +13,7 @@ public class Handlers {
     private final Map<String, CopyOnWriteArraySet<BiFunction<Address, byte[], CompletableFuture<byte[]>>>> handlers
         = Maps.newConcurrentMap();
 
-    public void registry(String type, BiFunction<Address, byte[], CompletableFuture<byte[]>> handler) {
+    public void add(String type, BiFunction<Address, byte[], CompletableFuture<byte[]>> handler) {
         handlers.computeIfAbsent(type, k -> Sets.newCopyOnWriteArraySet()).add(handler);
     }
 

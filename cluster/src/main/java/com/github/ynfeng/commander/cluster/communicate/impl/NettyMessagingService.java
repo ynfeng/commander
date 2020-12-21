@@ -36,8 +36,8 @@ public class NettyMessagingService implements MessagingService {
     private final Address localAddress;
     private final String communicateId;
     private final Map<Channel, RemoteClientConnection> clientConnections = Maps.newConcurrentMap();
-    private final Map<Address, Channel> channels = Maps.newConcurrentMap();
     private final Handlers handlers = new Handlers();
+    private final Channels channels = new Channels();
     private Channel serverChannel;
     private EventLoopGroup serverGroup;
     private EventLoopGroup clientGroup;
@@ -95,10 +95,12 @@ public class NettyMessagingService implements MessagingService {
     @Override
     public CompletableFuture<Void> sendAsync(Address address, Message message, boolean keepAlive) {
         CompletableFuture<Void> sendAsyncFuture = new CompletableFuture<>();
-        Channel channel = channels.computeIfAbsent(address, addr -> bootstrapClient(address).join());
-        RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
-        ProtocolMessage protocolMessage = buildProtocolMessage(message);
-        connection.sendAsync(protocolMessage).whenComplete(completeSendAsync(sendAsyncFuture));
+        channels.get(address, () -> bootstrapClient(address))
+            .thenAccept(channel -> {
+                RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
+                ProtocolMessage protocolMessage = buildProtocolMessage(message);
+                connection.sendAsync(protocolMessage).whenComplete(completeSendAsync(sendAsyncFuture));
+            });
         return sendAsyncFuture;
     }
 
@@ -149,7 +151,7 @@ public class NettyMessagingService implements MessagingService {
 
     @Override
     public void registerHandler(String type, BiFunction<Address, byte[], CompletableFuture<byte[]>> handler) {
-        handlers.registry(type, handler);
+        handlers.add(type, handler);
     }
 
     @Override
