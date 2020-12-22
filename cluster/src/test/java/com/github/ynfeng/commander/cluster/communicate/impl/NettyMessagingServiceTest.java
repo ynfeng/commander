@@ -36,7 +36,9 @@ class NettyMessagingServiceTest {
         byte[] receiveBytes = result.get(1, TimeUnit.SECONDS);
         assertThat(receiveBytes, is("Hello there!".getBytes()));
 
+        peer2.unregisterHandler("hello");
         peer1.shutdown();
         peer2.shutdown();
+
     }
 }

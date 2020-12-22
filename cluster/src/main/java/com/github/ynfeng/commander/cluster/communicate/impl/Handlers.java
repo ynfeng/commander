@@ -17,4 +17,8 @@ public class Handlers {
     public BiFunction<Address, byte[], CompletableFuture<byte[]>> get(String type) {
         return handlers.get(type);
     }
+
+    public void remove(String type) {
+        handlers.remove(type);
+    }
 }

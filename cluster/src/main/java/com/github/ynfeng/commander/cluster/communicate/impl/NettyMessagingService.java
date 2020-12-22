@@ -156,6 +156,7 @@ public class NettyMessagingService implements MessagingService {
 
     @Override
     public void unregisterHandler(String type) {
+        handlers.remove(type);
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
