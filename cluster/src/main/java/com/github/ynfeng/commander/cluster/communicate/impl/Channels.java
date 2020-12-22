@@ -14,6 +14,7 @@ public class Channels {
         Channel channel = channels.get(address);
         if (channel == null) {
             channel = supplier.get().join();
+            channel.closeFuture().addListener(ch -> channels.remove(address));
             channels.putIfAbsent(address, channel);
         }
         return CompletableFuture.completedFuture(channel);
