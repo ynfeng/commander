@@ -13,10 +13,8 @@ public class Channels {
     public CompletableFuture<Channel> get(Address address, Supplier<CompletableFuture<Channel>> supplier) {
         Channel channel = channels.get(address);
         if (channel == null) {
-            return supplier.get().thenApply(ch -> {
-                channels.putIfAbsent(address, ch);
-                return ch;
-            });
+            channel = supplier.get().join();
+            channels.putIfAbsent(address, channel);
         }
         return CompletableFuture.completedFuture(channel);
     }
