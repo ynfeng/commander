@@ -23,9 +23,7 @@ public class AbstractConnection implements Connection {
     @Override
     public void dispatch(ProtocolMessage protocolMessage) {
         handlers.get(protocolMessage.subject())
-            .forEach(fun -> {
-                fun.apply(protocolMessage.address(), protocolMessage.payload())
-                    .complete(protocolMessage.payload());
-            });
+            .apply(protocolMessage.address(), protocolMessage.payload())
+            .complete(protocolMessage.payload());
     }
 }

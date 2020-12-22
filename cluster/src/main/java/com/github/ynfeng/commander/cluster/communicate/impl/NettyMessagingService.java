@@ -50,6 +50,16 @@ public class NettyMessagingService implements MessagingService {
         initEventLoopGroup();
     }
 
+    private static BiConsumer<Void, Throwable> completeSendAsync(CompletableFuture<Void> sendAsyncFuture) {
+        return (r, e) -> {
+            if (e == null) {
+                sendAsyncFuture.complete(null);
+            } else {
+                sendAsyncFuture.completeExceptionally(e);
+            }
+        };
+    }
+
     private void initEventLoopGroup() {
         if (!tryInitEpollEventLoopGroup()) {
             initNioEventLoopGroup();
@@ -92,16 +102,6 @@ public class NettyMessagingService implements MessagingService {
                 connection.sendAsync(protocolMessage).whenComplete(completeSendAsync(sendAsyncFuture));
             });
         return sendAsyncFuture;
-    }
-
-    private static BiConsumer<Void, Throwable> completeSendAsync(CompletableFuture<Void> sendAsyncFuture) {
-        return (r, e) -> {
-            if (e == null) {
-                sendAsyncFuture.complete(null);
-            } else {
-                sendAsyncFuture.completeExceptionally(e);
-            }
-        };
     }
 
     private ProtocolMessage buildProtocolMessage(Message message) {
