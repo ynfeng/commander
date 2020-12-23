@@ -3,7 +3,7 @@ package com.github.ynfeng.commander.cluster.communicate;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Manageable;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 public interface MessagingService extends Manageable {
     default CompletableFuture<Void> sendAsync(Address address, Message message) {
@@ -18,7 +18,7 @@ public interface MessagingService extends Manageable {
 
     CompletableFuture<byte[]> sendAndReceive(Address address, Message message, boolean keepAlive);
 
-    void registerHandler(String type, BiFunction<Address, byte[], CompletableFuture<byte[]>> handler);
+    void registerHandler(String type, BiConsumer<Address, byte[]> handler);
 
     void unregisterHandler(String type);
 

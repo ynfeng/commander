@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 
 public class NettyMessagingService implements MessagingService {
     public static final String HANDSHAKE_FRAME_DECODER = "frameDecoder";
@@ -150,9 +149,12 @@ public class NettyMessagingService implements MessagingService {
     }
 
     @Override
-    public void registerHandler(String type, BiFunction<Address, byte[], CompletableFuture<byte[]>> handler) {
-        handlers.add(type, handler);
+    public void registerHandler(String type, BiConsumer<Address, byte[]> handler) {
+        handlers.add(type, (connection, message) -> {
+            handler.accept(message.address(), message.payload());
+        });
     }
+
 
     @Override
     public void unregisterHandler(String type) {

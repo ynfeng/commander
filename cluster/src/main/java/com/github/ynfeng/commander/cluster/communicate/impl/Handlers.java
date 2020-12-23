@@ -1,20 +1,17 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.support.Address;
 import com.google.common.collect.Maps;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 public class Handlers {
-    private final Map<String, BiFunction<Address, byte[], CompletableFuture<byte[]>>> handlers
-        = Maps.newConcurrentMap();
+    private final Map<String, BiConsumer<ServerConnection, ProtocolMessage>> handlers = Maps.newConcurrentMap();
 
-    public void add(String type, BiFunction<Address, byte[], CompletableFuture<byte[]>> handler) {
+    public void add(String type, BiConsumer<ServerConnection, ProtocolMessage> handler) {
         handlers.putIfAbsent(type, handler);
     }
 
-    public BiFunction<Address, byte[], CompletableFuture<byte[]>> get(String type) {
+    public BiConsumer<ServerConnection, ProtocolMessage> get(String type) {
         return handlers.get(type);
     }
 

@@ -28,7 +28,9 @@ class NettyMessagingServiceTest {
         peer1.start();
         peer2.start();
         CompletableFuture<byte[]> result = new CompletableFuture<>();
-        peer2.registerHandler("hello", (address, bytes) -> result);
+        peer2.registerHandler("hello", (address, bytes) -> {
+            result.complete(bytes);
+        });
 
         MessagingService.Message greeting = new MessagingService.Message("hello", "Hello there!".getBytes());
         peer1.sendAsync(Address.of("127.0.0.1", 1990), greeting).join();

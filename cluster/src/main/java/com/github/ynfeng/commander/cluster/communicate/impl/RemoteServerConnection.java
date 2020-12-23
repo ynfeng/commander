@@ -1,9 +1,7 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.support.Address;
 import io.netty.channel.Channel;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
+import java.util.function.BiConsumer;
 
 public class RemoteServerConnection implements ServerConnection {
     private final Channel channel;
@@ -16,10 +14,9 @@ public class RemoteServerConnection implements ServerConnection {
 
     @Override
     public void dispatch(ProtocolMessage protocolMessage) {
-        BiFunction<Address, byte[], CompletableFuture<byte[]>> handler = handlers.get(protocolMessage.subject());
+        BiConsumer<ServerConnection, ProtocolMessage> handler = handlers.get(protocolMessage.subject());
         if (handler != null) {
-            handler.apply(protocolMessage.address(), protocolMessage.payload())
-                .complete(protocolMessage.payload());
+            handler.accept(this, protocolMessage);
         }
     }
 
