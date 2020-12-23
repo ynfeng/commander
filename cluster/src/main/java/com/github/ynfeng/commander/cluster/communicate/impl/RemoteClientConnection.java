@@ -4,8 +4,8 @@ import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
 import java.util.concurrent.CompletableFuture;
 
-public class RemoteClientConnection implements ClientConnection{
-    private Channel channel;
+public class RemoteClientConnection implements ClientConnection {
+    private final Channel channel;
 
     public RemoteClientConnection(Channel remoteChannel) {
         this.channel = remoteChannel;
