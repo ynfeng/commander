@@ -5,11 +5,12 @@ import io.netty.channel.Channel;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-public class ServerConnection extends AbstractConnection {
+public class RemoteServerConnection implements ServerConnection {
+    private final Channel channel;
     private final Handlers handlers;
 
-    public ServerConnection(Channel channel, Handlers handlers) {
-        super(channel);
+    public RemoteServerConnection(Channel channel, Handlers handlers) {
+        this.channel = channel;
         this.handlers = handlers;
     }
 
@@ -20,5 +21,10 @@ public class ServerConnection extends AbstractConnection {
             handler.apply(protocolMessage.address(), protocolMessage.payload())
                 .complete(protocolMessage.payload());
         }
+    }
+
+    @Override
+    public void reply(ProtocolMessage message) {
+
     }
 }

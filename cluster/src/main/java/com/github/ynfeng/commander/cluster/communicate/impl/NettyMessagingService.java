@@ -181,7 +181,7 @@ public class NettyMessagingService implements MessagingService {
                     ch.pipeline().addLast(HANDSHAKE_FRAME_DECODER,
                         new FixedLengthFrameDecoder(5));
                     ch.pipeline().addLast(
-                        new ServerHandshakeHandlerAdapter(communicateId, new ServerConnection(ch, handlers)));
+                        new ServerHandshakeHandlerAdapter(communicateId, new RemoteServerConnection(ch, handlers)));
                 }
             });
             bind(bootstrap);
