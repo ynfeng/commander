@@ -6,12 +6,12 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.List;
 
 public class MessageDecoderV1 extends AbstractMessageDecoder {
-    private static ProtocolMessage buildProtocolMessage(Address address, String subject, byte[] payload) {
-        return ProtocolMessage.builder()
-            .address(address)
-            .subject(subject)
-            .payload(payload)
-            .build();
+    @Override
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+        Address address = readAddress(in);
+        String subject = readSubject(in);
+        byte[] payload = readPayload(in);
+        out.add(buildProtocolMessage(address, subject, payload));
     }
 
     private static Address readAddress(ByteBuf in) {
@@ -37,11 +37,11 @@ public class MessageDecoderV1 extends AbstractMessageDecoder {
         return payload;
     }
 
-    @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        Address address = readAddress(in);
-        String subject = readSubject(in);
-        byte[] payload = readPayload(in);
-        out.add(buildProtocolMessage(address, subject, payload));
+    private static ProtocolMessage buildProtocolMessage(Address address, String subject, byte[] payload) {
+        return ProtocolMessage.builder()
+            .address(address)
+            .subject(subject)
+            .payload(payload)
+            .build();
     }
 }
