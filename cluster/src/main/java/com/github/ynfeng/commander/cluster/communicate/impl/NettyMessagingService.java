@@ -113,7 +113,7 @@ public class NettyMessagingService implements MessagingService {
     }
 
     private RemoteClientConnection getOrCreateRemoteClientConnection(Channel channel) {
-        return clientConnections.computeIfAbsent(channel, c -> new RemoteClientConnection(c, handlers));
+        return clientConnections.computeIfAbsent(channel, c -> new RemoteClientConnection(c));
     }
 
     @SuppressWarnings("checkstyle:MethodLength")

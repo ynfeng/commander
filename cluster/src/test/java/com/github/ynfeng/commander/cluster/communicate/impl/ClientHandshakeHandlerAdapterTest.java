@@ -19,7 +19,7 @@ class ClientHandshakeHandlerAdapterTest {
     private static EmbeddedChannel createChannelAndRegister(String communicateId) throws Exception {
         EmbeddedChannel channel = new EmbeddedChannel(false, false);
         channel.pipeline().addLast(NettyMessagingService.HANDSHAKE_FRAME_DECODER, new FixedLengthFrameDecoder(5));
-        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, new RemoteClientConnection(new EmbeddedChannel(), new Handlers()), new CompletableFuture<>()));
+        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, new RemoteClientConnection(new EmbeddedChannel()), new CompletableFuture<>()));
         channel.register();
         return channel;
     }

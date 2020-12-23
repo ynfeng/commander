@@ -4,13 +4,11 @@ import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
 import java.util.concurrent.CompletableFuture;
 
-public class AbstractConnection implements Connection {
+public abstract class AbstractConnection implements Connection {
     private final Channel channel;
-    private final Handlers handlers;
 
-    public AbstractConnection(Channel channel, Handlers handlers) {
+    public AbstractConnection(Channel channel) {
         this.channel = channel;
-        this.handlers = handlers;
     }
 
     private static void complete(CompletableFuture<Void> completableFuture, Future<? super Void> c) {
@@ -26,12 +24,5 @@ public class AbstractConnection implements Connection {
         CompletableFuture<Void> completableFuture = new CompletableFuture<>();
         channel.writeAndFlush(message).addListener(c -> complete(completableFuture, c));
         return completableFuture;
-    }
-
-    @Override
-    public void dispatch(ProtocolMessage protocolMessage) {
-        handlers.get(protocolMessage.subject())
-            .apply(protocolMessage.address(), protocolMessage.payload())
-            .complete(protocolMessage.payload());
     }
 }

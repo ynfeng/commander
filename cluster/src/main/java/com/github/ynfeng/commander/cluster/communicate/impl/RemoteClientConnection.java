@@ -4,7 +4,12 @@ import io.netty.channel.Channel;
 
 public class RemoteClientConnection extends AbstractConnection {
 
-    public RemoteClientConnection(Channel remoteChannel, Handlers handlers) {
-        super(remoteChannel, handlers);
+    public RemoteClientConnection(Channel remoteChannel) {
+        super(remoteChannel);
+    }
+
+    @Override
+    public void dispatch(ProtocolMessage protocolMessage) {
+
     }
 }
