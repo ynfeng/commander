@@ -21,6 +21,8 @@ jobs:
           java-version: 1.8
       - name: Checkout commander
         uses: actions/checkout@v2
+      - name: Check spelling
+        uses: check-spelling/check-spelling@0.0.16-alpha
       - name: Build commander
         run: ./gradlew clean build
       - uses: ashley-taylor/junit-report-annotations-action@1.3
