@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;

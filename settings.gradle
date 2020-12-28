@@ -12,4 +12,5 @@ include 'engine'
 include 'primitive'
 include 'module'
 include 'serializer'
+include 'communicate'
 

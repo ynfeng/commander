@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

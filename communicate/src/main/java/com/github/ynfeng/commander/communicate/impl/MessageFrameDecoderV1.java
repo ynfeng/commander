@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 public class MessageFrameDecoderV1 extends AbstractFrameMessageDecoder {
     public MessageFrameDecoderV1() {

@@ -1,7 +1,8 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.number.OrderingComparison.greaterThanOrEqualTo;
 
 import com.github.ynfeng.commander.support.Address;
 import io.netty.buffer.ByteBuf;
@@ -22,7 +23,7 @@ class MessageEncoderV1Test {
 
         assertThat(byteBuf.readInt(), is(46));
         assertThat(byteBuf.readByte(), is(ProtocolMessage.Type.REQUEST.value()));
-        assertThat(byteBuf.readLong(), is(1L));
+        assertThat(byteBuf.readLong(), greaterThanOrEqualTo(1L));
         assertThat(byteBuf.readByte(), is((byte) 9));
 
         byte[] host = new byte[9];

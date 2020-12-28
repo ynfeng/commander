@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 import com.google.common.base.Preconditions;
 import io.netty.channel.ChannelHandlerContext;

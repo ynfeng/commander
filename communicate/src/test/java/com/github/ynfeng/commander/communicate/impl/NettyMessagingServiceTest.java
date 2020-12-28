@@ -1,9 +1,9 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.cluster.communicate.MessagingService;
+import com.github.ynfeng.commander.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;

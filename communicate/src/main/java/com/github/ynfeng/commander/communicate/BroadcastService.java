@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.communicate;
+package com.github.ynfeng.commander.communicate;
 
 import com.github.ynfeng.commander.support.Manageable;
 import java.util.function.Consumer;

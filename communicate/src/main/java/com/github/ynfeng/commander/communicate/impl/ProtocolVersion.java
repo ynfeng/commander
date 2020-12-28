@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 import java.util.Arrays;
 import java.util.Comparator;

@@ -1,18 +1,9 @@
-plugins {
-    id 'java'
-}
-
-version 'unspecified'
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-}
-
-test {
-    useJUnitPlatform()
+project.dependencies {
+    implementation(
+            project(':support'),
+            project(':testtools'),
+            project(':serializer'),
+            "io.netty:netty-all:$nettyVersion",
+            "io.netty:netty-transport-native-epoll:$nettyVersion:linux-x86_64",
+    )
 }

@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 import com.github.ynfeng.commander.support.Address;
 import com.google.common.collect.Maps;

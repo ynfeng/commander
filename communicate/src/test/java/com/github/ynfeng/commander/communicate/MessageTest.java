@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander.cluster.communicate;
+package com.github.ynfeng.commander.communicate;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

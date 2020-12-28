@@ -1,6 +1,6 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
-import com.github.ynfeng.commander.cluster.communicate.BroadcastService;
+import com.github.ynfeng.commander.communicate.BroadcastService;
 import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
 import com.github.ynfeng.commander.support.Address;

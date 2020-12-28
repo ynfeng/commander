@@ -1,10 +1,10 @@
-package com.github.ynfeng.commander.cluster.communicate.impl;
+package com.github.ynfeng.commander.communicate.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.cluster.communicate.UnicastService;
+import com.github.ynfeng.commander.communicate.UnicastService;
 import com.github.ynfeng.commander.support.Address;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
