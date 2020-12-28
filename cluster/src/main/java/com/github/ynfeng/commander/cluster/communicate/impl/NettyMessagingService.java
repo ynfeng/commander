@@ -89,19 +89,9 @@ public class NettyMessagingService implements MessagingService {
             .thenAccept(channel -> {
                 RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
                 ProtocolMessage protocolMessage = buildProtocolMessage(message);
-                connection.sendAndReceive(protocolMessage).whenComplete(completeFuture(future));
+                connection.sendAndReceive(protocolMessage).whenComplete(completeSendFuture(future));
             });
         return future;
-    }
-
-    private static BiConsumer<byte[], Throwable> completeFuture(CompletableFuture<byte[]> future) {
-        return (r, t) -> {
-            if (t != null) {
-                future.completeExceptionally(t);
-            } else {
-                future.complete(r);
-            }
-        };
     }
 
     @Override
@@ -111,7 +101,7 @@ public class NettyMessagingService implements MessagingService {
             .thenAccept(channel -> {
                 RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
                 ProtocolMessage protocolMessage = buildProtocolMessage(message);
-                connection.sendAsync(protocolMessage).whenComplete(completeSendAsync(sendAsyncFuture));
+                connection.sendAsync(protocolMessage).whenComplete(completeSendFuture(sendAsyncFuture));
             });
         return sendAsyncFuture;
     }
@@ -124,12 +114,12 @@ public class NettyMessagingService implements MessagingService {
             .build();
     }
 
-    private static BiConsumer<Void, Throwable> completeSendAsync(CompletableFuture<Void> sendAsyncFuture) {
-        return (r, e) -> {
-            if (e == null) {
-                sendAsyncFuture.complete(null);
+    private static <T> BiConsumer<T, Throwable> completeSendFuture(CompletableFuture<T> future) {
+        return (r, t) -> {
+            if (t != null) {
+                future.completeExceptionally(t);
             } else {
-                sendAsyncFuture.completeExceptionally(e);
+                future.complete(r);
             }
         };
     }
