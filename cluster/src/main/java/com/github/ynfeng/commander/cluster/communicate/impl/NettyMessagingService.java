@@ -84,27 +84,29 @@ public class NettyMessagingService implements MessagingService {
 
     @Override
     public CompletableFuture<byte[]> sendAndReceive(Address address, Message message, boolean keepAlive) {
-        CompletableFuture<byte[]> future = new CompletableFuture<>();
-        channels.get(address, () -> bootstrapClient(address))
-            .thenAccept(channel -> {
-                RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
-                ProtocolMessage protocolMessage = buildProtocolMessage(message);
-                connection.sendAndReceive(protocolMessage).whenComplete(completeSendFuture(future));
-            });
-        return future;
+        return channels.get(address, () -> bootstrapClient(address))
+            .thenCompose(channel ->
+                doSend(message, channel, (conn, protocolMessage) -> conn.sendAndReceive(protocolMessage)));
     }
 
     @Override
     public CompletableFuture<Void> sendAsync(Address address, Message message, boolean keepAlive) {
-        CompletableFuture<Void> sendAsyncFuture = new CompletableFuture<>();
-        channels.get(address, () -> bootstrapClient(address))
-            .thenAccept(channel -> {
-                RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
-                ProtocolMessage protocolMessage = buildProtocolMessage(message);
-                connection.sendAsync(protocolMessage).whenComplete(completeSendFuture(sendAsyncFuture));
-            });
-        return sendAsyncFuture;
+        return channels.get(address, () -> bootstrapClient(address))
+            .thenCompose(channel ->
+                doSend(message, channel, (conn, protocolMessage) -> conn.sendAsync(protocolMessage)));
     }
+
+    @SuppressWarnings("checkstyle:LineLength")
+    private <T> CompletableFuture<T> doSend(Message message,
+                                            Channel channel,
+                                            BiFunction<RemoteClientConnection, ProtocolMessage, CompletableFuture<T>> sendFunction) {
+        CompletableFuture<T> future = new CompletableFuture<T>();
+        RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
+        ProtocolMessage protocolMessage = buildProtocolMessage(message);
+        sendFunction.apply(connection, protocolMessage).whenComplete(completeSend(future));
+        return future;
+    }
+
 
     private ProtocolMessage buildProtocolMessage(Message message) {
         return ProtocolMessage.builder()
@@ -114,7 +116,7 @@ public class NettyMessagingService implements MessagingService {
             .build();
     }
 
-    private static <T> BiConsumer<T, Throwable> completeSendFuture(CompletableFuture<T> future) {
+    private static <T> BiConsumer<T, Throwable> completeSend(CompletableFuture<T> future) {
         return (r, t) -> {
             if (t != null) {
                 future.completeExceptionally(t);
@@ -125,7 +127,9 @@ public class NettyMessagingService implements MessagingService {
     }
 
     private RemoteClientConnection getOrCreateRemoteClientConnection(Channel channel) {
-        return clientConnections.computeIfAbsent(channel, c -> new RemoteClientConnection(c));
+        RemoteClientConnection conn = clientConnections.computeIfAbsent(channel, c -> new RemoteClientConnection(c));
+        channel.closeFuture().addListener(f -> clientConnections.remove(channel));
+        return conn;
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
