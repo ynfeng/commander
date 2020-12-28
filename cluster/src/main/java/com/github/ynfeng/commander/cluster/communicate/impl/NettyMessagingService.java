@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 public class NettyMessagingService implements MessagingService {
     public static final String HANDSHAKE_FRAME_DECODER = "frameDecoder";
@@ -79,6 +80,28 @@ public class NettyMessagingService implements MessagingService {
                 + "Reason: {}. Proceeding with nio.", e.getMessage());
             return false;
         }
+    }
+
+    @Override
+    public CompletableFuture<byte[]> sendAndReceive(Address address, Message message, boolean keepAlive) {
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
+        channels.get(address, () -> bootstrapClient(address))
+            .thenAccept(channel -> {
+                RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
+                ProtocolMessage protocolMessage = buildProtocolMessage(message);
+                connection.sendAndReceive(protocolMessage).whenComplete(completeFuture(future));
+            });
+        return future;
+    }
+
+    private static BiConsumer<byte[], Throwable> completeFuture(CompletableFuture<byte[]> future) {
+        return (r, t) -> {
+            if (t != null) {
+                future.completeExceptionally(t);
+            } else {
+                future.complete(r);
+            }
+        };
     }
 
     @Override
@@ -144,14 +167,19 @@ public class NettyMessagingService implements MessagingService {
     }
 
     @Override
-    public CompletableFuture<byte[]> sendAndReceive(Address address, Message message, boolean keepAlive) {
-        return null;
-    }
-
-    @Override
     public void registerHandler(String type, BiConsumer<Address, byte[]> handler) {
         handlers.add(type, (connection, message) -> {
             handler.accept(message.address(), message.payload());
+        });
+    }
+
+    @Override
+    public void registerHandler(String type, BiFunction<Address, byte[], byte[]> handler) {
+        handlers.add(type, (connection, message) -> {
+            byte[] reply = handler.apply(message.address(), message.payload());
+            MessagingService.Message replyMessage = new Message(message.subject(), reply);
+            ProtocolMessage protocolMessage = buildProtocolMessage(replyMessage);
+            connection.reply(protocolMessage);
         });
     }
 

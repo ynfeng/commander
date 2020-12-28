@@ -41,6 +41,25 @@ class NettyMessagingServiceTest {
         peer2.unregisterHandler("hello");
         peer1.shutdown();
         peer2.shutdown();
+    }
 
+    @Test
+    public void should_send_and_receive() throws Exception {
+        Address peer1Addr = Address.of("127.0.0.1", 7892);
+        Address peer2Addr = Address.of("127.0.0.1", 1990);
+        NettyMessagingService peer1 = new NettyMessagingService("test", peer1Addr);
+        NettyMessagingService peer2 = new NettyMessagingService("test", peer2Addr);
+        peer1.start();
+        peer2.start();
+
+        peer2.registerHandler("hello", (addr, payload) -> {
+            return "Hello".getBytes();
+        });
+        MessagingService.Message greeting = new MessagingService.Message("hello", "Hello there!".getBytes());
+        byte[] reply = peer1.sendAndReceive(peer2Addr, greeting).get(1, TimeUnit.SECONDS);
+        assertThat(reply, is("Hello".getBytes()));
+
+        peer1.shutdown();
+        peer2.shutdown();
     }
 }

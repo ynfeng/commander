@@ -22,6 +22,6 @@ public class RemoteServerConnection implements ServerConnection {
 
     @Override
     public void reply(ProtocolMessage message) {
-
+        channel.writeAndFlush(message);
     }
 }
