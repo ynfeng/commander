@@ -6,4 +6,6 @@ public interface ClientConnection extends Connection<ProtocolResponseMessage> {
     CompletableFuture<Void> sendAsync(ProtocolRequestMessage request);
 
     CompletableFuture<byte[]> sendAndReceive(ProtocolRequestMessage request);
+
+    void close();
 }

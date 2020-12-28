@@ -49,7 +49,7 @@ class MessageEncoderV1Test {
         EmbeddedChannel channel = new EmbeddedChannel();
         channel.pipeline().addLast(new MessageEncoderV1());
 
-        ProtocolResponseMessage response = new ProtocolResponseMessage(2L, ProtocolResponseMessage.Status.OK, "hello".getBytes());
+        ProtocolResponseMessage response = ProtocolResponseMessage.ok(2L, "hello".getBytes());
         channel.writeOutbound(response);
 
         ByteBuf byteBuf = channel.readOutbound();

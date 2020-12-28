@@ -28,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public class NettyMessagingService implements MessagingService {
     public static final String HANDSHAKE_FRAME_DECODER = "frameDecoder";
@@ -84,47 +85,71 @@ public class NettyMessagingService implements MessagingService {
 
     @Override
     public CompletableFuture<byte[]> sendAndReceive(Address address, Message message, boolean keepAlive) {
-        return channels.get(address, () -> bootstrapClient(address))
-            .thenCompose(channel ->
-                doSend(message, channel, (conn, protocolMessage) -> conn.sendAndReceive(protocolMessage)));
+        return obtainChannel(address, keepAlive).thenCompose(channel ->
+            doSend(message, keepAlive,
+                () -> getOrCreateRemoteClientConnection(address, channel),
+                (conn, protocolMessage) -> conn.sendAndReceive(protocolMessage)));
     }
 
     @Override
     public CompletableFuture<Void> sendAsync(Address address, Message message, boolean keepAlive) {
-        return channels.get(address, () -> bootstrapClient(address))
-            .thenCompose(channel ->
-                doSend(message, channel, (conn, protocolMessage) -> conn.sendAsync(protocolMessage)));
+        return obtainChannel(address, keepAlive).thenCompose(channel ->
+            doSend(message, keepAlive,
+                () -> getOrCreateRemoteClientConnection(address, channel),
+                (conn, protocolMessage) -> conn.sendAsync(protocolMessage)));
     }
 
-    @SuppressWarnings("checkstyle:LineLength")
+    private CompletableFuture<Channel> obtainChannel(Address address, boolean keepAlive) {
+        if (keepAlive) {
+            return channels.get(address, () -> openChannel(address));
+        }
+        return openChannel(address);
+    }
+
+    @SuppressWarnings({"checkstyle:LineLength", "checkstyle:ParameterNumber"})
     private <T> CompletableFuture<T> doSend(Message message,
-                                            Channel channel,
-                                            BiFunction<RemoteClientConnection, ProtocolRequestMessage, CompletableFuture<T>> sendFunction) {
+                                            boolean keepAlive,
+                                            Supplier<ClientConnection> connectionSupplier,
+                                            BiFunction<ClientConnection, ProtocolRequestMessage, CompletableFuture<T>> sendFunction) {
         CompletableFuture<T> future = new CompletableFuture<T>();
-        RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
         ProtocolRequestMessage request = new ProtocolRequestMessage(message.subject(), localAddress, message.payload());
-        sendFunction.apply(connection, request).whenComplete(completeSend(future));
+        ClientConnection conn = connectionSupplier.get();
+        sendFunction.apply(conn, request).whenComplete(completeSend(keepAlive, future, conn));
         return future;
     }
 
-    private static <T> BiConsumer<T, Throwable> completeSend(CompletableFuture<T> future) {
+    private static <T> BiConsumer<T, Throwable> completeSend(boolean keepAlive, CompletableFuture<T> future, ClientConnection conn) {
         return (r, t) -> {
-            if (t != null) {
-                future.completeExceptionally(t);
-            } else {
-                future.complete(r);
-            }
+            tryCloseConnection(conn, keepAlive);
+            completeSendFuture(future, r, t);
         };
     }
 
-    private RemoteClientConnection getOrCreateRemoteClientConnection(Channel channel) {
+    private static void tryCloseConnection(ClientConnection conn, boolean keepAlive) {
+        if (!keepAlive) {
+            conn.close();
+        }
+    }
+
+    private static <T> void completeSendFuture(CompletableFuture<T> future, T r, Throwable t) {
+        if (t != null) {
+            future.completeExceptionally(t);
+        } else {
+            future.complete(r);
+        }
+    }
+
+    private ClientConnection getOrCreateRemoteClientConnection(Address address, Channel channel) {
         RemoteClientConnection conn = clientConnections.computeIfAbsent(channel, c -> new RemoteClientConnection(c));
-        channel.closeFuture().addListener(f -> clientConnections.remove(channel));
+        channel.closeFuture().addListener(f -> {
+            clientConnections.remove(channel);
+            channels.remove(address);
+        });
         return conn;
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
-    private CompletableFuture<Channel> bootstrapClient(Address address) {
+    private CompletableFuture<Channel> openChannel(Address address) {
         CompletableFuture<Void> handshakeFuture = new CompletableFuture<>();
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
@@ -140,11 +165,11 @@ public class NettyMessagingService implements MessagingService {
         bootstrap.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
-                RemoteClientConnection remoteClientConnection = getOrCreateRemoteClientConnection(ch);
+                ClientConnection clientConnection = getOrCreateRemoteClientConnection(address, ch);
                 ch.pipeline().addLast(HANDSHAKE_FRAME_DECODER,
                     new FixedLengthFrameDecoder(5));
                 ch.pipeline().addLast(
-                    new ClientHandshakeHandlerAdapter(communicateId, remoteClientConnection, handshakeFuture));
+                    new ClientHandshakeHandlerAdapter(communicateId, clientConnection, handshakeFuture));
             }
         });
         ChannelFuture connectFuture = bootstrap.connect(address.toInetSocketAddress());
@@ -162,9 +187,8 @@ public class NettyMessagingService implements MessagingService {
     public void registerHandler(String type, BiFunction<Address, byte[], byte[]> handler) {
         handlers.add(type, (connection, message) -> {
             byte[] reply = handler.apply(message.senderAddress(), message.payload());
-            ProtocolResponseMessage response
-                = new ProtocolResponseMessage(message.messageId(), ProtocolResponseMessage.Status.OK, reply);
-            connection.reply(response);
+            ProtocolResponseMessage ok = ProtocolResponseMessage.ok(message.messageId(), reply);
+            connection.reply(ok);
         });
     }
 

@@ -4,13 +4,16 @@ import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RemoteClientConnection implements ClientConnection {
     private final Channel channel;
     private CompletableFuture<byte[]> completableFuture;
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     public RemoteClientConnection(Channel channel) {
         this.channel = channel;
+        closed.set(true);
     }
 
     @Override
@@ -40,6 +43,13 @@ public class RemoteClientConnection implements ClientConnection {
             }
         });
         return completableFuture;
+    }
+
+    @Override
+    public void close() {
+        if (closed.compareAndSet(true, false)) {
+            channel.close();
+        }
     }
 
     @Override

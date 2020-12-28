@@ -59,7 +59,7 @@ class NettyMessagingServiceTest {
                 return "How are you.".getBytes();
             });
             MessagingService.Message greeting = new MessagingService.Message("hello", "Hello there!".getBytes());
-            byte[] reply = peer1.sendAndReceive(peer2Addr, greeting).get(1, TimeUnit.SECONDS);
+            byte[] reply = peer1.sendAndReceive(peer2Addr, greeting, false).get(1, TimeUnit.SECONDS);
             assertThat(reply, is("How are you.".getBytes()));
         } finally {
             peer2.shutdown();

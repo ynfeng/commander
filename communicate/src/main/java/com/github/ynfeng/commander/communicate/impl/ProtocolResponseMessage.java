@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class ProtocolResponseMessage extends ProtocolMessage {
     private Status status;
 
-    protected ProtocolResponseMessage(long messageId, Status status, byte[] payload) {
+    private ProtocolResponseMessage(long messageId, Status status, byte[] payload) {
         super(messageId, Type.RESPONSE, payload);
         this.status = status;
     }
@@ -40,12 +40,17 @@ public class ProtocolResponseMessage extends ProtocolMessage {
         payload(payload);
     }
 
+
     private void readStatus(ByteBuf in) {
         status = Status.of(in.readByte());
     }
 
     private void readMessageId(ByteBuf in) {
         messageId(in.readLong());
+    }
+
+    public static ProtocolResponseMessage ok(long messageId, byte[] reply) {
+        return new ProtocolResponseMessage(messageId, ProtocolResponseMessage.Status.OK, reply);
     }
 
     public Status status() {

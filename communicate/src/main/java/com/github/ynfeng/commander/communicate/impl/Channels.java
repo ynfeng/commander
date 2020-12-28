@@ -20,7 +20,7 @@ public class Channels {
         return CompletableFuture.completedFuture(channel);
     }
 
-    public void add(Address address, Channel channel) {
-        channels.putIfAbsent(address, channel);
+    public void remove(Address address) {
+        channels.remove(address);
     }
 }
