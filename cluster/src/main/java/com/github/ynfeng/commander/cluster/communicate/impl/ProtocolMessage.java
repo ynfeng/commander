@@ -1,48 +1,65 @@
 package com.github.ynfeng.commander.cluster.communicate.impl;
 
-import com.github.ynfeng.commander.support.Address;
+import io.netty.buffer.ByteBuf;
+import java.util.Arrays;
 
-public class ProtocolMessage {
-    private Address address;
-    private String subject;
+public abstract class ProtocolMessage {
+    private long messageId;
     private byte[] payload;
+    private Type type;
 
-    public static ProtocolMessageBuilder builder() {
-        return new ProtocolMessageBuilder();
+    protected ProtocolMessage(Type type) {
+        this.type = type;
     }
 
-    public Address address() {
-        return address;
+    protected ProtocolMessage(long messageId, Type type, byte[] payload) {
+        this.messageId = messageId;
+        this.payload = payload.clone();
+        this.type = type;
     }
 
     public byte[] payload() {
         return payload.clone();
     }
 
-    public String subject() {
-        return subject;
+    public long messageId() {
+        return messageId;
     }
 
-    static class ProtocolMessageBuilder {
-        private final ProtocolMessage protocolMessage = new ProtocolMessage();
+    abstract void encode(ByteBuf out);
 
-        public ProtocolMessageBuilder address(Address address) {
-            protocolMessage.address = address;
-            return this;
+    abstract void decode(ByteBuf in);
+
+    public Type type() {
+        return type;
+    }
+
+    enum Type {
+        REQUEST((byte) 1),
+        RESPONSE((byte) 2);
+        private final byte value;
+
+        Type(byte value) {
+            this.value = value;
         }
 
-        public ProtocolMessageBuilder subject(String subject) {
-            protocolMessage.subject = subject;
-            return this;
+        public static Type of(byte value) {
+            return Arrays.stream(values())
+                .filter(each -> each.value == value)
+                .findFirst()
+                .orElse(null);
         }
 
-        public ProtocolMessageBuilder payload(byte[] payload) {
-            protocolMessage.payload = payload.clone();
-            return this;
+        public byte value() {
+            return value;
         }
+    }
 
-        public ProtocolMessage build() {
-            return protocolMessage;
-        }
+    protected void messageId(long messageId) {
+        this.messageId = messageId;
+    }
+
+    protected void payload(byte[] payload) {
+        this.payload = payload.clone();
     }
 }

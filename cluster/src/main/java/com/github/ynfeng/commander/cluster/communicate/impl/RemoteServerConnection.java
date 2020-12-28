@@ -13,15 +13,15 @@ public class RemoteServerConnection implements ServerConnection {
     }
 
     @Override
-    public void dispatch(ProtocolMessage protocolMessage) {
-        BiConsumer<ServerConnection, ProtocolMessage> handler = handlers.get(protocolMessage.subject());
+    public void dispatch(ProtocolRequestMessage request) {
+        BiConsumer<ServerConnection, ProtocolRequestMessage> handler = handlers.get(request.subject());
         if (handler != null) {
-            handler.accept(this, protocolMessage);
+            handler.accept(this, request);
         }
     }
 
     @Override
-    public void reply(ProtocolMessage message) {
-        channel.writeAndFlush(message);
+    public void reply(ProtocolResponseMessage response) {
+        channel.writeAndFlush(response);
     }
 }

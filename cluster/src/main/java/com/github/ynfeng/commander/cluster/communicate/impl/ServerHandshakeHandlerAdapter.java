@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public class ServerHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapter {
     private final String communicateId;
-    private final Connection connection;
+    private final ServerConnection connection;
 
-    public ServerHandshakeHandlerAdapter(String communicateId, Connection connection) {
+    public ServerHandshakeHandlerAdapter(String communicateId, ServerConnection connection) {
         this.communicateId = communicateId;
         this.connection = connection;
     }

@@ -10,25 +10,19 @@ import org.junit.jupiter.api.Test;
 
 class MessageEncoderV1Test {
 
-    private static ProtocolMessage buildProtocolMessage() {
-        return ProtocolMessage.builder()
-            .subject("test channel")
-            .address(Address.of("127.0.0.1", 1988))
-            .payload("hello".getBytes())
-            .build();
-    }
-
     @Test
-    public void should_encode_protocol_message() {
+    public void should_encode_protocol_request_message() {
         EmbeddedChannel channel = new EmbeddedChannel();
         channel.pipeline().addLast(new MessageEncoderV1());
 
-        ProtocolMessage protocolMessage = buildProtocolMessage();
-        channel.writeOutbound(protocolMessage);
+        ProtocolRequestMessage requestMessage = new ProtocolRequestMessage("test channel", Address.of("127.0.0.1", 1988), "hello".getBytes());
+        channel.writeOutbound(requestMessage);
 
         ByteBuf byteBuf = channel.readOutbound();
 
-        assertThat(byteBuf.readInt(), is(37));
+        assertThat(byteBuf.readInt(), is(46));
+        assertThat(byteBuf.readByte(), is(ProtocolMessage.Type.REQUEST.value()));
+        assertThat(byteBuf.readLong(), is(1L));
         assertThat(byteBuf.readByte(), is((byte) 9));
 
         byte[] host = new byte[9];
@@ -49,4 +43,23 @@ class MessageEncoderV1Test {
         assertThat(payload, is("hello".getBytes()));
     }
 
+    @Test
+    public void should_encode_protocol_response_message() {
+        EmbeddedChannel channel = new EmbeddedChannel();
+        channel.pipeline().addLast(new MessageEncoderV1());
+
+        ProtocolResponseMessage response = new ProtocolResponseMessage(2L, ProtocolResponseMessage.Status.OK, "hello".getBytes());
+        channel.writeOutbound(response);
+
+        ByteBuf byteBuf = channel.readOutbound();
+
+        assertThat(byteBuf.readInt(), is(19));
+        assertThat(byteBuf.readByte(), is(ProtocolMessage.Type.RESPONSE.value()));
+        assertThat(byteBuf.readLong(), is(2L));
+        assertThat(byteBuf.readByte(), is((byte) 1));
+        assertThat(byteBuf.readInt(), is(5));
+        byte[] payload = new byte[5];
+        byteBuf.readBytes(payload);
+        assertThat(payload, is("hello".getBytes()));
+    }
 }

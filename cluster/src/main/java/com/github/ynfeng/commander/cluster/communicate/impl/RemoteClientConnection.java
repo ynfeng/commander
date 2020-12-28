@@ -4,7 +4,6 @@ import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import java.util.concurrent.CompletableFuture;
-import org.jetbrains.annotations.NotNull;
 
 public class RemoteClientConnection implements ClientConnection {
     private final Channel channel;
@@ -15,14 +14,14 @@ public class RemoteClientConnection implements ClientConnection {
     }
 
     @Override
-    public CompletableFuture<Void> sendAsync(ProtocolMessage message) {
+    public CompletableFuture<Void> sendAsync(ProtocolRequestMessage request) {
         CompletableFuture<Void> completableFuture = new CompletableFuture<>();
-        channel.writeAndFlush(message).addListener(completeFuture(completableFuture));
+        channel.writeAndFlush(request).addListener(completeFuture(completableFuture));
         return completableFuture;
     }
 
-    @NotNull
-    private GenericFutureListener<Future<? super Void>> completeFuture(CompletableFuture<Void> completableFuture) {
+    @SuppressWarnings("checkstyle:LineLength")
+    private static GenericFutureListener<Future<? super Void>> completeFuture(CompletableFuture<Void> completableFuture) {
         return f -> {
             if (f.isSuccess()) {
                 completableFuture.complete(null);
@@ -33,9 +32,9 @@ public class RemoteClientConnection implements ClientConnection {
     }
 
     @Override
-    public CompletableFuture<byte[]> sendAndReceive(ProtocolMessage protocolMessage) {
+    public CompletableFuture<byte[]> sendAndReceive(ProtocolRequestMessage request) {
         completableFuture = new CompletableFuture<>();
-        channel.writeAndFlush(protocolMessage).addListener(f -> {
+        channel.writeAndFlush(request).addListener(f -> {
             if (!f.isSuccess()) {
                 completableFuture.completeExceptionally(f.cause());
             }
@@ -44,7 +43,7 @@ public class RemoteClientConnection implements ClientConnection {
     }
 
     @Override
-    public void dispatch(ProtocolMessage protocolMessage) {
-        completableFuture.complete(protocolMessage.payload());
+    public void dispatch(ProtocolResponseMessage response) {
+        completableFuture.complete(response.payload());
     }
 }

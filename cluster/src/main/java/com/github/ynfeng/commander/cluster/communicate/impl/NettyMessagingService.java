@@ -99,21 +99,12 @@ public class NettyMessagingService implements MessagingService {
     @SuppressWarnings("checkstyle:LineLength")
     private <T> CompletableFuture<T> doSend(Message message,
                                             Channel channel,
-                                            BiFunction<RemoteClientConnection, ProtocolMessage, CompletableFuture<T>> sendFunction) {
+                                            BiFunction<RemoteClientConnection, ProtocolRequestMessage, CompletableFuture<T>> sendFunction) {
         CompletableFuture<T> future = new CompletableFuture<T>();
         RemoteClientConnection connection = getOrCreateRemoteClientConnection(channel);
-        ProtocolMessage protocolMessage = buildProtocolMessage(message);
-        sendFunction.apply(connection, protocolMessage).whenComplete(completeSend(future));
+        ProtocolRequestMessage request = new ProtocolRequestMessage(message.subject(), localAddress, message.payload());
+        sendFunction.apply(connection, request).whenComplete(completeSend(future));
         return future;
-    }
-
-
-    private ProtocolMessage buildProtocolMessage(Message message) {
-        return ProtocolMessage.builder()
-            .address(localAddress)
-            .payload(message.payload())
-            .subject(message.subject())
-            .build();
     }
 
     private static <T> BiConsumer<T, Throwable> completeSend(CompletableFuture<T> future) {
@@ -163,17 +154,17 @@ public class NettyMessagingService implements MessagingService {
     @Override
     public void registerHandler(String type, BiConsumer<Address, byte[]> handler) {
         handlers.add(type, (connection, message) -> {
-            handler.accept(message.address(), message.payload());
+            handler.accept(message.senderAddress(), message.payload());
         });
     }
 
     @Override
     public void registerHandler(String type, BiFunction<Address, byte[], byte[]> handler) {
         handlers.add(type, (connection, message) -> {
-            byte[] reply = handler.apply(message.address(), message.payload());
-            MessagingService.Message replyMessage = new Message(message.subject(), reply);
-            ProtocolMessage protocolMessage = buildProtocolMessage(replyMessage);
-            connection.reply(protocolMessage);
+            byte[] reply = handler.apply(message.senderAddress(), message.payload());
+            ProtocolResponseMessage response
+                = new ProtocolResponseMessage(message.messageId(), ProtocolResponseMessage.Status.OK, reply);
+            connection.reply(response);
         });
     }
 

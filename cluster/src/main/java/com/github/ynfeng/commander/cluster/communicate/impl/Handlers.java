@@ -5,13 +5,13 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class Handlers {
-    private final Map<String, BiConsumer<ServerConnection, ProtocolMessage>> handlers = Maps.newConcurrentMap();
+    private final Map<String, BiConsumer<ServerConnection, ProtocolRequestMessage>> handlers = Maps.newConcurrentMap();
 
-    public void add(String type, BiConsumer<ServerConnection, ProtocolMessage> handler) {
+    public void add(String type, BiConsumer<ServerConnection, ProtocolRequestMessage> handler) {
         handlers.putIfAbsent(type, handler);
     }
 
-    public BiConsumer<ServerConnection, ProtocolMessage> get(String type) {
+    public BiConsumer<ServerConnection, ProtocolRequestMessage> get(String type) {
         return handlers.get(type);
     }
 

@@ -7,10 +7,10 @@ import java.util.concurrent.CompletableFuture;
 public class ClientHandshakeHandlerAdapter extends AbstractHandshakeHanderAdapter {
     private final String communicateId;
     private final CompletableFuture<Void> handshakeFuture;
-    private final Connection connection;
+    private final Connection<? extends ProtocolMessage> connection;
 
     public ClientHandshakeHandlerAdapter(String communicateId,
-                                         Connection connection,
+                                         Connection<? extends ProtocolMessage> connection,
                                          CompletableFuture<Void> handshakeFuture) {
         this.communicateId = communicateId;
         this.handshakeFuture = handshakeFuture;

@@ -23,8 +23,9 @@ public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandl
         return ProtocolVersion.valueOf(byteBuf.readByte());
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void acceptProtocolVersion(ChannelHandlerContext ctx,
-                                         Connection connection,
+                                         Connection<? extends ProtocolMessage> connection,
                                          ProtocolVersion protocolVersion) {
         logger.debug("accepted protocol version {} to connection {}", protocolVersion, ctx.channel().remoteAddress());
         ctx.pipeline().remove(this);
