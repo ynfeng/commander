@@ -22,8 +22,8 @@ public interface MessagingService extends Manageable {
         return sendAndReceive(address, message, null, keepAlive);
     }
 
-    default CompletableFuture<byte[]> sendAndReceive(Address address, Message message, Duration duration) {
-        return sendAndReceive(address, message, duration, true);
+    default CompletableFuture<byte[]> sendAndReceive(Address address, Message message, Duration timeout) {
+        return sendAndReceive(address, message, timeout, true);
     }
 
     @SuppressWarnings("checkstyle:ParameterNumber")

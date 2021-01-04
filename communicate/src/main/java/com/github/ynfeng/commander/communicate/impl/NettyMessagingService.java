@@ -1,8 +1,9 @@
 package com.github.ynfeng.commander.communicate.impl;
 
+import static com.github.ynfeng.commander.support.Threads.namedThreads;
+
 import com.github.ynfeng.commander.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
-import com.github.ynfeng.commander.support.Threads;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Maps;
@@ -26,6 +27,8 @@ import io.netty.handler.codec.FixedLengthFrameDecoder;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -40,6 +43,7 @@ public class NettyMessagingService implements MessagingService {
     private final Map<Channel, RemoteClientConnection> clientConnections = Maps.newConcurrentMap();
     private final Handlers handlers = new Handlers();
     private final Channels channels = new Channels();
+    private final ScheduledExecutorService timeoutExecutor;
     private Channel serverChannel;
     private EventLoopGroup serverGroup;
     private EventLoopGroup clientGroup;
@@ -50,6 +54,8 @@ public class NettyMessagingService implements MessagingService {
         this.localAddress = localAddress;
         this.communicateId = communicateId;
         initEventLoopGroup();
+        timeoutExecutor = Executors.newScheduledThreadPool(
+            4, namedThreads("netty-messaging-timeout-%d", logger));
     }
 
     private void initEventLoopGroup() {
@@ -60,9 +66,9 @@ public class NettyMessagingService implements MessagingService {
 
     private void initNioEventLoopGroup() {
         clientGroup = new NioEventLoopGroup(0,
-            Threads.namedThreads("netty-messaging-event-nio-client-%d", logger));
+            namedThreads("netty-messaging-event-nio-client-%d", logger));
         serverGroup = new NioEventLoopGroup(0,
-            Threads.namedThreads("netty-messaging-event-nio-server-%d", logger));
+            namedThreads("netty-messaging-event-nio-server-%d", logger));
         serverChannelClass = NioServerSocketChannel.class;
         clientChannelClass = NioSocketChannel.class;
     }
@@ -71,9 +77,9 @@ public class NettyMessagingService implements MessagingService {
     private boolean tryInitEpollEventLoopGroup() {
         try {
             clientGroup = new EpollEventLoopGroup(0,
-                Threads.namedThreads("netty-messaging-event-epoll-client-%d", logger));
+                namedThreads("netty-messaging-event-epoll-client-%d", logger));
             serverGroup = new EpollEventLoopGroup(0,
-                Threads.namedThreads("netty-messaging-event-epoll-server-%d", logger));
+                namedThreads("netty-messaging-event-epoll-server-%d", logger));
             serverChannelClass = EpollServerSocketChannel.class;
             clientChannelClass = EpollSocketChannel.class;
             return true;
@@ -88,12 +94,12 @@ public class NettyMessagingService implements MessagingService {
     @Override
     public CompletableFuture<byte[]> sendAndReceive(Address address,
                                                     Message message,
-                                                    Duration duration,
+                                                    Duration timeout,
                                                     boolean keepAlive) {
         return obtainChannel(address, keepAlive).thenCompose(channel ->
             doSend(message, keepAlive,
                 () -> getOrCreateRemoteClientConnection(address, channel),
-                (conn, protocolMessage) -> conn.sendAndReceive(protocolMessage)));
+                (conn, protocolMessage) -> conn.sendAndReceive(protocolMessage, timeout)));
     }
 
     @Override
@@ -145,7 +151,8 @@ public class NettyMessagingService implements MessagingService {
     }
 
     private ClientConnection getOrCreateRemoteClientConnection(Address address, Channel channel) {
-        RemoteClientConnection conn = clientConnections.computeIfAbsent(channel, c -> new RemoteClientConnection(c));
+        RemoteClientConnection conn = clientConnections.computeIfAbsent(channel,
+            c -> new RemoteClientConnection(c, timeoutExecutor));
         channel.closeFuture().addListener(f -> {
             clientConnections.remove(channel);
             channels.remove(address);

@@ -11,6 +11,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.Test;
 
 class ClientHandshakeHandlerAdapterTest {
@@ -19,7 +20,7 @@ class ClientHandshakeHandlerAdapterTest {
     private static EmbeddedChannel createChannelAndRegister(String communicateId) throws Exception {
         EmbeddedChannel channel = new EmbeddedChannel(false, false);
         channel.pipeline().addLast(NettyMessagingService.HANDSHAKE_FRAME_DECODER, new FixedLengthFrameDecoder(5));
-        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, new RemoteClientConnection(new EmbeddedChannel()), new CompletableFuture<>()));
+        channel.pipeline().addLast(new ClientHandshakeHandlerAdapter(communicateId, new RemoteClientConnection(new EmbeddedChannel(), Executors.newSingleThreadScheduledExecutor()), new CompletableFuture<>()));
         channel.register();
         return channel;
     }

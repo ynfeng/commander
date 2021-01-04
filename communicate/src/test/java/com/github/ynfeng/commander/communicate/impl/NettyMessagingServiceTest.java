@@ -5,8 +5,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
 
 class NettyMessagingServiceTest {
@@ -65,6 +68,53 @@ class NettyMessagingServiceTest {
             peer2.shutdown();
             peer1.shutdown();
         }
+    }
 
+    @Test
+    public void should_receive_within_the_timeout() throws Exception {
+        Address peer1Addr = Address.of("127.0.0.1", 7892);
+        Address peer2Addr = Address.of("127.0.0.1", 1990);
+        NettyMessagingService peer1 = new NettyMessagingService("test", peer1Addr);
+        NettyMessagingService peer2 = new NettyMessagingService("test", peer2Addr);
+        try {
+            peer1.start();
+            peer2.start();
+            peer2.registerHandler("hello", (addr, payload) -> {
+                return "How are you.".getBytes();
+            });
+            MessagingService.Message greeting = new MessagingService.Message("hello", "Hello there!".getBytes());
+            byte[] reply = peer1.sendAndReceive(peer2Addr, greeting, Duration.ofSeconds(1), false).get(1, TimeUnit.SECONDS);
+            assertThat(reply, is("How are you.".getBytes()));
+        } finally {
+            peer2.shutdown();
+            peer1.shutdown();
+        }
+    }
+
+    @Test
+    public void should_receive_timeout() throws Exception {
+        Address peer1Addr = Address.of("127.0.0.1", 7892);
+        Address peer2Addr = Address.of("127.0.0.1", 1990);
+        NettyMessagingService peer1 = new NettyMessagingService("test", peer1Addr);
+        NettyMessagingService peer2 = new NettyMessagingService("test", peer2Addr);
+        try {
+            peer1.start();
+            peer2.start();
+            peer2.registerHandler("hello", (addr, payload) -> {
+                try {
+                    Thread.sleep(550);
+                } catch (InterruptedException e) {
+                }
+                return "How are you.".getBytes();
+            });
+            MessagingService.Message greeting = new MessagingService.Message("hello", "Hello there!".getBytes());
+            byte[] reply = peer1.sendAndReceive(peer2Addr, greeting, Duration.ofMillis(500), false).get(1, TimeUnit.SECONDS);
+            assertThat(reply, is("How are you.".getBytes()));
+        } catch (ExecutionException e) {
+            assertThat(e.getCause().getMessage(), is("Request subject hello timed out in 500 milliseconds"));
+        } finally {
+            peer2.shutdown();
+            peer1.shutdown();
+        }
     }
 }

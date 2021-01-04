@@ -4,18 +4,23 @@ import com.google.common.collect.Maps;
 import io.netty.channel.Channel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class RemoteClientConnection implements ClientConnection {
     private final Channel channel;
-    private final Map<Long, CompletableFuture<byte[]>> waitingReceiveFuture = Maps.newConcurrentMap();
+    private final ScheduledExecutorService timeoutExecutor;
+    private final Map<Long, Callback> callbacks = Maps.newConcurrentMap();
     private final AtomicBoolean closed = new AtomicBoolean();
 
-    public RemoteClientConnection(Channel channel) {
+    public RemoteClientConnection(Channel channel, ScheduledExecutorService timeoutExecutor) {
         this.channel = channel;
-        closed.set(false);
+        this.timeoutExecutor = timeoutExecutor;
     }
 
     @Override
@@ -37,15 +42,15 @@ public class RemoteClientConnection implements ClientConnection {
     }
 
     @Override
-    public CompletableFuture<byte[]> sendAndReceive(ProtocolRequestMessage request) {
-        CompletableFuture<byte[]> completableFuture
-            = waitingReceiveFuture.computeIfAbsent(request.messageId(), k -> new CompletableFuture<>());
+    public CompletableFuture<byte[]> sendAndReceive(ProtocolRequestMessage request, Duration timeout) {
+        Callback callback = callbacks.computeIfAbsent(request.messageId(),
+            k -> new Callback(request.messageId(), request.subject(), timeout));
         channel.writeAndFlush(request).addListener(f -> {
             if (!f.isSuccess()) {
-                completableFuture.completeExceptionally(f.cause());
+                callback.completeExceptionally(f.cause());
             }
         });
-        return completableFuture;
+        return callback.future;
     }
 
     @Override
@@ -57,9 +62,40 @@ public class RemoteClientConnection implements ClientConnection {
 
     @Override
     public void dispatch(ProtocolResponseMessage response) {
-        CompletableFuture<byte[]> future = waitingReceiveFuture.remove(response.messageId());
-        if (future != null) {
-            future.complete(response.payload());
+        Callback callback = callbacks.remove(response.messageId());
+        if (callback != null) {
+            callback.complete(response.payload());
+        }
+    }
+
+    class Callback {
+        private final CompletableFuture<byte[]> future;
+        private final long messageId;
+        private final String subject;
+        private long timeout;
+
+        Callback(long messageId, String subject, Duration timeout) {
+            this.subject = subject;
+            if (timeout != null) {
+                this.timeout = timeout.toMillis();
+                timeoutExecutor.schedule(this::timeout, this.timeout, TimeUnit.MILLISECONDS);
+            }
+            future = new CompletableFuture<>();
+            this.messageId = messageId;
+        }
+
+        private void timeout() {
+            future.completeExceptionally(
+                new TimeoutException("Request subject " + subject + " timed out in " + timeout + " milliseconds"));
+            callbacks.remove(messageId);
+        }
+
+        public void completeExceptionally(Throwable cause) {
+            future.completeExceptionally(cause);
+        }
+
+        public void complete(byte[] payload) {
+            future.complete(payload);
         }
     }
 }
