@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -72,13 +73,14 @@ public class RemoteClientConnection implements ClientConnection {
         private final CompletableFuture<byte[]> future;
         private final long messageId;
         private final String subject;
+        private ScheduledFuture<?> timeoutFuture;
         private long timeout;
 
         Callback(long messageId, String subject, Duration timeout) {
             this.subject = subject;
             if (timeout != null) {
                 this.timeout = timeout.toMillis();
-                timeoutExecutor.schedule(this::timeout, this.timeout, TimeUnit.MILLISECONDS);
+                timeoutFuture = timeoutExecutor.schedule(this::timeout, this.timeout, TimeUnit.MILLISECONDS);
             }
             future = new CompletableFuture<>();
             this.messageId = messageId;
@@ -92,10 +94,12 @@ public class RemoteClientConnection implements ClientConnection {
 
         public void completeExceptionally(Throwable cause) {
             future.completeExceptionally(cause);
+            timeoutFuture.cancel(false);
         }
 
         public void complete(byte[] payload) {
             future.complete(payload);
+            timeoutFuture.cancel(false);
         }
     }
 }
