@@ -23,6 +23,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -83,8 +84,12 @@ public class NettyMessagingService implements MessagingService {
         }
     }
 
+    @SuppressWarnings("checkstyle:ParameterNumber")
     @Override
-    public CompletableFuture<byte[]> sendAndReceive(Address address, Message message, boolean keepAlive) {
+    public CompletableFuture<byte[]> sendAndReceive(Address address,
+                                                    Message message,
+                                                    Duration duration,
+                                                    boolean keepAlive) {
         return obtainChannel(address, keepAlive).thenCompose(channel ->
             doSend(message, keepAlive,
                 () -> getOrCreateRemoteClientConnection(address, channel),

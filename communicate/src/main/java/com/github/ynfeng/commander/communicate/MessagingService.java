@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.communicate;
 
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Manageable;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -14,10 +15,19 @@ public interface MessagingService extends Manageable {
     CompletableFuture<Void> sendAsync(Address address, Message message, boolean keepAlive);
 
     default CompletableFuture<byte[]> sendAndReceive(Address address, Message message) {
-        return sendAndReceive(address, message, true);
+        return sendAndReceive(address, message, null, true);
     }
 
-    CompletableFuture<byte[]> sendAndReceive(Address address, Message message, boolean keepAlive);
+    default CompletableFuture<byte[]> sendAndReceive(Address address, Message message, boolean keepAlive) {
+        return sendAndReceive(address, message, null, keepAlive);
+    }
+
+    default CompletableFuture<byte[]> sendAndReceive(Address address, Message message, Duration duration) {
+        return sendAndReceive(address, message, duration, true);
+    }
+
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    CompletableFuture<byte[]> sendAndReceive(Address address, Message message, Duration timeout, boolean keepAlive);
 
     void registerHandler(String type, BiConsumer<Address, byte[]> handler);
 
