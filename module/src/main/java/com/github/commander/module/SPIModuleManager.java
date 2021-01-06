@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public class SPIModuleManager implements ModuleManager {
     private final Map<Class<? extends Module>, Module> modulesRegistry = Maps.newConcurrentMap();
     private final AtomicBoolean isLoad = new AtomicBoolean();
+    private final AtomicBoolean isLoading = new AtomicBoolean();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -38,10 +39,12 @@ public class SPIModuleManager implements ModuleManager {
     }
 
     private void loadModules() {
-        if (isLoad.compareAndSet(false, true)) {
+        if (!isLoad.get() && isLoading.compareAndSet(false, true)) {
             for (Module module : ServiceLoader.load(Module.class)) {
                 modulesRegistry.put(module.getClass(), module);
             }
+            isLoad.set(true);
+            isLoading.set(false);
         }
     }
 }
