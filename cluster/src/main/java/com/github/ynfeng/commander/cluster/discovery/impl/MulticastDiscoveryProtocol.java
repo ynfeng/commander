@@ -1,11 +1,11 @@
-package com.github.ynfeng.commander.cluster.discovery;
+package com.github.ynfeng.commander.cluster.discovery.impl;
 
+import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryProtocol;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
-    public static final Type TYPE = new Type();
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
     private final MulticastDiscoveryConfig config;
     private final AtomicBoolean isStart = new AtomicBoolean();
@@ -31,14 +31,5 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     @Override
     public boolean isStarted() {
         return isStart.get();
-    }
-
-    public static class Type
-        implements NodeDiscoveryProtocolType<MulticastDiscoveryConfig, MulticastDiscoveryProtocol> {
-
-        @Override
-        public MulticastDiscoveryProtocol newProtocol(MulticastDiscoveryConfig config) {
-            return new MulticastDiscoveryProtocol(config);
-        }
     }
 }
