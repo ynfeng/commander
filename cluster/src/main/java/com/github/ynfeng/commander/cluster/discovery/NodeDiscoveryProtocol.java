@@ -5,7 +5,7 @@ import com.github.ynfeng.commander.support.Manageable;
 public interface NodeDiscoveryProtocol extends Manageable {
 
     @FunctionalInterface
-    interface Type<C extends NodeDiscoveryConfig> {
-        NodeDiscoveryProtocol newProtocol(C config);
+    interface Type {
+        NodeDiscoveryProtocol newProtocol();
     }
 }

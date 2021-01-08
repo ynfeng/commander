@@ -4,5 +4,5 @@ import com.github.ynfeng.commander.support.Config;
 
 @FunctionalInterface
 public interface NodeDiscoveryConfig extends Config {
-    NodeDiscoveryProtocol.Type<? extends NodeDiscoveryConfig> protocolType();
+    NodeDiscoveryProtocol.Type protocolType();
 }
