@@ -9,12 +9,7 @@ public class MulticastDiscoveryConfig implements NodeDiscoveryConfig {
 
     @Override
     public NodeDiscoveryProtocol.Type protocolType() {
-        return new NodeDiscoveryProtocol.Type() {
-            @Override
-            public MulticastDiscoveryProtocol newProtocol() {
-                return new MulticastDiscoveryProtocol(MulticastDiscoveryConfig.this);
-            }
-        };
+        return () -> new MulticastDiscoveryProtocol(this);
     }
 
     public Address localAddress() {
