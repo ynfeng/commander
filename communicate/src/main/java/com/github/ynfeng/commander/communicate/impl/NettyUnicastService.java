@@ -4,6 +4,7 @@ import com.github.ynfeng.commander.communicate.UnicastService;
 import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
 import com.github.ynfeng.commander.support.Address;
+import com.github.ynfeng.commander.support.Host;
 import com.github.ynfeng.commander.support.Threads;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
@@ -35,6 +36,7 @@ public class NettyUnicastService implements UnicastService {
         .add(SerializationTypes.BASIC)
         .add(Message.class)
         .add(Address.class)
+        .add(Host.class)
         .build());
     private Channel channel;
 

@@ -7,6 +7,7 @@ import com.github.ynfeng.commander.cluster.ClusterNode;
 import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryMessage;
 import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryProtocol;
 import com.github.ynfeng.commander.support.Address;
+import com.github.ynfeng.commander.support.Host;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ class MulticastDiscoveryProtocolTypeTest {
     public void setup() {
         MulticastDiscoveryConfig config = new MulticastDiscoveryConfig();
         this.config = Mockito.spy(config);
-        Mockito.when(this.config.localAddress()).thenReturn(Address.of("127.0.0.1", 1234));
+        Mockito.when(this.config.localHost()).thenReturn(Host.of("127.0.0.1"));
         Mockito.when(this.config.groupAddress()).thenReturn(Address.of("230.0.0.1", 1234));
         Mockito.when(this.config.localNode()).thenReturn(ClusterNode.of("testNode"));
         protocol = this.config.protocolType().newProtocol();

@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.support.Address;
+import com.github.ynfeng.commander.support.Host;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.AfterEach;
@@ -17,7 +18,7 @@ class NettyBroadcastServiceTest {
     @BeforeEach
     public void setup() {
         broadcastService = new NettyBroadcastService(
-            Address.of("127.0.0.1", 1234), Address.of("230.0.0.1", 1234));
+            Host.of("127.0.0.1"), Address.of("230.0.0.1", 1234));
         broadcastService.start();
         assertThat(broadcastService.isStarted(), is(true));
     }

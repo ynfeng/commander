@@ -1,19 +1,17 @@
 package com.github.ynfeng.commander.support;
 
-import com.google.common.base.Objects;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 
 public class Address {
-    private String host;
+    private Host host;
     private int port;
 
+    @SuppressWarnings("unused")
     private Address() {
     }
 
     private Address(String host, int port) {
-        this.host = host;
+        this.host = Host.of(host);
         this.port = port;
     }
 
@@ -21,39 +19,32 @@ public class Address {
         return new Address(ip, port);
     }
 
-    public InetAddress toInetAddress() {
-        try {
-            return InetAddress.getByAddress(ipToBytes());
-        } catch (UnknownHostException e) {
-            return null;
-        }
-    }
-
-    private byte[] ipToBytes() {
-        byte[] addrBytes = new byte[4];
-        String[] ipItems = host.split("\\.");
-        for (int i = 0; i < addrBytes.length; i++) {
-            addrBytes[i] = Byte.valueOf(ipItems[i]);
-        }
-        return addrBytes;
-    }
-
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Address) {
-            Address that = (Address) obj;
-            return Objects.equal(host, that.host) && Objects.equal(port, that.port);
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
         }
-        return false;
+        if (!(o instanceof Address)) {
+            return false;
+        }
+
+        Address address = (Address) o;
+
+        if (port != address.port) {
+            return false;
+        }
+        return host.equals(address.host);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(host, port);
+        int result = host.hashCode();
+        result = 31 * result + port;
+        return result;
     }
 
     public InetSocketAddress toInetSocketAddress() {
-        return new InetSocketAddress(host, port);
+        return new InetSocketAddress(host.ip(), port);
     }
 
     public int port() {
@@ -61,6 +52,6 @@ public class Address {
     }
 
     public String host() {
-        return host;
+        return host.ip();
     }
 }

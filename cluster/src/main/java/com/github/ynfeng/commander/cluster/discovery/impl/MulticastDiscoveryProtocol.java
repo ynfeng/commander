@@ -30,7 +30,7 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
 
     public MulticastDiscoveryProtocol(MulticastDiscoveryConfig config) {
         this.config = config;
-        broadcastService = new NettyBroadcastService(config.localAddress(), config.groupAddress());
+        broadcastService = new NettyBroadcastService(config.localHost(), config.groupAddress());
     }
 
     @Override
