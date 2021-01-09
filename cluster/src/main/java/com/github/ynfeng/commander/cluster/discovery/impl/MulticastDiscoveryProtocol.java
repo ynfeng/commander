@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 
 public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
-    private final MulticastDiscoveryConfig config;
+    private final MulticastDiscoveryProtocolConfig config;
     private final AtomicBoolean isStart = new AtomicBoolean();
     private final NettyBroadcastService broadcastService;
     private final Map<NodeDiscoveryMessage.Type, Set<Consumer<ClusterNode>>> listeners = Maps.newConcurrentMap();
@@ -33,7 +33,7 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
         .add(NodeDiscoveryMessage.class)
         .build());
 
-    public MulticastDiscoveryProtocol(MulticastDiscoveryConfig config) {
+    public MulticastDiscoveryProtocol(MulticastDiscoveryProtocolConfig config) {
         this.config = config;
         broadcastService = new NettyBroadcastService(config.localHost(), config.groupAddress());
         scheduledExecutorService = Executors.newScheduledThreadPool(

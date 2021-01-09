@@ -1,12 +1,12 @@
 package com.github.ynfeng.commander.cluster.discovery.impl;
 
 import com.github.ynfeng.commander.cluster.ClusterNode;
-import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryConfig;
+import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryProtocolConfig;
 import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryProtocol;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
 
-public class MulticastDiscoveryConfig implements NodeDiscoveryConfig {
+public class MulticastDiscoveryProtocolConfig implements NodeDiscoveryProtocolConfig {
     private Host localhost;
     private Address groupAddress;
     private ClusterNode localNode;
@@ -38,7 +38,7 @@ public class MulticastDiscoveryConfig implements NodeDiscoveryConfig {
     }
 
     public static class Builder {
-        private final MulticastDiscoveryConfig config = new MulticastDiscoveryConfig();
+        private final MulticastDiscoveryProtocolConfig config = new MulticastDiscoveryProtocolConfig();
 
         public Builder localHost(Host host) {
             config.localhost = host;
@@ -60,7 +60,7 @@ public class MulticastDiscoveryConfig implements NodeDiscoveryConfig {
             return this;
         }
 
-        public MulticastDiscoveryConfig build() {
+        public MulticastDiscoveryProtocolConfig build() {
             return config;
         }
     }

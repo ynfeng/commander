@@ -18,7 +18,7 @@ class MulticastDiscoveryProtocolTypeTest {
 
     @BeforeEach
     public void setup() {
-        MulticastDiscoveryConfig config = MulticastDiscoveryConfig.builder()
+        MulticastDiscoveryProtocolConfig config = MulticastDiscoveryProtocolConfig.builder()
             .localHost(Host.of("127.0.0.1"))
             .groupAddress(Address.of("230.0.0.1", 1234))
             .localNode(ClusterNode.of("testNode"))
