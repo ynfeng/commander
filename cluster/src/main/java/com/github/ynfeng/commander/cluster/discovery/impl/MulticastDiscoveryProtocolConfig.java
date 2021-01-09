@@ -1,19 +1,19 @@
 package com.github.ynfeng.commander.cluster.discovery.impl;
 
-import com.github.ynfeng.commander.cluster.ClusterNode;
-import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryProtocolConfig;
-import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryProtocol;
+import com.github.ynfeng.commander.cluster.ClusterMember;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryProtocol;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryProtocolConfig;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
 
-public class MulticastDiscoveryProtocolConfig implements NodeDiscoveryProtocolConfig {
+public class MulticastDiscoveryProtocolConfig implements ClusterMemberDiscoveryProtocolConfig {
     private Host localhost;
     private Address groupAddress;
-    private ClusterNode localNode;
+    private ClusterMember localMember;
     private long broadcastInterval = 5;
 
     @Override
-    public NodeDiscoveryProtocol.Type protocolType() {
+    public ClusterMemberDiscoveryProtocol.Type protocolType() {
         return () -> new MulticastDiscoveryProtocol(this);
     }
 
@@ -21,8 +21,8 @@ public class MulticastDiscoveryProtocolConfig implements NodeDiscoveryProtocolCo
         return groupAddress;
     }
 
-    public ClusterNode localNode() {
-        return localNode;
+    public ClusterMember localMember() {
+        return localMember;
     }
 
     public Host localHost() {
@@ -50,8 +50,8 @@ public class MulticastDiscoveryProtocolConfig implements NodeDiscoveryProtocolCo
             return this;
         }
 
-        public Builder localNode(ClusterNode node) {
-            config.localNode = node;
+        public Builder localMember(ClusterMember member) {
+            config.localMember = member;
             return this;
         }
 

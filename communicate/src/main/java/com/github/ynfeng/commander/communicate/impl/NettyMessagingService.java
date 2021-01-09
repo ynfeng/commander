@@ -266,13 +266,9 @@ public class NettyMessagingService implements MessagingService {
     @Override
     public void shutdown() {
         if (started.compareAndSet(true, false)) {
-            try {
-                serverChannel.close().sync();
-                serverGroup.shutdownGracefully().syncUninterruptibly();
-                clientGroup.shutdownGracefully().syncUninterruptibly();
-            } catch (InterruptedException e) {
-                throw new IllegalStateException(e);
-            }
+            serverChannel.close();
+            serverGroup.shutdownGracefully();
+            clientGroup.shutdownGracefully();
         }
     }
 

@@ -1,8 +1,8 @@
 package com.github.ynfeng.commander.cluster.discovery.impl;
 
-import com.github.ynfeng.commander.cluster.ClusterNode;
-import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryMessage;
-import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryProtocol;
+import com.github.ynfeng.commander.cluster.ClusterMember;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryMessage;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryProtocol;
 import com.github.ynfeng.commander.communicate.impl.NettyBroadcastService;
 import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
@@ -19,18 +19,19 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
+public class MulticastDiscoveryProtocol implements ClusterMemberDiscoveryProtocol {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
     private final MulticastDiscoveryProtocolConfig config;
     private final AtomicBoolean isStart = new AtomicBoolean();
     private final NettyBroadcastService broadcastService;
-    private final Map<NodeDiscoveryMessage.Type, Set<Consumer<ClusterNode>>> listeners = Maps.newConcurrentMap();
+    private final Map<ClusterMemberDiscoveryMessage.Type, Set<Consumer<ClusterMember>>> listeners
+        = Maps.newConcurrentMap();
     private final ScheduledExecutorService scheduledExecutorService;
     private final Serializer serializer = Serializer.create(SerializationTypes.builder()
         .add(SerializationTypes.BASIC)
-        .add(ClusterNode.class)
-        .add(NodeDiscoveryMessage.Type.class)
-        .add(NodeDiscoveryMessage.class)
+        .add(ClusterMember.class)
+        .add(ClusterMemberDiscoveryMessage.Type.class)
+        .add(ClusterMemberDiscoveryMessage.class)
         .build());
 
     public MulticastDiscoveryProtocol(MulticastDiscoveryProtocolConfig config) {
@@ -48,34 +49,34 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
             listenNodeChangeMessage();
             broadcastOnlineMessage();
             scheduledExecutorService.scheduleAtFixedRate(
-                () -> broadcastOnlineMessage(), 5, config.broadcastInterval(), TimeUnit.SECONDS);
+                () -> broadcastOnlineMessage(), 0, config.broadcastInterval(), TimeUnit.SECONDS);
             logger.debug("Multicast discovery protocol start successfully.");
         }
     }
 
     private void listenNodeChangeMessage() {
-        broadcastService.addListener(NodeDiscoveryMessage.Type.Online.value(), this::notifyListeners);
-        broadcastService.addListener(NodeDiscoveryMessage.Type.Offline.value(), this::notifyListeners);
+        broadcastService.addListener(ClusterMemberDiscoveryMessage.Type.Online.value(), this::notifyListeners);
+        broadcastService.addListener(ClusterMemberDiscoveryMessage.Type.Offline.value(), this::notifyListeners);
     }
 
     private void notifyListeners(byte[] bytes) {
-        NodeDiscoveryMessage message = serializer.decode(bytes);
-        Set<Consumer<ClusterNode>> consumers = listeners.get(message.type());
+        ClusterMemberDiscoveryMessage message = serializer.decode(bytes);
+        Set<Consumer<ClusterMember>> consumers = listeners.get(message.type());
         if (consumers != null) {
             consumers.forEach(each -> each.accept(message.node()));
         }
     }
 
     private void broadcastOnlineMessage() {
-        NodeDiscoveryMessage onlineMessage = NodeDiscoveryMessage.createOnlineMessage(config.localNode());
-        broadcastService.broadcast(NodeDiscoveryMessage.Type.Online.value(), serializer.encode(onlineMessage));
+        ClusterMemberDiscoveryMessage onlineMessage
+            = ClusterMemberDiscoveryMessage.createOnlineMessage(config.localMember());
+        broadcastService.broadcast(ClusterMemberDiscoveryMessage.Type.Online.value(), serializer.encode(onlineMessage));
         logger.debug("broadcast cluster node online message {}", onlineMessage.toString());
     }
 
     @Override
     public void shutdown() {
         if (isStart.compareAndSet(true, false)) {
-            broadcastOffline();
             broadcastService.shutdown();
             scheduledExecutorService.shutdownNow();
             logger.debug("Multicast discovery protocol shutdown successfully.");
@@ -88,13 +89,17 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     }
 
     @Override
-    public void addClusterNodeChangeListener(NodeDiscoveryMessage.Type type, Consumer<ClusterNode> listener) {
+    public void addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type type,
+                                             Consumer<ClusterMember> listener) {
         listeners.computeIfAbsent(type, t -> Sets.newCopyOnWriteArraySet()).add(listener);
     }
 
     @Override
     public void broadcastOffline() {
-        NodeDiscoveryMessage offlineMessage = NodeDiscoveryMessage.createOfflineMessage(config.localNode());
-        broadcastService.broadcast(NodeDiscoveryMessage.Type.Offline.value(), serializer.encode(offlineMessage));
+        ClusterMemberDiscoveryMessage offlineMessage
+            = ClusterMemberDiscoveryMessage.createOfflineMessage(config.localMember());
+        byte[] encode = serializer.encode(offlineMessage);
+        broadcastService.broadcast(ClusterMemberDiscoveryMessage.Type.Offline.value(), encode);
+        logger.debug("broadcast cluster node offline message {}", offlineMessage.toString());
     }
 }

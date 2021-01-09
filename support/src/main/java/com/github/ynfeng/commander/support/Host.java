@@ -20,12 +20,12 @@ public class Host {
     }
 
     byte[] ipToBytes() {
-        byte[] addrBytes = new byte[4];
-        String[] ipItems = ip.split("\\.");
-        for (int i = 0; i < addrBytes.length; i++) {
-            addrBytes[i] = Byte.valueOf(ipItems[i]);
+        try {
+            InetAddress ip = InetAddress.getByName(this.ip);
+            return ip.getAddress();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
         }
-        return addrBytes;
     }
 
     public String ip() {

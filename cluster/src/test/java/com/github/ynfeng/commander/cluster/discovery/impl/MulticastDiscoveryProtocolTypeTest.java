@@ -3,9 +3,9 @@ package com.github.ynfeng.commander.cluster.discovery.impl;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander.cluster.ClusterNode;
-import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryMessage;
-import com.github.ynfeng.commander.cluster.discovery.NodeDiscoveryProtocol;
+import com.github.ynfeng.commander.cluster.ClusterMember;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryMessage;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryProtocol;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
 import java.util.concurrent.CompletableFuture;
@@ -14,14 +14,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class MulticastDiscoveryProtocolTypeTest {
-    private NodeDiscoveryProtocol protocol;
+    private ClusterMemberDiscoveryProtocol protocol;
 
     @BeforeEach
     public void setup() {
         MulticastDiscoveryProtocolConfig config = MulticastDiscoveryProtocolConfig.builder()
             .localHost(Host.of("127.0.0.1"))
             .groupAddress(Address.of("230.0.0.1", 1234))
-            .localNode(ClusterNode.of("testNode"))
+            .localMember(ClusterMember.of("testNode"))
             .broadcastInterval(10)
             .build();
         protocol = config.protocolType().newProtocol();
@@ -35,8 +35,8 @@ class MulticastDiscoveryProtocolTypeTest {
 
     @Test
     public void should_broadcast_message_when_node_online() {
-        CompletableFuture<ClusterNode> future = new CompletableFuture<ClusterNode>();
-        protocol.addClusterNodeChangeListener(NodeDiscoveryMessage.Type.Online, node -> {
+        CompletableFuture<ClusterMember> future = new CompletableFuture<ClusterMember>();
+        protocol.addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type.Online, node -> {
             future.complete(node);
         });
 
@@ -45,8 +45,8 @@ class MulticastDiscoveryProtocolTypeTest {
 
     @Test
     public void should_broadcast_message_when_node_offline() {
-        CompletableFuture<ClusterNode> future = new CompletableFuture<ClusterNode>();
-        protocol.addClusterNodeChangeListener(NodeDiscoveryMessage.Type.Offline, node -> {
+        CompletableFuture<ClusterMember> future = new CompletableFuture<ClusterMember>();
+        protocol.addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type.Offline, node -> {
             future.complete(node);
         });
         protocol.broadcastOffline();

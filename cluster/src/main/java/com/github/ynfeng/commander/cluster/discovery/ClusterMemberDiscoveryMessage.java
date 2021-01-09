@@ -1,33 +1,33 @@
 package com.github.ynfeng.commander.cluster.discovery;
 
-import com.github.ynfeng.commander.cluster.ClusterNode;
+import com.github.ynfeng.commander.cluster.ClusterMember;
 
-public class NodeDiscoveryMessage {
-    private ClusterNode node;
+public class ClusterMemberDiscoveryMessage {
+    private ClusterMember node;
     private Type type;
 
     @SuppressWarnings("unused")
-    private NodeDiscoveryMessage() {
+    private ClusterMemberDiscoveryMessage() {
     }
 
-    private NodeDiscoveryMessage(ClusterNode node, Type type) {
+    private ClusterMemberDiscoveryMessage(ClusterMember node, Type type) {
         this.node = node;
         this.type = type;
     }
 
-    public static NodeDiscoveryMessage createOnlineMessage(ClusterNode node) {
-        return new NodeDiscoveryMessage(node, Type.Online);
+    public static ClusterMemberDiscoveryMessage createOnlineMessage(ClusterMember node) {
+        return new ClusterMemberDiscoveryMessage(node, Type.Online);
     }
 
-    public static NodeDiscoveryMessage createOfflineMessage(ClusterNode node) {
-        return new NodeDiscoveryMessage(node, Type.Offline);
+    public static ClusterMemberDiscoveryMessage createOfflineMessage(ClusterMember node) {
+        return new ClusterMemberDiscoveryMessage(node, Type.Offline);
     }
 
     public Type type() {
         return type;
     }
 
-    public ClusterNode node() {
+    public ClusterMember node() {
         return node;
     }
 
