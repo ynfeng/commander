@@ -24,4 +24,8 @@ public class MulticastDiscoveryConfig implements NodeDiscoveryConfig {
     public Host localHost() {
         return null;
     }
+
+    public long broadcastInterval() {
+        return 0;
+    }
 }

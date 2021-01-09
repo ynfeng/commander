@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 public interface NodeDiscoveryProtocol extends Manageable {
 
-    void addListener(NodeDiscoveryMessage.Type type, Consumer<ClusterNode> listener);
+    void addClusterNodeChangeListener(NodeDiscoveryMessage.Type type, Consumer<ClusterNode> listener);
 
     void broadcastOffline();
 

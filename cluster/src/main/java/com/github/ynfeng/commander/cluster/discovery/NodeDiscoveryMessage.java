@@ -44,4 +44,12 @@ public class NodeDiscoveryMessage {
             return value;
         }
     }
+
+    @Override
+    public String toString() {
+        return "NodeDiscoveryMessage{"
+            + "node=" + node
+            + ", type=" + type
+            + '}';
+    }
 }

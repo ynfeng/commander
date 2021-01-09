@@ -25,6 +25,7 @@ class MulticastDiscoveryProtocolTypeTest {
         Mockito.when(this.config.localHost()).thenReturn(Host.of("127.0.0.1"));
         Mockito.when(this.config.groupAddress()).thenReturn(Address.of("230.0.0.1", 1234));
         Mockito.when(this.config.localNode()).thenReturn(ClusterNode.of("testNode"));
+        Mockito.when(this.config.broadcastInterval()).thenReturn(5L);
         protocol = this.config.protocolType().newProtocol();
         protocol.start();
     }
@@ -37,7 +38,7 @@ class MulticastDiscoveryProtocolTypeTest {
     @Test
     public void should_broadcast_message_when_node_online() {
         CompletableFuture<ClusterNode> future = new CompletableFuture<ClusterNode>();
-        protocol.addListener(NodeDiscoveryMessage.Type.Online, node -> {
+        protocol.addClusterNodeChangeListener(NodeDiscoveryMessage.Type.Online, node -> {
             future.complete(node);
         });
 
@@ -47,7 +48,7 @@ class MulticastDiscoveryProtocolTypeTest {
     @Test
     public void should_broadcast_message_when_node_offline() {
         CompletableFuture<ClusterNode> future = new CompletableFuture<ClusterNode>();
-        protocol.addListener(NodeDiscoveryMessage.Type.Offline, node -> {
+        protocol.addClusterNodeChangeListener(NodeDiscoveryMessage.Type.Offline, node -> {
             future.complete(node);
         });
         protocol.broadcastOffline();
