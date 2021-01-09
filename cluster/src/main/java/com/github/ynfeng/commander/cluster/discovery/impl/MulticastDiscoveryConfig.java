@@ -7,6 +7,10 @@ import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
 
 public class MulticastDiscoveryConfig implements NodeDiscoveryConfig {
+    private Host localhost;
+    private Address groupAddress;
+    private ClusterNode localNode;
+    private long broadcastInterval = 5;
 
     @Override
     public NodeDiscoveryProtocol.Type protocolType() {
@@ -14,18 +18,50 @@ public class MulticastDiscoveryConfig implements NodeDiscoveryConfig {
     }
 
     public Address groupAddress() {
-        return null;
+        return groupAddress;
     }
 
     public ClusterNode localNode() {
-        return null;
+        return localNode;
     }
 
     public Host localHost() {
-        return null;
+        return localhost;
     }
 
     public long broadcastInterval() {
-        return 0;
+        return broadcastInterval;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private final MulticastDiscoveryConfig config = new MulticastDiscoveryConfig();
+
+        public Builder localHost(Host host) {
+            config.localhost = host;
+            return this;
+        }
+
+        public Builder groupAddress(Address address) {
+            config.groupAddress = address;
+            return this;
+        }
+
+        public Builder localNode(ClusterNode node) {
+            config.localNode = node;
+            return this;
+        }
+
+        public Builder broadcastInterval(long interval) {
+            config.broadcastInterval = interval;
+            return this;
+        }
+
+        public MulticastDiscoveryConfig build() {
+            return config;
+        }
     }
 }

@@ -12,21 +12,19 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class MulticastDiscoveryProtocolTypeTest {
-    private MulticastDiscoveryConfig config;
     private NodeDiscoveryProtocol protocol;
 
     @BeforeEach
     public void setup() {
-        MulticastDiscoveryConfig config = new MulticastDiscoveryConfig();
-        this.config = Mockito.spy(config);
-        Mockito.when(this.config.localHost()).thenReturn(Host.of("127.0.0.1"));
-        Mockito.when(this.config.groupAddress()).thenReturn(Address.of("230.0.0.1", 1234));
-        Mockito.when(this.config.localNode()).thenReturn(ClusterNode.of("testNode"));
-        Mockito.when(this.config.broadcastInterval()).thenReturn(5L);
-        protocol = this.config.protocolType().newProtocol();
+        MulticastDiscoveryConfig config = MulticastDiscoveryConfig.builder()
+            .localHost(Host.of("127.0.0.1"))
+            .groupAddress(Address.of("230.0.0.1", 1234))
+            .localNode(ClusterNode.of("testNode"))
+            .broadcastInterval(10)
+            .build();
+        protocol = config.protocolType().newProtocol();
         protocol.start();
     }
 
