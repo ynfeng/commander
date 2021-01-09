@@ -82,6 +82,7 @@ public class NettyBroadcastService implements BroadcastService {
             bootServer();
             bootClient();
             joinGroup();
+            logger.debug("Broadcast service start successfully listen on port {}", localAddress.port());
         }
     }
 
@@ -168,6 +169,7 @@ public class NettyBroadcastService implements BroadcastService {
                 .syncUninterruptibly();
             serverChannel.close().syncUninterruptibly();
             group.shutdownGracefully().syncUninterruptibly();
+            logger.debug("Broadcaset service shutdown successfully.");
         }
     }
 

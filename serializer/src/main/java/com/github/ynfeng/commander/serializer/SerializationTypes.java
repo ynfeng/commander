@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class SerializationTypes {
-    public static final int CUSTOM_ID = 200;
+    public static final int CUSTOM_ID = 1000;
     public static final SerializationTypes BASIC = builder()
         .add(byte[].class)
         .build();
