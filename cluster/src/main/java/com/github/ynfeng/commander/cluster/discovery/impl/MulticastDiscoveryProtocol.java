@@ -39,6 +39,7 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
             broadcastService.start();
             listenNodeOnlineMessage();
             broadcastOnlineMessage();
+            logger.debug("Multicast discovery protocol start successfully.");
         }
     }
 
@@ -60,6 +61,7 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     public void shutdown() {
         if (isStart.compareAndSet(true, false)) {
             broadcastService.shutdown();
+            logger.debug("Multicast discovery protocol shutdown successfully.");
         }
     }
 

@@ -82,7 +82,6 @@ public class NettyBroadcastService implements BroadcastService {
             bootServer();
             bootClient();
             joinGroup();
-            logger.debug("Broadcast service start successfully listen on port {}", localAddress.port());
         }
     }
 
