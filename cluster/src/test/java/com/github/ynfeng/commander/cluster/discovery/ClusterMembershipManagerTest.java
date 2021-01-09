@@ -18,13 +18,13 @@ public class ClusterMembershipManagerTest {
             .localMember(ClusterMember.of("1"))
             .broadcastInterval(1)
             .groupAddress(Address.of("230.0.0.2", 12344))
-            .localHost(Host.of("192.168.16.48"))
+            .localHost(Host.of("127.0.0.1"))
             .build();
         MulticastDiscoveryProtocolConfig discoveryProtocolConfig2 = MulticastDiscoveryProtocolConfig.builder()
             .localMember(ClusterMember.of("2"))
             .broadcastInterval(1)
             .groupAddress(Address.of("230.0.0.2", 12344))
-            .localHost(Host.of("192.168.16.48"))
+            .localHost(Host.of("127.0.0.1"))
             .build();
 
         ClusterMembershipConfig config1 = ClusterMembershipConfig.builder()
