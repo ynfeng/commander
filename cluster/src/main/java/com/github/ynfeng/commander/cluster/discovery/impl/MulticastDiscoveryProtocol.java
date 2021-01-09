@@ -37,14 +37,15 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     public void start() {
         if (isStart.compareAndSet(false, true)) {
             broadcastService.start();
-            listenNodeOnlineMessage();
+            listenNodeChangeMessage();
             broadcastOnlineMessage();
             logger.debug("Multicast discovery protocol start successfully.");
         }
     }
 
-    private void listenNodeOnlineMessage() {
-        broadcastService.addListener(NodeDiscoveryMessage.Type.Online.name(), this::notifyListeners);
+    private void listenNodeChangeMessage() {
+        broadcastService.addListener(NodeDiscoveryMessage.Type.Online.value(), this::notifyListeners);
+        broadcastService.addListener(NodeDiscoveryMessage.Type.Offline.value(), this::notifyListeners);
     }
 
     private void notifyListeners(byte[] bytes) {
@@ -54,12 +55,13 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
 
     private void broadcastOnlineMessage() {
         NodeDiscoveryMessage onlineMessage = NodeDiscoveryMessage.createOnlineMessage(config.localNode());
-        broadcastService.broadcast(NodeDiscoveryMessage.Type.Online.name(), serializer.encode(onlineMessage));
+        broadcastService.broadcast(NodeDiscoveryMessage.Type.Online.value(), serializer.encode(onlineMessage));
     }
 
     @Override
     public void shutdown() {
         if (isStart.compareAndSet(true, false)) {
+            broadcastOffline();
             broadcastService.shutdown();
             logger.debug("Multicast discovery protocol shutdown successfully.");
         }
@@ -73,5 +75,11 @@ public class MulticastDiscoveryProtocol implements NodeDiscoveryProtocol {
     @Override
     public void addListener(NodeDiscoveryMessage.Type type, Consumer<ClusterNode> listener) {
         listeners.computeIfAbsent(type, t -> Sets.newCopyOnWriteArraySet()).add(listener);
+    }
+
+    @Override
+    public void broadcastOffline() {
+        NodeDiscoveryMessage offlineMessage = NodeDiscoveryMessage.createOfflineMessage(config.localNode());
+        broadcastService.broadcast(NodeDiscoveryMessage.Type.Offline.value(), serializer.encode(offlineMessage));
     }
 }

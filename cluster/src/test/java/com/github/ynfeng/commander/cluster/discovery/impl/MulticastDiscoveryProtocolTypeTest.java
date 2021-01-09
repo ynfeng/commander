@@ -43,4 +43,15 @@ class MulticastDiscoveryProtocolTypeTest {
 
         assertThat(future.join().name(), is("testNode"));
     }
+
+    @Test
+    public void should_broadcast_message_when_node_offline() {
+        CompletableFuture<ClusterNode> future = new CompletableFuture<ClusterNode>();
+        protocol.addListener(NodeDiscoveryMessage.Type.Offline, node -> {
+            future.complete(node);
+        });
+        protocol.broadcastOffline();
+
+        assertThat(future.join().name(), is("testNode"));
+    }
 }

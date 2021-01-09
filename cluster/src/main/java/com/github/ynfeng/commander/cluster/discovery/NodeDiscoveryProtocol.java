@@ -8,6 +8,8 @@ public interface NodeDiscoveryProtocol extends Manageable {
 
     void addListener(NodeDiscoveryMessage.Type type, Consumer<ClusterNode> listener);
 
+    void broadcastOffline();
+
     @FunctionalInterface
     interface Type {
         NodeDiscoveryProtocol newProtocol();

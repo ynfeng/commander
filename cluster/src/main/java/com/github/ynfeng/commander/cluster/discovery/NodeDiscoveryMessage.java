@@ -1,7 +1,6 @@
 package com.github.ynfeng.commander.cluster.discovery;
 
 import com.github.ynfeng.commander.cluster.ClusterNode;
-import java.util.Arrays;
 
 public class NodeDiscoveryMessage {
     private ClusterNode node;
@@ -18,6 +17,10 @@ public class NodeDiscoveryMessage {
 
     public static NodeDiscoveryMessage createOnlineMessage(ClusterNode node) {
         return new NodeDiscoveryMessage(node, Type.Online);
+    }
+
+    public static NodeDiscoveryMessage createOfflineMessage(ClusterNode node) {
+        return new NodeDiscoveryMessage(node, Type.Offline);
     }
 
     public Type type() {
@@ -37,10 +40,8 @@ public class NodeDiscoveryMessage {
             this.value = value;
         }
 
-        public static Type ofValue(String value) {
-            return Arrays.stream(values())
-                .filter(each -> each.value.equals(value))
-                .findAny().orElse(null);
+        public String value() {
+            return value;
         }
     }
 }
