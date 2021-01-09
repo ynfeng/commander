@@ -84,7 +84,6 @@ public class NettyUnicastService implements UnicastService {
         }
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     private void bootServer() {
         Bootstrap bootstrap = new Bootstrap()
             .group(group)

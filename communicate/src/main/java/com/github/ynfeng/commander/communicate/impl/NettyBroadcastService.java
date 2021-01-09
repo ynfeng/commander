@@ -107,7 +107,6 @@ public class NettyBroadcastService implements BroadcastService {
         }
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     private Bootstrap clientBootstrap() {
         return new Bootstrap()
             .group(group)

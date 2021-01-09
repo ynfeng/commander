@@ -101,7 +101,6 @@ public class ReactorProcessEngine implements ProcessEngine {
         return isStart.get();
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     @Override
     public ContinueFuture continueProcess(ProcessId processId, String nodeRefName, Variables variables) {
         ContinueFuture continueFuture = new ContinueFuture();

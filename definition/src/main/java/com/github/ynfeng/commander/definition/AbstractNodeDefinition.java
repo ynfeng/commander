@@ -14,7 +14,6 @@ public abstract class AbstractNodeDefinition implements NodeDefinition {
         return refName;
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     @Override
     public boolean equals(Object o) {
         if (o == null) {

@@ -19,7 +19,6 @@ public class Expression {
         return expressionValue;
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     @Override
     public boolean equals(Object o) {
         if (o == null) {

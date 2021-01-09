@@ -5,7 +5,6 @@ import io.netty.channel.ChannelHandlerContext;
 
 public class MessageEncoderV1 extends AbstractMessageEncoder {
 
-    @SuppressWarnings("checkstyle:MethodLength")
     @Override
     protected void encode(ChannelHandlerContext ctx, Object msg, ByteBuf out) throws Exception {
         ((ProtocolMessage) msg).encode(out);

@@ -18,7 +18,6 @@ public final class ProcessId {
         return idVal;
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     @Override
     public boolean equals(Object o) {
         if (this == o) {

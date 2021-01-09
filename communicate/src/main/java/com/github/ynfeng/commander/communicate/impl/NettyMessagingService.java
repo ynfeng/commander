@@ -73,7 +73,6 @@ public class NettyMessagingService implements MessagingService {
         clientChannelClass = NioSocketChannel.class;
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     private boolean tryInitEpollEventLoopGroup() {
         try {
             clientGroup = new EpollEventLoopGroup(0,
@@ -160,20 +159,18 @@ public class NettyMessagingService implements MessagingService {
         return conn;
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     private CompletableFuture<Channel> openChannel(Address address) {
         CompletableFuture<Void> handshakeFuture = new CompletableFuture<>();
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
-        bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK,
-            new WriteBufferWaterMark(10 * 32 * 1024, 10 * 64 * 1024));
-        bootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
-        bootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 1024);
-        bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
-        bootstrap.option(ChannelOption.TCP_NODELAY, true);
-        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000);
+        setClientOptions(bootstrap);
         bootstrap.group(clientGroup);
         bootstrap.channel(clientChannelClass);
+        initClientHandlers(address, handshakeFuture, bootstrap);
+        ChannelFuture connectFuture = bootstrap.connect(address.toInetSocketAddress());
+        return handshakeFuture.thenApply(v -> connectFuture.channel());
+    }
+
+    private void initClientHandlers(Address address, CompletableFuture<Void> handshakeFuture, Bootstrap bootstrap) {
         bootstrap.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -184,8 +181,17 @@ public class NettyMessagingService implements MessagingService {
                     new ClientHandshakeHandlerAdapter(communicateId, clientConnection, handshakeFuture));
             }
         });
-        ChannelFuture connectFuture = bootstrap.connect(address.toInetSocketAddress());
-        return handshakeFuture.thenApply(v -> connectFuture.channel());
+    }
+
+    private static void setClientOptions(Bootstrap bootstrap) {
+        bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+        bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK,
+            new WriteBufferWaterMark(10 * 32 * 1024, 10 * 64 * 1024));
+        bootstrap.option(ChannelOption.SO_RCVBUF, 1024 * 1024);
+        bootstrap.option(ChannelOption.SO_SNDBUF, 1024 * 1024);
+        bootstrap.option(ChannelOption.SO_KEEPALIVE, true);
+        bootstrap.option(ChannelOption.TCP_NODELAY, true);
+        bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000);
     }
 
     @Override
@@ -209,36 +215,42 @@ public class NettyMessagingService implements MessagingService {
         handlers.remove(type);
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     @Override
     public void start() {
         if (started.compareAndSet(false, true)) {
             ServerBootstrap bootstrap = new ServerBootstrap();
-            bootstrap.option(ChannelOption.SO_REUSEADDR, true);
-            bootstrap.option(ChannelOption.SO_BACKLOG, 128);
-            bootstrap.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK,
-                new WriteBufferWaterMark(8 * 1024, 32 * 1024));
-            bootstrap.childOption(ChannelOption.SO_RCVBUF, 1024 * 1024);
-            bootstrap.childOption(ChannelOption.SO_SNDBUF, 1024 * 1024);
-            bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
-            bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
-            bootstrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+            setServerOptions(bootstrap);
             bootstrap.group(serverGroup, clientGroup);
             bootstrap.channel(serverChannelClass);
-            bootstrap.childHandler(new ChannelInitializer<Channel>() {
-                @Override
-                protected void initChannel(Channel ch) throws Exception {
-                    ch.pipeline().addLast(HANDSHAKE_FRAME_DECODER,
-                        new FixedLengthFrameDecoder(5));
-                    ch.pipeline().addLast(
-                        new ServerHandshakeHandlerAdapter(communicateId, new RemoteServerConnection(ch, handlers)));
-                }
-            });
+            initServerHandlers(bootstrap);
             bind(bootstrap);
         }
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
+    private void initServerHandlers(ServerBootstrap bootstrap) {
+        bootstrap.childHandler(new ChannelInitializer<Channel>() {
+            @Override
+            protected void initChannel(Channel ch) throws Exception {
+                ch.pipeline().addLast(HANDSHAKE_FRAME_DECODER,
+                    new FixedLengthFrameDecoder(5));
+                ch.pipeline().addLast(
+                    new ServerHandshakeHandlerAdapter(communicateId, new RemoteServerConnection(ch, handlers)));
+            }
+        });
+    }
+
+    private static void setServerOptions(ServerBootstrap bootstrap) {
+        bootstrap.option(ChannelOption.SO_REUSEADDR, true);
+        bootstrap.option(ChannelOption.SO_BACKLOG, 128);
+        bootstrap.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK,
+            new WriteBufferWaterMark(8 * 1024, 32 * 1024));
+        bootstrap.childOption(ChannelOption.SO_RCVBUF, 1024 * 1024);
+        bootstrap.childOption(ChannelOption.SO_SNDBUF, 1024 * 1024);
+        bootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
+        bootstrap.childOption(ChannelOption.TCP_NODELAY, true);
+        bootstrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+    }
+
     private void bind(ServerBootstrap bootstrap) {
         ChannelFuture channelFuture = bootstrap.bind(localAddress.host(), localAddress.port());
         boolean success = channelFuture.syncUninterruptibly().isSuccess();
@@ -252,7 +264,6 @@ public class NettyMessagingService implements MessagingService {
     }
 
     @Override
-    @SuppressWarnings("checkstyle:MethodLength")
     public void shutdown() {
         if (started.compareAndSet(true, false)) {
             try {

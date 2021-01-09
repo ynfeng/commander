@@ -80,7 +80,6 @@ public class ReactorProcessInstance implements ProcessInstance {
             Sinks.EmitFailureHandler.FAIL_FAST);
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     private void runReadyNodes() {
         commandSinks.emitNext(() -> {
             NodeDefinition nextNode = context.nextReadyNode();
@@ -136,7 +135,6 @@ public class ReactorProcessInstance implements ProcessInstance {
         future.notifyProcessStarted(processId);
     }
 
-    @SuppressWarnings("checkstyle:MethodLength")
     public ProcessFuture continueRunningNode(String refName, Variables variables) {
         commandSinks.emitNext(() -> {
             LOGGER.debug("continue to run process[{}] node[{}]", processId, refName);
