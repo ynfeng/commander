@@ -22,11 +22,9 @@ public class ClusterMembershipManager implements Manageable {
     public void start() {
         clusterMemberDiscoveryProtocol.start();
         clusterMemberDiscoveryProtocol.addClusterNodeChangeListener(
-            ClusterMemberDiscoveryMessage.Type.Online,
-            member -> memberOnline(member));
+            ClusterMemberDiscoveryMessage.Type.Online, this::memberOnline);
         clusterMemberDiscoveryProtocol.addClusterNodeChangeListener(
-            ClusterMemberDiscoveryMessage.Type.Offline,
-            member -> memberOffline(member));
+            ClusterMemberDiscoveryMessage.Type.Offline, this::memberOffline);
     }
 
     private void memberOffline(ClusterMember member) {
