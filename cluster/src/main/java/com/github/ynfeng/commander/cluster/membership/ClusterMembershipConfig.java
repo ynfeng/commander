@@ -1,6 +1,7 @@
-package com.github.ynfeng.commander.cluster.discovery;
+package com.github.ynfeng.commander.cluster.membership;
 
 import com.github.ynfeng.commander.cluster.ClusterMember;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryProtocolConfig;
 import com.github.ynfeng.commander.support.Config;
 
 public class ClusterMembershipConfig implements Config {

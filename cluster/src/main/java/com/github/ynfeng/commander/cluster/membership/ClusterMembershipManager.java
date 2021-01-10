@@ -1,6 +1,8 @@
-package com.github.ynfeng.commander.cluster.discovery;
+package com.github.ynfeng.commander.cluster.membership;
 
 import com.github.ynfeng.commander.cluster.ClusterMember;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryMessage;
+import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryProtocol;
 import com.github.ynfeng.commander.support.Manageable;
 import com.google.common.collect.Sets;
 import java.util.Collections;

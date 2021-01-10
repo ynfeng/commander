@@ -1,10 +1,12 @@
-package com.github.ynfeng.commander.cluster.discovery;
+package com.github.ynfeng.commander.cluster.membership;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.cluster.ClusterMember;
 import com.github.ynfeng.commander.cluster.discovery.impl.MulticastDiscoveryProtocolConfig;
+import com.github.ynfeng.commander.cluster.membership.ClusterMembershipConfig;
+import com.github.ynfeng.commander.cluster.membership.ClusterMembershipManager;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
 import com.google.common.collect.Sets;
