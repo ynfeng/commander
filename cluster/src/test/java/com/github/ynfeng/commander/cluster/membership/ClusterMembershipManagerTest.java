@@ -29,11 +29,11 @@ public class ClusterMembershipManagerTest {
 
         ClusterMembershipConfig config1 = ClusterMembershipConfig.builder()
             .memberDiscoveryConfig(discoveryProtocolConfig1)
-            .localMember(ClusterMember.of("1"))
+            .localMember(discoveryProtocolConfig1.localMember())
             .build();
         ClusterMembershipConfig config2 = ClusterMembershipConfig.builder()
             .memberDiscoveryConfig(discoveryProtocolConfig2)
-            .localMember(ClusterMember.of("2"))
+            .localMember(discoveryProtocolConfig2.localMember())
             .build();
         ClusterMembershipManager manager1 = new ClusterMembershipManager(config1);
         ClusterMembershipManager manager2 = new ClusterMembershipManager(config2);
