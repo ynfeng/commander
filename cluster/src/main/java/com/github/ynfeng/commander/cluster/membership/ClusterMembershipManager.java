@@ -28,13 +28,17 @@ public class ClusterMembershipManager implements Manageable {
     }
 
     private void memberOffline(ClusterMember member) {
-        if (!member.equals(config.localMember())) {
+        if (!isLocalMember(member)) {
             members.remove(member);
         }
     }
 
+    private boolean isLocalMember(ClusterMember member) {
+        return member.equals(config.localMember());
+    }
+
     private void memberOnline(ClusterMember member) {
-        if (!member.equals(config.localMember())) {
+        if (!isLocalMember(member)) {
             members.add(member);
         }
     }
