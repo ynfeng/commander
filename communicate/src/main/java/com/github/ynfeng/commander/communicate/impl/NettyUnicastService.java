@@ -5,6 +5,7 @@ import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
+import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.Threads;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
@@ -23,12 +24,10 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
-public class NettyUnicastService implements UnicastService {
+public class NettyUnicastService extends ManageableSupport implements UnicastService {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
-    private final AtomicBoolean started = new AtomicBoolean();
     private final Map<String, Set<BiConsumer<Address, byte[]>>> listeners = Maps.newConcurrentMap();
     private final NioEventLoopGroup group;
     private final int port;
@@ -72,18 +71,14 @@ public class NettyUnicastService implements UnicastService {
     }
 
     @Override
-    public void start() {
-        if (started.compareAndSet(false, true)) {
-            bootServer();
-        }
+    public void doStart() {
+        bootServer();
     }
 
     @Override
-    public void shutdown() {
-        if (started.compareAndSet(true, false)) {
-            channel.close().syncUninterruptibly();
-            group.shutdownGracefully().syncUninterruptibly();
-        }
+    public void doShutdown() {
+        channel.close().syncUninterruptibly();
+        group.shutdownGracefully().syncUninterruptibly();
     }
 
     private void bootServer() {
@@ -121,11 +116,6 @@ public class NettyUnicastService implements UnicastService {
         if (subcribedListeners != null) {
             subcribedListeners.forEach(consumer -> consumer.accept(message.source, message.payload));
         }
-    }
-
-    @Override
-    public boolean isStarted() {
-        return started.get();
     }
 
     static class Message {

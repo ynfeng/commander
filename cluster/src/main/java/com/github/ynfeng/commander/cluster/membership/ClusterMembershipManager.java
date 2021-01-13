@@ -3,12 +3,12 @@ package com.github.ynfeng.commander.cluster.membership;
 import com.github.ynfeng.commander.cluster.ClusterMember;
 import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryMessage;
 import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryProtocol;
-import com.github.ynfeng.commander.support.Manageable;
+import com.github.ynfeng.commander.support.ManageableSupport;
 import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 
-public class ClusterMembershipManager implements Manageable {
+public class ClusterMembershipManager extends ManageableSupport {
     private final ClusterMembershipConfig config;
     private final ClusterMemberDiscoveryProtocol clusterMemberDiscoveryProtocol;
     private final Set<ClusterMember> members = Sets.newConcurrentHashSet();
@@ -19,7 +19,7 @@ public class ClusterMembershipManager implements Manageable {
     }
 
     @Override
-    public void start() {
+    public void doStart() {
         clusterMemberDiscoveryProtocol.start();
         clusterMemberDiscoveryProtocol.addClusterNodeChangeListener(
             ClusterMemberDiscoveryMessage.Type.Online, this::memberOnline);
@@ -44,13 +44,8 @@ public class ClusterMembershipManager implements Manageable {
     }
 
     @Override
-    public void shutdown() {
+    public void doShutdown() {
         clusterMemberDiscoveryProtocol.shutdown();
-    }
-
-    @Override
-    public boolean isStarted() {
-        return false;
     }
 
     public Set<ClusterMember> clusterMembers() {

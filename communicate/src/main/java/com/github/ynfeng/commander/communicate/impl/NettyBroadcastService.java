@@ -5,6 +5,7 @@ import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
+import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.Threads;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
@@ -24,14 +25,12 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-public class NettyBroadcastService implements BroadcastService {
+public class NettyBroadcastService extends ManageableSupport implements BroadcastService {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
     private final Address groupAddress;
     private final Host localHost;
-    private final AtomicBoolean started = new AtomicBoolean();
     private final Map<String, Set<Consumer<byte[]>>> listeners = Maps.newConcurrentMap();
     private final Serializer serializer = Serializer.create(SerializationTypes.builder()
         .add(SerializationTypes.BASIC)
@@ -75,11 +74,9 @@ public class NettyBroadcastService implements BroadcastService {
     }
 
     @Override
-    public void start() {
-        if (started.compareAndSet(false, true)) {
-            bootClient();
-            joinGroup();
-        }
+    public void doStart() {
+        bootClient();
+        joinGroup();
     }
 
     private void joinGroup() {
@@ -138,19 +135,12 @@ public class NettyBroadcastService implements BroadcastService {
     }
 
     @Override
-    public void shutdown() {
-        if (started.compareAndSet(true, false)) {
-            clientChannel
-                .leaveGroup(groupAddress.toInetSocketAddress(), iface)
-                .syncUninterruptibly();
-            group.shutdownGracefully().syncUninterruptibly();
-            logger.debug("Broadcaset service shutdown successfully.");
-        }
-    }
-
-    @Override
-    public boolean isStarted() {
-        return started.get();
+    public void doShutdown() {
+        clientChannel
+            .leaveGroup(groupAddress.toInetSocketAddress(), iface)
+            .syncUninterruptibly();
+        group.shutdownGracefully().syncUninterruptibly();
+        logger.debug("Broadcaset service shutdown successfully.");
     }
 
     static class Message {

@@ -4,6 +4,7 @@ import static com.github.ynfeng.commander.support.Threads.namedThreads;
 
 import com.github.ynfeng.commander.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
+import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Maps;
@@ -29,15 +30,13 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-public class NettyMessagingService implements MessagingService {
+public class NettyMessagingService extends ManageableSupport implements MessagingService {
     public static final String HANDSHAKE_FRAME_DECODER = "frameDecoder";
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
-    private final AtomicBoolean started = new AtomicBoolean();
     private final Address localAddress;
     private final String communicateId;
     private final Map<Channel, RemoteClientConnection> clientConnections = Maps.newConcurrentMap();
@@ -216,15 +215,13 @@ public class NettyMessagingService implements MessagingService {
     }
 
     @Override
-    public void start() {
-        if (started.compareAndSet(false, true)) {
-            ServerBootstrap bootstrap = new ServerBootstrap();
-            setServerOptions(bootstrap);
-            bootstrap.group(serverGroup, clientGroup);
-            bootstrap.channel(serverChannelClass);
-            initServerHandlers(bootstrap);
-            bind(bootstrap);
-        }
+    public void doStart() {
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        setServerOptions(bootstrap);
+        bootstrap.group(serverGroup, clientGroup);
+        bootstrap.channel(serverChannelClass);
+        initServerHandlers(bootstrap);
+        bind(bootstrap);
     }
 
     private void initServerHandlers(ServerBootstrap bootstrap) {
@@ -264,16 +261,9 @@ public class NettyMessagingService implements MessagingService {
     }
 
     @Override
-    public void shutdown() {
-        if (started.compareAndSet(true, false)) {
-            serverChannel.close();
-            serverGroup.shutdownGracefully();
-            clientGroup.shutdownGracefully();
-        }
-    }
-
-    @Override
-    public boolean isStarted() {
-        return started.get();
+    public void doShutdown() {
+        serverChannel.close();
+        serverGroup.shutdownGracefully();
+        clientGroup.shutdownGracefully();
     }
 }

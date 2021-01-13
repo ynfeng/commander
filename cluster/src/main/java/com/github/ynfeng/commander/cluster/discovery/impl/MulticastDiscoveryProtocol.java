@@ -6,6 +6,7 @@ import com.github.ynfeng.commander.cluster.discovery.ClusterMemberDiscoveryProto
 import com.github.ynfeng.commander.communicate.impl.NettyBroadcastService;
 import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
+import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.Threads;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
@@ -16,13 +17,11 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-public class MulticastDiscoveryProtocol implements ClusterMemberDiscoveryProtocol {
+public class MulticastDiscoveryProtocol extends ManageableSupport implements ClusterMemberDiscoveryProtocol {
     private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
     private final MulticastDiscoveryProtocolConfig config;
-    private final AtomicBoolean isStart = new AtomicBoolean();
     private final NettyBroadcastService broadcastService;
     private final Map<ClusterMemberDiscoveryMessage.Type, Set<Consumer<ClusterMember>>> listeners
         = Maps.newConcurrentMap();
@@ -43,15 +42,13 @@ public class MulticastDiscoveryProtocol implements ClusterMemberDiscoveryProtoco
     }
 
     @Override
-    public void start() {
-        if (isStart.compareAndSet(false, true)) {
-            broadcastService.start();
-            listenNodeChangeMessage();
-            broadcastOnlineMessage();
-            scheduledExecutorService.scheduleAtFixedRate(
-                () -> broadcastOnlineMessage(), 0, config.broadcastInterval(), TimeUnit.SECONDS);
-            logger.debug("Multicast discovery protocol start successfully.");
-        }
+    public void doStart() {
+        broadcastService.start();
+        listenNodeChangeMessage();
+        broadcastOnlineMessage();
+        scheduledExecutorService.scheduleAtFixedRate(
+            () -> broadcastOnlineMessage(), 0, config.broadcastInterval(), TimeUnit.SECONDS);
+        logger.debug("Multicast discovery protocol start successfully.");
     }
 
     private void listenNodeChangeMessage() {
@@ -75,17 +72,10 @@ public class MulticastDiscoveryProtocol implements ClusterMemberDiscoveryProtoco
     }
 
     @Override
-    public void shutdown() {
-        if (isStart.compareAndSet(true, false)) {
-            broadcastService.shutdown();
-            scheduledExecutorService.shutdownNow();
-            logger.debug("Multicast discovery protocol shutdown successfully.");
-        }
-    }
-
-    @Override
-    public boolean isStarted() {
-        return isStart.get();
+    public void doShutdown() {
+        broadcastService.shutdown();
+        scheduledExecutorService.shutdownNow();
+        logger.debug("Multicast discovery protocol shutdown successfully.");
     }
 
     @Override
