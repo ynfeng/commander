@@ -23,7 +23,7 @@ public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandl
         return ProtocolVersion.valueOf(byteBuf.readByte());
     }
 
-    @SuppressWarnings( {"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void acceptProtocolVersion(ChannelHandlerContext ctx,
                                          Connection<? extends ProtocolMessage> connection,
                                          ProtocolVersion protocolVersion) {
