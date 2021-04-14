@@ -36,7 +36,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew clean build sonarqube --info
-      - uses: ashley-taylo
+      - name: ashley
+        uses: ashley-taylo
         with:
           access-token: ${{ secrets.GITHUB_TOKEN }}
         if: always()
