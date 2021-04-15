@@ -36,7 +36,7 @@ class MulticastDiscoveryProtocolTypeTest {
     @Test
     public void should_broadcast_message_when_node_online() {
         CompletableFuture<ClusterMember> future = new CompletableFuture<ClusterMember>();
-        protocol.addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type.Online, node -> {
+        protocol.addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type.ONLINE, node -> {
             future.complete(node);
         });
 
@@ -46,7 +46,7 @@ class MulticastDiscoveryProtocolTypeTest {
     @Test
     public void should_broadcast_message_when_node_offline() {
         CompletableFuture<ClusterMember> future = new CompletableFuture<ClusterMember>();
-        protocol.addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type.Offline, node -> {
+        protocol.addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type.OFFLINE, node -> {
             future.complete(node);
         });
         protocol.broadcastOffline();

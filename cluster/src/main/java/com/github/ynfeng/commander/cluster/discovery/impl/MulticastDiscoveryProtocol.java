@@ -47,13 +47,13 @@ public class MulticastDiscoveryProtocol extends ManageableSupport implements Clu
         listenNodeChangeMessage();
         broadcastOnlineMessage();
         scheduledExecutorService.scheduleAtFixedRate(
-            () -> broadcastOnlineMessage(), 0, config.broadcastInterval(), TimeUnit.SECONDS);
+            this::broadcastOnlineMessage, 0, config.broadcastInterval(), TimeUnit.SECONDS);
         logger.debug("Multicast discovery protocol start successfully.");
     }
 
     private void listenNodeChangeMessage() {
-        broadcastService.addListener(ClusterMemberDiscoveryMessage.Type.Online.value(), this::notifyListeners);
-        broadcastService.addListener(ClusterMemberDiscoveryMessage.Type.Offline.value(), this::notifyListeners);
+        broadcastService.addListener(ClusterMemberDiscoveryMessage.Type.ONLINE.value(), this::notifyListeners);
+        broadcastService.addListener(ClusterMemberDiscoveryMessage.Type.OFFLINE.value(), this::notifyListeners);
     }
 
     private void notifyListeners(byte[] bytes) {
@@ -67,8 +67,8 @@ public class MulticastDiscoveryProtocol extends ManageableSupport implements Clu
     private void broadcastOnlineMessage() {
         ClusterMemberDiscoveryMessage onlineMessage
             = ClusterMemberDiscoveryMessage.createOnlineMessage(config.localMember());
-        broadcastService.broadcast(ClusterMemberDiscoveryMessage.Type.Online.value(), serializer.encode(onlineMessage));
-        logger.debug("broadcast cluster node online message {}", onlineMessage.toString());
+        broadcastService.broadcast(ClusterMemberDiscoveryMessage.Type.ONLINE.value(), serializer.encode(onlineMessage));
+        logger.debug("broadcast cluster node online message {}", onlineMessage);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class MulticastDiscoveryProtocol extends ManageableSupport implements Clu
         ClusterMemberDiscoveryMessage offlineMessage
             = ClusterMemberDiscoveryMessage.createOfflineMessage(config.localMember());
         byte[] encode = serializer.encode(offlineMessage);
-        broadcastService.broadcast(ClusterMemberDiscoveryMessage.Type.Offline.value(), encode);
-        logger.debug("broadcast cluster node offline message {}", offlineMessage.toString());
+        broadcastService.broadcast(ClusterMemberDiscoveryMessage.Type.OFFLINE.value(), encode);
+        logger.debug("broadcast cluster node offline message {}", offlineMessage);
     }
 }

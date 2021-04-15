@@ -7,6 +7,11 @@ public abstract class AbstractModule implements Module {
     private final Map<Class<?>, Object> componentRegistry = Maps.newHashMap();
 
     @Override
+    public void init() {
+
+    }
+
+    @Override
     public <T> T getComponent(Class<T> componentType) {
         if (componentRegistry.get(componentType) == null) {
             throw new ModuleException(String.format("component '%s' not found in module '%s'",

@@ -22,9 +22,9 @@ public class ClusterMembershipManager extends ManageableSupport {
     public void doStart() {
         clusterMemberDiscoveryProtocol.start();
         clusterMemberDiscoveryProtocol.addClusterNodeChangeListener(
-            ClusterMemberDiscoveryMessage.Type.Online, this::memberOnline);
+            ClusterMemberDiscoveryMessage.Type.ONLINE, this::memberOnline);
         clusterMemberDiscoveryProtocol.addClusterNodeChangeListener(
-            ClusterMemberDiscoveryMessage.Type.Offline, this::memberOffline);
+            ClusterMemberDiscoveryMessage.Type.OFFLINE, this::memberOffline);
     }
 
     private void memberOffline(ClusterMember member) {

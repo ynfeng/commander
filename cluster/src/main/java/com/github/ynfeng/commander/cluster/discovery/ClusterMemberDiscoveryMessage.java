@@ -16,11 +16,11 @@ public class ClusterMemberDiscoveryMessage {
     }
 
     public static ClusterMemberDiscoveryMessage createOnlineMessage(ClusterMember node) {
-        return new ClusterMemberDiscoveryMessage(node, Type.Online);
+        return new ClusterMemberDiscoveryMessage(node, Type.ONLINE);
     }
 
     public static ClusterMemberDiscoveryMessage createOfflineMessage(ClusterMember node) {
-        return new ClusterMemberDiscoveryMessage(node, Type.Offline);
+        return new ClusterMemberDiscoveryMessage(node, Type.OFFLINE);
     }
 
     public Type type() {
@@ -32,7 +32,7 @@ public class ClusterMemberDiscoveryMessage {
     }
 
     public enum Type {
-        Online("clusterNodeOnline"), Offline("clusterNodeOffline");
+        ONLINE("clusterNodeOnline"), OFFLINE("clusterNodeOffline");
 
         private final String value;
 
