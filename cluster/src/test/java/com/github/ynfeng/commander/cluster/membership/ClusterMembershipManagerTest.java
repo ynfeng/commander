@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class ClusterMembershipManagerTest {
 
     @Test
-    public void should_discovery_cluster_node() {
+    void should_discovery_cluster_node() {
         MulticastDiscoveryProtocolConfig discoveryProtocolConfig1 = MulticastDiscoveryProtocolConfig.builder()
             .localMember(ClusterMember.of("1"))
             .broadcastInterval(1)

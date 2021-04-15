@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class ClusterModuleTest {
 
     @Test
-    public void should_get_name() {
+    void should_get_name() {
         ClusterModule clusterModule = new ClusterModule();
         clusterModule.init();
 

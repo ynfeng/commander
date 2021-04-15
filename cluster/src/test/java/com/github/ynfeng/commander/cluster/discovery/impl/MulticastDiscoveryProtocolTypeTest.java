@@ -17,7 +17,7 @@ class MulticastDiscoveryProtocolTypeTest {
     private ClusterMemberDiscoveryProtocol protocol;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         MulticastDiscoveryProtocolConfig config = MulticastDiscoveryProtocolConfig.builder()
             .localHost(Host.of("127.0.0.1"))
             .groupAddress(Address.of("230.0.0.1", 1234))
@@ -29,12 +29,12 @@ class MulticastDiscoveryProtocolTypeTest {
     }
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         protocol.shutdown();
     }
 
     @Test
-    public void should_broadcast_message_when_node_online() {
+    void should_broadcast_message_when_node_online() {
         CompletableFuture<ClusterMember> future = new CompletableFuture<ClusterMember>();
         protocol.addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type.ONLINE, node -> {
             future.complete(node);
@@ -44,7 +44,7 @@ class MulticastDiscoveryProtocolTypeTest {
     }
 
     @Test
-    public void should_broadcast_message_when_node_offline() {
+    void should_broadcast_message_when_node_offline() {
         CompletableFuture<ClusterMember> future = new CompletableFuture<ClusterMember>();
         protocol.addClusterNodeChangeListener(ClusterMemberDiscoveryMessage.Type.OFFLINE, node -> {
             future.complete(node);

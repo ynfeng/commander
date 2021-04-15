@@ -26,7 +26,7 @@ class ClientHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_send_protocol_version_when_connected() throws Exception {
+    void should_send_protocol_version_when_connected() throws Exception {
         EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID);
 
         ByteBuf byteBuf = channel.readOutbound();
@@ -35,7 +35,7 @@ class ClientHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_close_when_connected_with_wrong_communicate_id() throws Exception {
+    void should_close_when_connected_with_wrong_communicate_id() throws Exception {
         EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt("wrongId".hashCode());
@@ -46,7 +46,7 @@ class ClientHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_add_encode_and_decoder_when_protocol_accepted() throws Exception {
+    void should_add_encode_and_decoder_when_protocol_accepted() throws Exception {
         EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt(COMMUNICATE_ID.hashCode());
