@@ -3,7 +3,9 @@ package com.github.ynfeng.commander.engine;
 import com.google.common.base.Stopwatch;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class ContinueFuture {
     private final CompletableFuture<ProcessFuture> future = new CompletableFuture<>();
@@ -33,8 +35,11 @@ public class ContinueFuture {
     private ProcessFuture getProcessFuture(Duration duration) {
         try {
             return future.get(duration.toMillis(), TimeUnit.MILLISECONDS);
-        } catch (Throwable t) {
-            throw new ProcessFutureException(t);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ProcessFutureException(e);
+        } catch (ExecutionException | TimeoutException e) {
+            throw new ProcessFutureException(e);
         }
     }
 }

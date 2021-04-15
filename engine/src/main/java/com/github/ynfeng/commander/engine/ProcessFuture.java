@@ -33,6 +33,10 @@ public class ProcessFuture {
         if (completeFuture.isCompletedExceptionally()) {
             try {
                 completeFuture.get();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                condition.completeExceptionally(e);
+                conditions.forEach((key, value) -> value.completeExceptionally(e));
             } catch (Exception e) {
                 condition.completeExceptionally(e);
                 conditions.forEach((key, value) -> value.completeExceptionally(e));
@@ -53,6 +57,9 @@ public class ProcessFuture {
         try {
             checkOccurredException(processIdFuture);
             return processIdFuture.get(waitTime.toMillis(), TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ProcessFutureException(e);
         } catch (Exception e) {
             throw new ProcessFutureException(e);
         }
@@ -102,6 +109,9 @@ public class ProcessFuture {
     public List<String> executedNodes() {
         try {
             return completeFuture.get().getExecutedNodes();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ProcessFutureException(e);
         } catch (Exception e) {
             throw new ProcessFutureException(e);
         }

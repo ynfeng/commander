@@ -97,7 +97,7 @@ public class NettyBroadcastService extends ManageableSupport implements Broadcas
                 .sync()
                 .channel();
         } catch (InterruptedException e) {
-            throw new IllegalStateException(e);
+            Thread.currentThread().interrupt();
         }
     }
 
