@@ -14,6 +14,7 @@ sonarqube {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'jacoco'
     group = 'com.github.ynfeng'
     version = '1.0.0'
     sourceCompatibility = JavaVersion.VERSION_1_8
