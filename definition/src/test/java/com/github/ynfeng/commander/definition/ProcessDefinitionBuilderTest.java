@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
-public class ProcessDefinitionBuilderTest {
+class ProcessDefinitionBuilderTest {
     private ProcessDefinitionBuilder processDefinitionBuilder;
 
     @BeforeEach

@@ -18,7 +18,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
+class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
     @Test
     void should_execute_fork_node() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()

@@ -7,7 +7,7 @@ import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
-public class EngineTestSupport {
+class EngineTestSupport {
     protected ProcessDefinitionRepository repository;
     protected ProcessEngine engine;
 

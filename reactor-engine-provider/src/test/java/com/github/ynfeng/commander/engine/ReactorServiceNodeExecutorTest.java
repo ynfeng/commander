@@ -15,7 +15,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ReactorServiceNodeExecutorTest extends EngineTestSupport {
+class ReactorServiceNodeExecutorTest extends EngineTestSupport {
     @Test
     void should_execute_service_node() throws InterruptedException {
         ProcessDefinition processDefinition = ProcessDefinition.builder()

@@ -17,7 +17,7 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class ReactorDecisionNodeExecutorTest extends EngineTestSupport {
+class ReactorDecisionNodeExecutorTest extends EngineTestSupport {
 
     @RepeatedTest(200)
     void should_execute_decision_node() {

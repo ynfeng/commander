@@ -10,7 +10,7 @@ import com.github.ynfeng.commander.support.Host;
 import com.google.common.collect.Sets;
 import org.junit.jupiter.api.Test;
 
-public class ClusterMembershipManagerTest {
+class ClusterMembershipManagerTest {
 
     @Test
     void should_discovery_cluster_node() {
