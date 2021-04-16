@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class NettyMessagingServiceTest {
 
     @Test
-    public void should_start_and_shutdown() {
+    void should_start_and_shutdown() {
         NettyMessagingService messagingService = new NettyMessagingService("test", Address.of("127.0.0.1", 7892));
         messagingService.start();
         assertThat(messagingService.isStarted(), is(true));
@@ -24,7 +24,7 @@ class NettyMessagingServiceTest {
     }
 
     @Test
-    public void should_send_and_listen_message() throws Exception {
+    void should_send_and_listen_message() throws Exception {
         NettyMessagingService peer1 = new NettyMessagingService("test", Address.of("127.0.0.1", 7892));
         NettyMessagingService peer2 = new NettyMessagingService("test", Address.of("127.0.0.1", 1990));
         try {
@@ -49,7 +49,7 @@ class NettyMessagingServiceTest {
     }
 
     @Test
-    public void should_send_and_receive() throws Exception {
+    void should_send_and_receive() throws Exception {
         Address peer1Addr = Address.of("127.0.0.1", 7892);
         Address peer2Addr = Address.of("127.0.0.1", 1990);
         NettyMessagingService peer1 = new NettyMessagingService("test", peer1Addr);
@@ -70,7 +70,7 @@ class NettyMessagingServiceTest {
     }
 
     @Test
-    public void should_receive_within_the_timeout() throws Exception {
+    void should_receive_within_the_timeout() throws Exception {
         Address peer1Addr = Address.of("127.0.0.1", 7892);
         Address peer2Addr = Address.of("127.0.0.1", 1990);
         NettyMessagingService peer1 = new NettyMessagingService("test", peer1Addr);
@@ -91,7 +91,7 @@ class NettyMessagingServiceTest {
     }
 
     @Test
-    public void should_receive_timeout() throws Exception {
+    void should_receive_timeout() throws Exception {
         Address peer1Addr = Address.of("127.0.0.1", 7892);
         Address peer2Addr = Address.of("127.0.0.1", 1990);
         NettyMessagingService peer1 = new NettyMessagingService("test", peer1Addr);

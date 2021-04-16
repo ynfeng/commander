@@ -16,7 +16,7 @@ class NettyBroadcastServiceTest {
     private NettyBroadcastService broadcastService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         broadcastService = new NettyBroadcastService(
             Host.of("127.0.0.1"), Address.of("230.0.0.1", 1234));
         broadcastService.start();
@@ -24,13 +24,13 @@ class NettyBroadcastServiceTest {
     }
 
     @AfterEach
-    public void destory() {
+    void destory() {
         broadcastService.shutdown();
         assertThat(broadcastService.isStarted(), is(false));
     }
 
     @Test
-    public void should_add_and_remove_listener() {
+    void should_add_and_remove_listener() {
         Consumer<byte[]> listener = bytes -> {
         };
         broadcastService.addListener("testSubject", listener);
@@ -41,7 +41,7 @@ class NettyBroadcastServiceTest {
     }
 
     @Test
-    public void should_broadcast_and_receive() throws InterruptedException {
+    void should_broadcast_and_receive() throws InterruptedException {
         Object waitObj = new Object();
         AtomicReference<String> actual = new AtomicReference<>();
         broadcastService.addListener("test", bytes -> {
@@ -60,7 +60,7 @@ class NettyBroadcastServiceTest {
     }
 
     @Test
-    public void should_not_receive_not_subscribed_subject() throws InterruptedException {
+    void should_not_receive_not_subscribed_subject() throws InterruptedException {
         Object waitObj = new Object();
         AtomicReference<String> actual = new AtomicReference<>();
         broadcastService.addListener("test", bytes -> {

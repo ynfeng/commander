@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 class MessageDecoderV1Test {
 
     @Test
-    public void should_decode_request_protocol_message() {
+    void should_decode_request_protocol_message() {
         EmbeddedChannel channel = createEmbeddedChannel();
         ByteBuf byteBuf = buildRequestMessageByteBuff();
         channel.writeInbound(byteBuf);
@@ -31,7 +31,7 @@ class MessageDecoderV1Test {
     }
 
     @Test
-    public void should_decode_response_protocol_message() {
+    void should_decode_response_protocol_message() {
         EmbeddedChannel channel = createEmbeddedChannel();
         ByteBuf byteBuf = buildResponseMessageByteBuff();
         channel.writeInbound(byteBuf);
@@ -48,7 +48,7 @@ class MessageDecoderV1Test {
 
 
     @Test
-    public void should_decode_half_protocol_request_message() {
+    void should_decode_half_protocol_request_message() {
         EmbeddedChannel channel = createEmbeddedChannel();
         ByteBuf byteBuf = buildHalfRequestMessageByteBuff();
         channel.writeInbound(byteBuf);
@@ -62,7 +62,7 @@ class MessageDecoderV1Test {
     }
 
     @Test
-    public void should_decode_half_protocol_response_message() {
+    void should_decode_half_protocol_response_message() {
         EmbeddedChannel channel = createEmbeddedChannel();
         ByteBuf byteBuf = buildHalfResponseMessageByteBuff();
         channel.writeInbound(byteBuf);
@@ -93,7 +93,7 @@ class MessageDecoderV1Test {
 
 
     @Test
-    public void should_decode_multiple_protocol_request_message() {
+    void should_decode_multiple_protocol_request_message() {
         EmbeddedChannel channel = createEmbeddedChannel();
         ByteBuf message1 = buildRequestMessageByteBuff();
         ByteBuf message2 = buildRequestMessageByteBuff();
@@ -109,7 +109,7 @@ class MessageDecoderV1Test {
     }
 
     @Test
-    public void should_decode_multiple_protocol_response_message() {
+    void should_decode_multiple_protocol_response_message() {
         EmbeddedChannel channel = createEmbeddedChannel();
         ByteBuf message1 = buildResponseMessageByteBuff();
         ByteBuf message2 = buildResponseMessageByteBuff();

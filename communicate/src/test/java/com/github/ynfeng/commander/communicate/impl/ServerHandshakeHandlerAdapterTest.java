@@ -29,7 +29,7 @@ class ServerHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_send_protocol_version_when_client_connected() throws Exception {
+    void should_send_protocol_version_when_client_connected() throws Exception {
         EmbeddedChannel channel = createChannel("test");
         writeProtocolVersion("test", 1, channel);
 
@@ -39,7 +39,7 @@ class ServerHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_read_half_packet() {
+    void should_read_half_packet() {
         EmbeddedChannel channel = createChannel("test");
         ByteBuf buf = Unpooled.buffer();
         buf.writeInt("test".hashCode());
@@ -62,7 +62,7 @@ class ServerHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_close_connection_when_version_invalid() {
+    void should_close_connection_when_version_invalid() {
         EmbeddedChannel channel = createChannel("test");
         writeProtocolVersion("test", 0, channel);
 
@@ -70,7 +70,7 @@ class ServerHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_close_connection_when_client_communicate_id_was_wrong() {
+    void should_close_connection_when_client_communicate_id_was_wrong() {
         EmbeddedChannel channel = createChannel("test");
         writeProtocolVersion("wrongId", 0, channel);
 
@@ -78,7 +78,7 @@ class ServerHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_add_encoder_and_decoder_when_accept_protocol_version() {
+    void should_add_encoder_and_decoder_when_accept_protocol_version() {
         EmbeddedChannel channel = createChannel("test");
         writeProtocolVersion("test", 1, channel);
         int handlers = channel.pipeline().toMap().entrySet().size();

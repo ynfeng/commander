@@ -65,7 +65,7 @@ class ClientHandshakeHandlerAdapterTest {
     }
 
     @Test
-    public void should_read_half_packet() throws Exception {
+    void should_read_half_packet() throws Exception {
         EmbeddedChannel channel = createChannelAndRegister(COMMUNICATE_ID);
         ByteBuf byteBuf = Unpooled.buffer();
         byteBuf.writeInt(COMMUNICATE_ID.hashCode());

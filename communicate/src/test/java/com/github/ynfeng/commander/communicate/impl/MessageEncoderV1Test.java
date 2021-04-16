@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class MessageEncoderV1Test {
 
     @Test
-    public void should_encode_protocol_request_message() {
+    void should_encode_protocol_request_message() {
         EmbeddedChannel channel = new EmbeddedChannel();
         channel.pipeline().addLast(new MessageEncoderV1());
 
@@ -45,7 +45,7 @@ class MessageEncoderV1Test {
     }
 
     @Test
-    public void should_encode_protocol_response_message() {
+    void should_encode_protocol_response_message() {
         EmbeddedChannel channel = new EmbeddedChannel();
         channel.pipeline().addLast(new MessageEncoderV1());
 

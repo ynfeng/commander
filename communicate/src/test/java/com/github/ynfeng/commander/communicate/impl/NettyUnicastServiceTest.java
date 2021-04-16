@@ -16,20 +16,20 @@ class NettyUnicastServiceTest {
     private UnicastService unicastService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         unicastService = new NettyUnicastService(1985);
         unicastService.start();
         assertThat(unicastService.isStarted(), is(true));
     }
 
     @AfterEach
-    public void destory() {
+    void destory() {
         unicastService.shutdown();
         assertThat(unicastService.isStarted(), is(false));
     }
 
     @Test
-    public void should_add_and_remove_listener() {
+    void should_add_and_remove_listener() {
         BiConsumer<Address, byte[]> listener = (addr, bytes) -> {
         };
         assertThat(unicastService.numOfSubjectOfListeners("test"), is(0));
@@ -42,7 +42,7 @@ class NettyUnicastServiceTest {
     }
 
     @Test
-    public void should_unicast_and_receive() throws InterruptedException {
+    void should_unicast_and_receive() throws InterruptedException {
         Object waitObj = new Object();
         AtomicReference<Address> recvAddress = new AtomicReference<>();
         AtomicReference<byte[]> recvBytes = new AtomicReference<>();
@@ -64,7 +64,7 @@ class NettyUnicastServiceTest {
     }
 
     @Test
-    public void should_not_receive_not_subscribed_subject() throws InterruptedException {
+    void should_not_receive_not_subscribed_subject() throws InterruptedException {
         Object waitObj = new Object();
         AtomicReference<Address> recvAddress = new AtomicReference<>();
         AtomicReference<byte[]> recvBytes = new AtomicReference<>();
