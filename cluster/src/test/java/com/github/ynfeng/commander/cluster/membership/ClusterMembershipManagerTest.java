@@ -1,7 +1,7 @@
 package com.github.ynfeng.commander.cluster.membership;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.cluster.ClusterMember;
 import com.github.ynfeng.commander.cluster.discovery.impl.MulticastDiscoveryProtocolConfig;
@@ -40,12 +40,9 @@ public class ClusterMembershipManagerTest {
 
         manager1.start();
         manager2.start();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
-        assertThat(manager1.clusterMembers(), is(Sets.newHashSet(ClusterMember.of("2"))));
-        assertThat(manager2.clusterMembers(), is(Sets.newHashSet(ClusterMember.of("1"))));
+
+        await().until(() -> manager1.clusterMembers(), is(Sets.newHashSet(ClusterMember.of("2"))));
+        await().until(() -> manager2.clusterMembers(), is(Sets.newHashSet(ClusterMember.of("1"))));
 
         manager1.shutdown();
         manager2.shutdown();

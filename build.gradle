@@ -39,7 +39,8 @@ subprojects {
                 "org.junit.jupiter:junit-jupiter:$junitVersion",
                 "org.hamcrest:hamcrest-core:$hamcrestVersion",
                 "org.hamcrest:hamcrest-library:$hamcrestVersion",
-                "org.mockito:mockito-core:$mockitoVersion"
+                "org.mockito:mockito-core:$mockitoVersion",
+                "org.awaitility:awaitility:$awaitilityVersion"
         )
     }
 
