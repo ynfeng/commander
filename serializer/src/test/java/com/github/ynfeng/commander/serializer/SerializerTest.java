@@ -10,7 +10,7 @@ class SerializerTest {
     private Serializer serializer;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         serializer = Serializer.create(SerializationTypes
             .builder()
             .startId(1)
@@ -20,7 +20,7 @@ class SerializerTest {
     }
 
     @Test
-    public void should_encode_and_decode_string() {
+    void should_encode_and_decode_string() {
         byte[] bytes = serializer.encode("hello");
         String obj = serializer.decode(bytes);
 
@@ -28,7 +28,7 @@ class SerializerTest {
     }
 
     @Test
-    public void should_encode_and_decode_object() {
+    void should_encode_and_decode_object() {
         TestObject obj = new TestObject(1);
 
         byte[] bytes = serializer.encode(obj);

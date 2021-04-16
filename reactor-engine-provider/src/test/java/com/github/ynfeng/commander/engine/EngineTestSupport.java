@@ -12,7 +12,7 @@ public class EngineTestSupport {
     protected ProcessEngine engine;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         EngineModule engineModule = new EngineModule();
         engineModule.init();
         repository = Mockito.mock(ProcessDefinitionRepository.class);

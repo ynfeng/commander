@@ -20,7 +20,7 @@ import org.mockito.Mockito;
 
 public class ReactorForkJoinNodeExecutorTest extends EngineTestSupport {
     @Test
-    public void should_execute_fork_node() {
+    void should_execute_fork_node() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()
             .withName("test")
             .withVersion(1)

@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,14 +16,14 @@ public class ProcessDefinitionBuilderTest {
     private ProcessDefinitionBuilder processDefinitionBuilder;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         processDefinitionBuilder = ProcessDefinition.builder()
             .withName("foo")
             .withVersion(1);
     }
 
     @Test
-    public void should_build_empty_process_definition() {
+    void should_build_empty_process_definition() {
         processDefinitionBuilder
             .withNodes(new StartDefinition(), new EndDefinition("normalEnd"))
             .withRelationShips(
@@ -38,11 +37,11 @@ public class ProcessDefinitionBuilderTest {
         assertThat(processDefinition.name(), is("foo"));
         assertThat(processDefinition.version(), is(1));
         assertThat(processDefinition.firstNode().refName(), is("start"));
-        assertThat(((StartDefinition) processDefinition.firstNode()).next().refName(), is("normalEnd"));
+        assertThat(((Nextable) processDefinition.firstNode()).next().refName(), is("normalEnd"));
     }
 
     @Test
-    public void should_throw_exception_when_link_with_not_exists_source_node() {
+    void should_throw_exception_when_link_with_not_exists_source_node() {
         processDefinitionBuilder.withRelationShips(
             RelationShips.builder()
                 .withLink("start", "end")
@@ -51,11 +50,11 @@ public class ProcessDefinitionBuilderTest {
             processDefinitionBuilder.build();
         });
 
-        MatcherAssert.assertThat(exception.getMessage(), is("The \"start\" node definition not exists."));
+        assertThat(exception.getMessage(), is("The \"start\" node definition not exists."));
     }
 
     @Test
-    public void should_throw_exception_when_link_with_not_exists_target_node() {
+    void should_throw_exception_when_link_with_not_exists_target_node() {
         processDefinitionBuilder
             .withNodes(new StartDefinition())
             .withRelationShips(
@@ -71,7 +70,7 @@ public class ProcessDefinitionBuilderTest {
     }
 
     @Test
-    public void should_throw_exception_when_duplicate_ref_name() {
+    void should_throw_exception_when_duplicate_ref_name() {
         ProcessDefinitionException exception = assertThrows(ProcessDefinitionException.class, () -> {
             processDefinitionBuilder
                 .withNodes(
@@ -84,7 +83,7 @@ public class ProcessDefinitionBuilderTest {
     }
 
     @Test
-    public void should_build_with_service_definition() {
+    void should_build_with_service_definition() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()
             .withName("test")
             .withVersion(1)
@@ -101,7 +100,7 @@ public class ProcessDefinitionBuilderTest {
             )
             .build();
 
-        ServiceDefinition serviceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
+        ServiceDefinition serviceDefinition = ((NextableNodeDefinition) processDefinition.firstNode()).next();
         ServiceCoordinate serviceCoordinate = serviceDefinition.serviceCoordinate();
 
         assertThat(serviceDefinition, instanceOf(ServiceDefinition.class));
@@ -112,7 +111,7 @@ public class ProcessDefinitionBuilderTest {
     }
 
     @Test
-    public void should_build_with_multiple_service_definition() {
+    void should_build_with_multiple_service_definition() {
         ProcessDefinition processDefinition = processDefinitionBuilder
             .withNodes(
                 new StartDefinition(),
@@ -127,7 +126,7 @@ public class ProcessDefinitionBuilderTest {
                     .build()
             ).build();
 
-        ServiceDefinition refNameServiceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
+        ServiceDefinition refNameServiceDefinition = ((NextableNodeDefinition) processDefinition.firstNode()).next();
         ServiceDefinition refName1ServiceDefinition = refNameServiceDefinition.next();
 
         assertThat(refNameServiceDefinition.refName(), is("refName"));
@@ -136,7 +135,7 @@ public class ProcessDefinitionBuilderTest {
     }
 
     @Test
-    public void should_build_with_decision_definition() {
+    void should_build_with_decision_definition() {
         ProcessDefinition processDefinition = processDefinitionBuilder.withNodes(
             new StartDefinition(),
             new ServiceDefinition("aService", ServiceCoordinate.of("aService", 1)),
@@ -157,7 +156,7 @@ public class ProcessDefinitionBuilderTest {
                 .build()
         ).build();
 
-        ServiceDefinition aServiceDefinition = ((StartDefinition) processDefinition.firstNode()).next();
+        ServiceDefinition aServiceDefinition = ((NextableNodeDefinition) processDefinition.firstNode()).next();
         DecisionDefinition decisionDefinition = aServiceDefinition.next();
         ConditionBranches branches = decisionDefinition.branches();
         Iterator<ConditionBranch> branchesIterator = branches.iterator();
@@ -174,7 +173,7 @@ public class ProcessDefinitionBuilderTest {
     }
 
     @Test
-    public void should_build_with_fork_and_join_definition() {
+    void should_build_with_fork_and_join_definition() {
         ProcessDefinition processDefinition =
             ProcessDefinition.builder()
                 .withName("test")
@@ -197,7 +196,7 @@ public class ProcessDefinitionBuilderTest {
                 )
                 .build();
 
-        ForkDefinition fork = ((StartDefinition) processDefinition.firstNode()).next();
+        ForkDefinition fork = ((NextableNodeDefinition) processDefinition.firstNode()).next();
         ForkBranchs forkBranchs = fork.branchs();
         Iterator<ForkBranch> forkBranchIterator = forkBranchs.iterator();
         ForkBranch branch1 = forkBranchIterator.next();

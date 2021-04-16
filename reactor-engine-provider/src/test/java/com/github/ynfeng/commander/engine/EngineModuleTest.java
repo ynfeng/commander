@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class EngineModuleTest {
 
     @Test
-    public void should_get_name() {
+    void should_get_name() {
         EngineModule engineModule = new EngineModule();
 
         assertThat(engineModule.name(), is("reactor-engine-module"));

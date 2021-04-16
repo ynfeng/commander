@@ -81,7 +81,7 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
             serverChannelClass = EpollServerSocketChannel.class;
             clientChannelClass = EpollSocketChannel.class;
             return true;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.debug("Failed to initialize native (epoll) transport. "
                 + "Reason: {}. Proceeding with nio.", e.getMessage());
             return false;
@@ -120,7 +120,7 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
                                             boolean keepAlive,
                                             Supplier<ClientConnection> connectionSupplier,
                                             BiFunction<ClientConnection, ProtocolRequestMessage, CompletableFuture<T>> sendFunction) {
-        CompletableFuture<T> future = new CompletableFuture<T>();
+        CompletableFuture<T> future = new CompletableFuture<>();
         ProtocolRequestMessage request = new ProtocolRequestMessage(message.subject(), localAddress, message.payload());
         ClientConnection conn = connectionSupplier.get();
         sendFunction.apply(conn, request).whenComplete(completeSend(keepAlive, future, conn));
@@ -195,9 +195,8 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
 
     @Override
     public void registerHandler(String type, BiConsumer<Address, byte[]> handler) {
-        handlers.add(type, (connection, message) -> {
-            handler.accept(message.senderAddress(), message.payload());
-        });
+        handlers.add(type, (connection, message) ->
+            handler.accept(message.senderAddress(), message.payload()));
     }
 
     @Override

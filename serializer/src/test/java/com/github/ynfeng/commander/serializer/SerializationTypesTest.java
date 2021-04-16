@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class SerializationTypesTest {
 
     @Test
-    public void should_create_serialization_type() {
+    void should_create_serialization_type() {
         SerializationTypes types = SerializationTypes
             .builder()
             .startId(1)
@@ -23,7 +23,7 @@ class SerializationTypesTest {
     }
 
     @Test
-    public void should_create_serialization_with_basic_types() {
+    void should_create_serialization_with_basic_types() {
         SerializationTypes types = SerializationTypes
             .builder()
             .startId(1)

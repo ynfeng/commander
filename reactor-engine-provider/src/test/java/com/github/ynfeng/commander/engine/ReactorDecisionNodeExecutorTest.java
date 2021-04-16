@@ -20,7 +20,7 @@ import org.mockito.Mockito;
 public class ReactorDecisionNodeExecutorTest extends EngineTestSupport {
 
     @RepeatedTest(200)
-    public void should_execute_decision_node() {
+    void should_execute_decision_node() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()
             .withName("test")
             .withVersion(1)
@@ -55,7 +55,7 @@ public class ReactorDecisionNodeExecutorTest extends EngineTestSupport {
     }
 
     @Test
-    public void should_execute_default_branch_when_no_suitable_condition() {
+    void should_execute_default_branch_when_no_suitable_condition() {
         ProcessDefinition processDefinition = ProcessDefinition.builder()
             .withName("test")
             .withVersion(1)

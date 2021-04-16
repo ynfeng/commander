@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 
 public class ReactorServiceNodeExecutorTest extends EngineTestSupport {
     @Test
-    public void should_execute_service_node() throws InterruptedException {
+    void should_execute_service_node() throws InterruptedException {
         ProcessDefinition processDefinition = ProcessDefinition.builder()
             .withVersion(1)
             .withName("test")

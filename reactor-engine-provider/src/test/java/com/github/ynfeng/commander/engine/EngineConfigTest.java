@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class EngineConfigTest {
 
     @Test
-    public void should_get_component_config() {
+    void should_get_component_config() {
         EngineConfig engineConfig = new EngineConfig();
 
         assertThat(engineConfig.getComponentConfig(""), nullValue());

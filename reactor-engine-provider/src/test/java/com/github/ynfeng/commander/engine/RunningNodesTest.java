@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class RunningNodesTest {
 
     @Test
-    public void should_not_add_null_and_null_NULL_definition() {
+    void should_not_add_null_and_null_NULL_definition() {
         RunningNodes runningNodes = new RunningNodes();
         runningNodes.add(null);
         runningNodes.add(NodeDefinition.NULL);
