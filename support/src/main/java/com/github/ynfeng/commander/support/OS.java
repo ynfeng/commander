@@ -2,7 +2,7 @@ package com.github.ynfeng.commander.support;
 
 import java.util.Locale;
 
-public class OS {
+public final class OS {
 
     private OS() {
     }
