@@ -100,11 +100,7 @@ class NettyMessagingServiceTest {
             peer1.start();
             peer2.start();
             peer2.registerHandler("hello", (addr, payload) -> {
-                try {
-                    Thread.sleep(550);
-                } catch (InterruptedException e) {
-                }
-                return "How are you.".getBytes();
+                "How are you.".getBytes();
             });
             MessagingService.Message greeting = new MessagingService.Message("hello", "Hello there!".getBytes());
             byte[] reply = peer1.sendAndReceive(peer2Addr, greeting, Duration.ofMillis(500), false).get(1, TimeUnit.SECONDS);

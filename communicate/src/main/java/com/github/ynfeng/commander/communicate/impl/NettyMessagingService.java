@@ -5,6 +5,7 @@ import static com.github.ynfeng.commander.support.Threads.namedThreads;
 import com.github.ynfeng.commander.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.ManageableSupport;
+import com.github.ynfeng.commander.support.OS;
 import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Maps;
@@ -58,7 +59,9 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
     }
 
     private void initEventLoopGroup() {
-        if (!tryInitEpollEventLoopGroup()) {
+        if (OS.isLinux()) {
+            initEpollEventLoopGroup();
+        } else {
             initNioEventLoopGroup();
         }
     }
@@ -72,7 +75,7 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
         clientChannelClass = NioSocketChannel.class;
     }
 
-    private boolean tryInitEpollEventLoopGroup() {
+    private void initEpollEventLoopGroup() {
         try {
             clientGroup = new EpollEventLoopGroup(0,
                 namedThreads("netty-messaging-event-epoll-client-%d", logger));
@@ -80,11 +83,10 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
                 namedThreads("netty-messaging-event-epoll-server-%d", logger));
             serverChannelClass = EpollServerSocketChannel.class;
             clientChannelClass = EpollSocketChannel.class;
-            return true;
         } catch (Exception e) {
             logger.debug("Failed to initialize native (epoll) transport. "
                 + "Reason: {}. Proceeding with nio.", e.getMessage());
-            return false;
+            throw e;
         }
     }
 
