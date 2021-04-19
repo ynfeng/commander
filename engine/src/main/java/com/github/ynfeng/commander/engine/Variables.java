@@ -8,11 +8,11 @@ public class Variables extends ConcurrentHashMap<String, Object> {
 
     public static Variables copy(Variables input) {
         Variables variables = new Variables();
-        input.forEach((key, value) -> variables.put(key, value));
+        input.forEach(variables::put);
         return variables;
     }
 
     public void merge(Variables params) {
-        params.forEach((key, value) -> put(key, value));
+        params.forEach(this::put);
     }
 }
