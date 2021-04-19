@@ -65,9 +65,8 @@ public class ReactorProcessInstance implements ProcessInstance {
     }
 
     private void notifyNodeComplete(NodeDefinition nodeDefinition) {
-        commandSinks.emitNext(() -> {
-            future.notifyNodeComplete(nodeDefinition.refName());
-        }, Sinks.EmitFailureHandler.FAIL_FAST);
+        commandSinks.emitNext(() ->
+            future.notifyNodeComplete(nodeDefinition.refName()), Sinks.EmitFailureHandler.FAIL_FAST);
     }
 
     private void addExecutedNode(NodeDefinition nodeDefinition) {
@@ -101,16 +100,15 @@ public class ReactorProcessInstance implements ProcessInstance {
 
     @Override
     public CompletableFuture<NodeExecutingVariable> getNodeExecutingVariable(String refName) {
-        CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<NodeExecutingVariable>();
-        commandSinks.emitNext(() -> {
-            future.complete(context.getNodeExecutingVariable(refName));
-        }, Sinks.EmitFailureHandler.FAIL_FAST);
+        CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<>();
+        commandSinks.emitNext(
+            () -> future.complete(context.getNodeExecutingVariable(refName)), Sinks.EmitFailureHandler.FAIL_FAST);
         return future;
     }
 
     @Override
     public CompletableFuture<NodeExecutingVariable> setNodeExecutingVariable(String refName, String key, Object val) {
-        CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<NodeExecutingVariable>();
+        CompletableFuture<NodeExecutingVariable> future = new CompletableFuture<>();
         commandSinks.emitNext(() -> {
             context.setNodeExecutingVariable(refName, key, val);
             future.complete(context.getNodeExecutingVariable(refName));
@@ -138,8 +136,8 @@ public class ReactorProcessInstance implements ProcessInstance {
         commandSinks.emitNext(() -> {
             LOGGER.debug("continue to run process[{}] node[{}]", processId, refName);
             NodeDefinition node = context.getRunningNode(refName)
-                .orElseThrow(() -> new ProcessEngineException(
-                    String.format("No such executing node[%s]", refName)));
+                .orElseThrow(
+                    () -> new ProcessEngineException(String.format("No such executing node[%s]", refName)));
             input.merge(variables);
             context.addReadyNode(node);
         }, Sinks.EmitFailureHandler.FAIL_FAST);
