@@ -27,7 +27,7 @@
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
         <module name="CyclomaticComplexity">
-            <property name="max" value="4"/>
+            <property name="max" value="5"/>
             <property name="severity" value="error"/>
         </module>
 
