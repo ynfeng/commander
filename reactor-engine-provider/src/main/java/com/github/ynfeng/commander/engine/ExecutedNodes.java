@@ -7,7 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 
 public class ExecutedNodes {
-    private final Queue<NodeDefinition> executedList = new LinkedBlockingQueue<NodeDefinition>();
+    private final Queue<NodeDefinition> executedList = new LinkedBlockingQueue<>();
 
     public void add(NodeDefinition nodeDefinition) {
         executedList.add(nodeDefinition);

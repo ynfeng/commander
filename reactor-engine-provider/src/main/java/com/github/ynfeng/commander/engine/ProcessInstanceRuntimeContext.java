@@ -54,8 +54,7 @@ public class ProcessInstanceRuntimeContext {
     }
 
     public NodeExecutingVariable getNodeExecutingVariable(String refName) {
-        return nodeExecutingVariables.computeIfAbsent(refName, k -> {
-            return new UpdatableNodeExecutingVariable();
-        });
+        return nodeExecutingVariables.computeIfAbsent(refName, k ->
+            new UpdatableNodeExecutingVariable());
     }
 }

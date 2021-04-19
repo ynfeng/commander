@@ -14,7 +14,6 @@ import reactor.core.scheduler.Schedulers;
 
 public class ReactorProcessEngine extends ManageableSupport implements ProcessEngine {
     private static final CmderLogger LOGGER = CmderLoggerFactory.getSystemLogger();
-    private final EngineModule module;
     private final ProcessIdGenerator processIdGenerator;
     private final ProcessDefinitionRepository definitionRepository;
     private final NodeExecutors nodeExecutors;
@@ -22,7 +21,6 @@ public class ReactorProcessEngine extends ManageableSupport implements ProcessEn
     private Sinks.Many<EngineCommand> cmdSinks;
 
     public ReactorProcessEngine(EngineModule module) {
-        this.module = module;
         processIdGenerator = module.getComponent(ProcessIdGenerator.class);
         definitionRepository = module.getComponent(ProcessDefinitionRepository.class);
         nodeExecutors = module.getComponent(NodeExecutors.class);
@@ -55,9 +53,9 @@ public class ReactorProcessEngine extends ManageableSupport implements ProcessEn
         Mono.justOrEmpty(name)
             .map(defName -> loadProcessDefinition(defName, version))
             .map(def -> newProcessInstance(def, variables, future))
-            .doOnError(error -> future.notifyProcessCompleteExceptionally(error))
-            .doOnNext(instance -> saveInstanceToContext(instance))
-            .subscribe(instance -> instance.run());
+            .doOnError(future::notifyProcessCompleteExceptionally)
+            .doOnNext(this::saveInstanceToContext)
+            .subscribe(ReactorProcessInstance::run);
     }
 
     private void saveInstanceToContext(ReactorProcessInstance instance) {

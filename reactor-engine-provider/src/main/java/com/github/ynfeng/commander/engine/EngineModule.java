@@ -5,8 +5,6 @@ import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.engine.executor.SPINodeExecutors;
 
 public class EngineModule extends AbstractModule {
-    private final EngineConfig engineConfig = new EngineConfig();
-
     @Override
     public void init() {
         registerComponent(ProcessIdGenerator.class, new UUIDProcessIdGenerator());

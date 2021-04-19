@@ -24,8 +24,8 @@ public class ReactorProcessInstance implements ProcessInstance {
         commandSinks = Sinks.many().unicast().onBackpressureBuffer();
         commandSinks.asFlux()
             .doOnNext(EngineCommand::execute)
-            .doOnComplete(() -> assemblyResult())
-            .doOnError(error -> assemblyException(error))
+            .doOnComplete(this::assemblyResult)
+            .doOnError(this::assemblyException)
             .subscribe();
     }
 
@@ -45,7 +45,6 @@ public class ReactorProcessInstance implements ProcessInstance {
 
     @Override
     public void start() {
-
     }
 
     @Override
