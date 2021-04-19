@@ -4,23 +4,23 @@ import com.github.ynfeng.commander.definition.ServiceDefinition;
 import com.github.ynfeng.commander.engine.ProcessInstance;
 
 public enum ServiceNodeExecuteState {
-    Created {
+    CREATED {
         @Override
         void accept(ProcessInstance processInstance, ServiceDefinition serviceDefinition) {
             processInstance.setNodeExecutingVariable(
-                serviceDefinition.refName(), "state", Waiting);
+                serviceDefinition.refName(), "state", WAITING);
         }
     },
-    Done {
+    DONE {
         @Override
         void accept(ProcessInstance processInstance, ServiceDefinition serviceDefinition) {
-
+            throw new UnsupportedOperationException();
         }
     },
-    Waiting {
+    WAITING {
         @Override
         void accept(ProcessInstance processInstance, ServiceDefinition serviceDefinition) {
-            processInstance.setNodeExecutingVariable(serviceDefinition.refName(), "state", Done)
+            processInstance.setNodeExecutingVariable(serviceDefinition.refName(), "state", DONE)
                 .thenAccept(v -> {
                     processInstance.addReadyNode(serviceDefinition.next());
                     processInstance.nodeComplete(serviceDefinition);

@@ -16,7 +16,7 @@ public class ServiceNodeExecutor implements NodeExecutor {
         CompletableFuture<NodeExecutingVariable> variableFuture =
             processInstance.getNodeExecutingVariable(nodeDefinition.refName());
         variableFuture.thenAccept(variable -> {
-            ServiceNodeExecuteState state = variable.get("state", ServiceNodeExecuteState.Created);
+            ServiceNodeExecuteState state = variable.get("state", ServiceNodeExecuteState.CREATED);
             logger.debug(String.format("%s's state is %s", nodeDefinition.refName(), state));
             state.accept(processInstance, serviceDefinition);
         });
