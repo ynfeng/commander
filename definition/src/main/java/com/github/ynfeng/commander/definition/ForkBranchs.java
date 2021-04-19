@@ -17,4 +17,23 @@ public class ForkBranchs {
     public void add(ForkBranch forkBranch) {
         branches.add(forkBranch);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ForkBranchs)) {
+            return false;
+        }
+
+        ForkBranchs that = (ForkBranchs) o;
+
+        return branches.equals(that.branches);
+    }
+
+    @Override
+    public int hashCode() {
+        return branches.hashCode();
+    }
 }

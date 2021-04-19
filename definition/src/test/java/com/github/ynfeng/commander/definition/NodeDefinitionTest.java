@@ -34,12 +34,6 @@ class NodeDefinitionTest {
     }
 
     @Test
-    void should_0_when_null_ref_name() {
-        ForkDefinition n1 = new ForkDefinition(null);
-        assertThat(n1.hashCode(), is(0));
-    }
-
-    @Test
     void should_not_equals_with_null() {
         ForkDefinition n1 = new ForkDefinition(null);
         assertThat(n1.equals(null), is(false));
