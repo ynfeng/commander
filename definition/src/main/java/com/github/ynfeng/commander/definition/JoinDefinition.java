@@ -21,4 +21,28 @@ public class JoinDefinition extends NextableNodeDefinition {
     public List<String> ons() {
         return Collections.unmodifiableList(ons);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof JoinDefinition)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        JoinDefinition that = (JoinDefinition) o;
+
+        return ons.equals(that.ons);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + ons.hashCode();
+        return result;
+    }
 }
