@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
-public class ModuleTest {
+class ModuleTest {
 
     @Test
     void should_get_module_name() {

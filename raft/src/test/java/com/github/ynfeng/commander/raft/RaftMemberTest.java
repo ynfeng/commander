@@ -12,5 +12,6 @@ class RaftMemberTest {
         RaftMember raftMember = new RaftMember(MemberId.of("member1"));
 
         assertThat(raftMember.isFollower(), is(true));
+        assertThat(raftMember.id(), is(MemberId.of("member1")));
     }
 }

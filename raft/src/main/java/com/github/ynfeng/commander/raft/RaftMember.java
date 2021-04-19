@@ -12,4 +12,8 @@ public class RaftMember {
     public boolean isFollower() {
         return role == MemberRole.FLLOWER;
     }
+
+    public MemberId id() {
+        return id;
+    }
 }
