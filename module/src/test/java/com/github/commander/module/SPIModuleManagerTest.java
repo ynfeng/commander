@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class SPIModuleManagerTest {
 
     @Test
-    public void should_get_module() {
+    void should_get_module() {
         ModuleManager manager = new SPIModuleManager();
 
         assertThat(manager.getModule(TestModule.class), instanceOf(TestModule.class));
@@ -18,7 +18,7 @@ class SPIModuleManagerTest {
     }
 
     @Test
-    public void should_throw_exception_when_get_not_exists_module() {
+    void should_throw_exception_when_get_not_exists_module() {
         ModuleManager manager = new SPIModuleManager();
         try {
             manager.getModule(NotExistModule.class);

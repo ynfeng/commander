@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class ModuleTest {
 
     @Test
-    public void should_get_module_name() {
+    void should_get_module_name() {
         TestModule testModule = new TestModule();
         String name = testModule.name();
 
@@ -18,7 +18,7 @@ public class ModuleTest {
     }
 
     @Test
-    public void should_get_component() {
+    void should_get_component() {
         TestModule testModule = new TestModule();
         testModule.init();
 
@@ -32,7 +32,7 @@ public class ModuleTest {
     }
 
     @Test
-    public void should_throw_exception_when_get_not_exists_component() {
+    void should_throw_exception_when_get_not_exists_component() {
         TestModule testModule = new TestModule();
         testModule.init();
 
