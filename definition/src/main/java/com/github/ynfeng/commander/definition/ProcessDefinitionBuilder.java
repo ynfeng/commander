@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 public class ProcessDefinitionBuilder {
     private final NodeDefinitions nodeDefinitions = NodeDefinitions.create();
-    private ProcessDefinition processDefinition;
     private String name;
     private int version;
     private RelationShips relationShips = new RelationShips(Lists.newArrayList());
@@ -34,9 +33,8 @@ public class ProcessDefinitionBuilder {
     }
 
     public ProcessDefinition build() {
-        processDefinition = new ProcessDefinition(name, version);
-        relationShips.links().stream()
-            .forEach(each -> each.doLink(nodeDefinitions));
+        ProcessDefinition processDefinition = new ProcessDefinition(name, version);
+        relationShips.links().forEach(each -> each.doLink(nodeDefinitions));
         processDefinition.firstNode(nodeDefinitions.get("start"));
         return processDefinition;
     }
