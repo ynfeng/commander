@@ -94,16 +94,15 @@ public class ProcessFuture {
     private ProcessFuture doWithException(CheckedRunnable runner) {
         try {
             runner.run();
-        } catch (Throwable e) {
+        } catch (Exception e) {
             throw new ProcessFutureException(e);
         }
         return this;
     }
 
     public ProcessFuture waitProcessComplete(Duration waitTime) {
-        return doWithException(() -> {
-            completeFuture.get(waitTime.toMillis(), TimeUnit.MILLISECONDS);
-        });
+        return doWithException(() ->
+            completeFuture.get(waitTime.toMillis(), TimeUnit.MILLISECONDS));
     }
 
     public List<String> executedNodes() {
