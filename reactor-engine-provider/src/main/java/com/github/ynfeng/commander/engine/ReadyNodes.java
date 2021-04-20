@@ -5,19 +5,19 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ReadyNodes {
-    private final Queue<NodeDefinition> readyNodes = new LinkedBlockingQueue<>();
+    private final Queue<NodeDefinition> ready = new LinkedBlockingQueue<>();
 
     public NodeDefinition poll() {
-        return readyNodes.poll();
+        return ready.poll();
     }
 
     public void add(NodeDefinition nodeDefinition) {
         if (nodeDefinition != null && nodeDefinition != NodeDefinition.NULL) {
-            readyNodes.add(nodeDefinition);
+            ready.add(nodeDefinition);
         }
     }
 
     public int size() {
-        return readyNodes.size();
+        return ready.size();
     }
 }
