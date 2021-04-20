@@ -16,7 +16,7 @@ public class ReactorProcessInstance implements ProcessInstance {
     private final Variables input = new Variables();
     private final ProcessInstanceRuntimeContext context = new ProcessInstanceRuntimeContext();
     private ProcessId processId;
-    private ProcessFuture future;
+    private ProcessFuture processFuture;
     private ProcessDefinition processDefinition;
     private NodeExecutors nodeExecutors;
 
@@ -34,13 +34,13 @@ public class ReactorProcessInstance implements ProcessInstance {
     }
 
     private void assemblyException(Throwable error) {
-        future.notifyProcessCompleteExceptionally(error);
+        processFuture.notifyProcessCompleteExceptionally(error);
     }
 
     private void assemblyResult() {
         ProcessResult.ProcessResultBuilder builder = ProcessResult.builder()
             .executedNodes(context.getExecuteNodeRefNames());
-        future.notifyProcessComplete(builder.build());
+        processFuture.notifyProcessComplete(builder.build());
     }
 
     @Override
@@ -51,7 +51,7 @@ public class ReactorProcessInstance implements ProcessInstance {
     public void addReadyNode(NodeDefinition nodeDefinition) {
         commandSinks.emitNext(() -> {
             context.addReadyNode(nodeDefinition);
-            future.makeNotifyCondition(nodeDefinition.refName());
+            processFuture.makeNotifyCondition(nodeDefinition.refName());
         }, Sinks.EmitFailureHandler.FAIL_FAST);
     }
 
@@ -66,7 +66,7 @@ public class ReactorProcessInstance implements ProcessInstance {
 
     private void notifyNodeComplete(NodeDefinition nodeDefinition) {
         commandSinks.emitNext(() ->
-            future.notifyNodeComplete(nodeDefinition.refName()), Sinks.EmitFailureHandler.FAIL_FAST);
+            processFuture.notifyNodeComplete(nodeDefinition.refName()), Sinks.EmitFailureHandler.FAIL_FAST);
     }
 
     private void addExecutedNode(NodeDefinition nodeDefinition) {
@@ -86,7 +86,7 @@ public class ReactorProcessInstance implements ProcessInstance {
                 context.addRunningNode(nextNode);
                 nodeExecutors.getExecutor(nextNode)
                     .execute(this, nextNode);
-                future.notifyNodeStart(nextNode.refName());
+                processFuture.notifyNodeStart(nextNode.refName());
                 nextNode = context.nextReadyNode();
             }
         }, Sinks.EmitFailureHandler.FAIL_FAST);
@@ -129,7 +129,7 @@ public class ReactorProcessInstance implements ProcessInstance {
     public void run() {
         addReadyNode(processDefinition.firstNode());
         runReadyNodes();
-        future.notifyProcessStarted(processId);
+        processFuture.notifyProcessStarted(processId);
     }
 
     public ProcessFuture continueRunningNode(String refName, Variables variables) {
@@ -142,7 +142,7 @@ public class ReactorProcessInstance implements ProcessInstance {
             context.addReadyNode(node);
         }, Sinks.EmitFailureHandler.FAIL_FAST);
         runReadyNodes();
-        return future;
+        return processFuture;
     }
 
     protected ProcessId processId() {
@@ -154,7 +154,7 @@ public class ReactorProcessInstance implements ProcessInstance {
     }
 
     protected void setProcessFuture(ProcessFuture processFuture) {
-        future = processFuture;
+        this.processFuture = processFuture;
     }
 
     protected void setNodeExecutors(NodeExecutors nodeExecutors) {
