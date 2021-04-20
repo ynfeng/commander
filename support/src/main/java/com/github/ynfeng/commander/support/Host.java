@@ -21,8 +21,7 @@ public class Host {
 
     byte[] ipToBytes() {
         try {
-            InetAddress ip = InetAddress.getByName(this.ip);
-            return ip.getAddress();
+            return InetAddress.getByName(ip).getAddress();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
