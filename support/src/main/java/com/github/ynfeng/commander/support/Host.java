@@ -23,7 +23,7 @@ public class Host {
         try {
             return InetAddress.getByName(ip).getAddress();
         } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
