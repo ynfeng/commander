@@ -21,12 +21,12 @@ class ShutdownStepsTest {
     }
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         TestableLoggerAppender.reset();
     }
 
     @Test
-    public void should_exeucte_shutdown_step() throws Exception {
+    void should_exeucte_shutdown_step() throws Exception {
         AutoCloseable closeable = Mockito.mock(AutoCloseable.class);
         ShutdownSteps shutdownSteps = new ShutdownSteps();
         shutdownSteps.add(new ShutdownStep("test", closeable));
@@ -39,7 +39,7 @@ class ShutdownStepsTest {
     }
 
     @Test
-    public void should_log_infomation_when_occurs_exception_on_shutdown() throws Exception {
+    void should_log_infomation_when_occurs_exception_on_shutdown() throws Exception {
         AutoCloseable closeable = () -> {
             throw new RuntimeException();
         };
