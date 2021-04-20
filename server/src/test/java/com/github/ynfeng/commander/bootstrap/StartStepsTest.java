@@ -21,12 +21,12 @@ class StartStepsTest {
     }
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         TestableLoggerAppender.reset();
     }
 
     @Test
-    public void should_execute_startup_steps() throws Exception {
+    void should_execute_startup_steps() throws Exception {
         StartFunction startFunction = Mockito.mock(StartFunction.class);
         StartSteps startSteps = new StartSteps();
         startSteps.add(new StartStep("test", startFunction));
@@ -39,7 +39,7 @@ class StartStepsTest {
     }
 
     @Test
-    public void should_log_infomation_when_occurs_exception_on_startup() throws Exception {
+    void should_log_infomation_when_occurs_exception_on_startup() throws Exception {
         StartSteps startSteps = new StartSteps();
         startSteps.add(new StartStep("test", () -> {
             throw new RuntimeException();
