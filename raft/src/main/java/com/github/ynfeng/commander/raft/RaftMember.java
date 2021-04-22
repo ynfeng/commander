@@ -34,7 +34,7 @@ public class RaftMember extends ManageableSupport {
     }
 
     private void detectElectionTimeout() {
-        if(electionTimeoutDetector.isTimeout()) {
+        if (electionTimeoutDetector.isTimeout()) {
             becomeCandidate();
         }
     }
