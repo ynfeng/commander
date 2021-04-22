@@ -16,7 +16,7 @@ public class DecisionNodeExecutor implements NodeExecutor {
     @Override
     public void execute(ProcessInstance processInstance, NodeDefinition nodeDefinition) {
         DecisionDefinition decisionDefinition = (DecisionDefinition) nodeDefinition;
-        final ConditionBranches branches = decisionDefinition.branches();
+        ConditionBranches branches = decisionDefinition.branches();
         if (executeBranches(processInstance, nodeDefinition, branches)) {
             return;
         }
@@ -47,7 +47,7 @@ public class DecisionNodeExecutor implements NodeExecutor {
         return false;
     }
 
-    private void executeDefaultBranch(
+    private static void executeDefaultBranch(
         ProcessInstance processInstance, NodeDefinition nodeDefinition, DecisionDefinition decisionDefinition) {
         ConditionBranch defaultBranch = decisionDefinition.defaultCondition();
         processInstance.addReadyNode(defaultBranch.next());
