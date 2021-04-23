@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.raft;
 
 import com.github.ynfeng.commander.support.ManageableSupport;
+import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +40,8 @@ public class RaftMember extends ManageableSupport {
     }
 
     private void connectToEachMember() {
+        List<MemberAddress> otherMemberAddresss = membership.otherMemberAddresses(id);
+
     }
 
     private void startElectionTimeoutDetect() {
