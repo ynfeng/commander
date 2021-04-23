@@ -7,13 +7,15 @@ import java.util.concurrent.TimeUnit;
 public class RaftMember extends ManageableSupport {
     private volatile MemberRole role;
     private final MemberId id;
-    private final RaftMemberConfig config;
+    private final LocalConfig config;
+    private final Membership membership;
     private final ElectionTimeoutDetector electionTimeoutDetector;
     private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 
-    private RaftMember(MemberId id, RaftMemberConfig config) {
+    private RaftMember(MemberId id, LocalConfig config, Membership membership) {
         this.id = id;
         this.config = config;
+        this.membership = membership;
         role = MemberRole.FLLOWER;
         electionTimeoutDetector = new ElectionTimeoutDetector();
     }
@@ -32,6 +34,14 @@ public class RaftMember extends ManageableSupport {
 
     @Override
     protected void doStart() {
+        connectToEachMember();
+        startElectionTimeoutDetect();
+    }
+
+    private void connectToEachMember() {
+    }
+
+    private void startElectionTimeoutDetect() {
         long electionTimeoutDetectionInterval = config.getElectionTimeoutDetectionInterval();
         executor.scheduleWithFixedDelay(this::detectElectionTimeout,
             electionTimeoutDetectionInterval,
@@ -60,7 +70,8 @@ public class RaftMember extends ManageableSupport {
 
     public static class RaftMemberBuilder {
         private MemberId memberId;
-        private RaftMemberConfig config;
+        private LocalConfig config;
+        private Membership membership;
 
         private RaftMemberBuilder() {
         }
@@ -70,13 +81,18 @@ public class RaftMember extends ManageableSupport {
             return this;
         }
 
-        public RaftMemberBuilder memberConfig(RaftMemberConfig config) {
+        public RaftMemberBuilder membership(Membership membership) {
+            this.membership = membership;
+            return this;
+        }
+
+        public RaftMemberBuilder localConfig(LocalConfig config) {
             this.config = config;
             return this;
         }
 
         public RaftMember build() {
-            return new RaftMember(memberId, config);
+            return new RaftMember(memberId, config, membership);
         }
     }
 }
