@@ -11,7 +11,7 @@ class RaftMemberTest {
 
     @Test
     void should_create_raft_member() {
-        RaftMember raftMember = createRaftMember();
+        RaftMember raftMember = createRaftMember("member1");
 
         assertThat(raftMember.isFollower(), is(true));
         assertThat(raftMember.id(), is(MemberId.of("member1")));
@@ -19,7 +19,7 @@ class RaftMemberTest {
 
     @Test
     void should_become_candidate_when_election_timeout() {
-        RaftMember raftMember = createRaftMember();
+        RaftMember raftMember = createRaftMember("member1");
         raftMember.start();
 
         await().atMost(1, TimeUnit.SECONDS)
@@ -28,9 +28,9 @@ class RaftMemberTest {
         raftMember.shutdown();
     }
 
-    private static RaftMember createRaftMember() {
+    private static RaftMember createRaftMember(String memberId) {
         return RaftMember.builder()
-            .memberId(MemberId.of("member1"))
+            .memberId(MemberId.of(memberId))
             .memberConfig(
                 RaftMemberConfig.builder()
                     .electionTimeoutDetectionInterval(100)
