@@ -4,15 +4,12 @@ import com.github.ynfeng.commander.support.ManageableSupport;
 
 public class RaftMember extends ManageableSupport {
     private volatile MemberRole role;
-    private final MemberId id;
-    private final LocalConfig config;
-    private final MemberIds memberIds;
-    private final ElectionTimeoutDetector electionTimeoutDetector;
+    private MemberId id;
+    private LocalConfig config;
+    private MemberIds memberIds;
+    private ElectionTimeoutDetector electionTimeoutDetector;
 
-    private RaftMember(MemberId id, LocalConfig config, MemberIds memberIds) {
-        this.id = id;
-        this.config = config;
-        this.memberIds = memberIds;
+    private RaftMember() {
         role = MemberRole.FLLOWER;
         electionTimeoutDetector
             = new ElectionTimeoutDetector(config.getElectionTimeoutDetectionInterval(), this::electionTimeout);
@@ -36,6 +33,10 @@ public class RaftMember extends ManageableSupport {
     }
 
     private void electionTimeout() {
+        becomeCandidate();
+    }
+
+    private void becomeCandidate() {
         role = MemberRole.CANDIDATE;
     }
 
@@ -72,7 +73,11 @@ public class RaftMember extends ManageableSupport {
         }
 
         public RaftMember build() {
-            return new RaftMember(memberId, config, memberIds);
+            RaftMember raftMember = new RaftMember();
+            raftMember.id = memberId;
+            raftMember.config = config;
+            raftMember.memberIds = memberIds;
+            return raftMember;
         }
     }
 }
