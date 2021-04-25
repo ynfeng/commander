@@ -15,7 +15,7 @@ public class RaftMember extends ManageableSupport {
         this.memberIds = memberIds;
         role = MemberRole.FLLOWER;
         electionTimeoutDetector
-            = new ElectionTimeoutDetector(config.getElectionTimeoutDetectionInterval(), this::becomeCandidate);
+            = new ElectionTimeoutDetector(config.getElectionTimeoutDetectionInterval(), this::electionTimeout);
     }
 
     public boolean isFollower() {
@@ -35,7 +35,7 @@ public class RaftMember extends ManageableSupport {
         electionTimeoutDetector.start();
     }
 
-    private void becomeCandidate() {
+    private void electionTimeout() {
         role = MemberRole.CANDIDATE;
     }
 
