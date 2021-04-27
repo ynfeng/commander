@@ -5,5 +5,5 @@ import com.github.ynfeng.commander.raft.protocol.Response;
 import java.util.concurrent.CompletableFuture;
 
 public interface RemoteMemberCommunicator {
-    <REQ extends Request, RES extends Response> CompletableFuture<RES> send(RemoteMember remoteMember, REQ request);
+    <T extends Request, R extends Response> CompletableFuture<R> send(RemoteMember remoteMember, T request);
 }

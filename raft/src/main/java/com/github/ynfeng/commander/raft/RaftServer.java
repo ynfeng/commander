@@ -116,9 +116,8 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public void becomeLeader() {
-        serverThreadPool.submit(() -> {
-            changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval()));
-        });
+        serverThreadPool.submit(() ->
+            changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval())));
     }
 
     @Override

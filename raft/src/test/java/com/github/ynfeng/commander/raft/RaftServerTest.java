@@ -21,7 +21,7 @@ class RaftServerTest {
     public static final RemoteMember REMOTE_MEMBER3 = RemoteMember.create(MemberId.create("server3"), Address.of("127.0.0.1", 8083));
 
     @Test
-    public void should_start_raft_server() {
+    void should_start_raft_server() {
         RaftServer raftServer = createRaftServer(new RemoteMemberCommunicatorStub());
 
         raftServer.start();
