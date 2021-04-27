@@ -37,12 +37,12 @@ class RaftServerTest {
         RaftServer raftServer = createRaftServer(new RemoteMemberCommunicator() {
             @SuppressWarnings("unchecked")
             @Override
-            public <REQ extends Request, RES extends Response> CompletableFuture<RES> send(RemoteMember remoteMember, REQ request) {
+            public <T extends Request, R extends Response> CompletableFuture<R> send(RemoteMember remoteMember, T request) {
                 if (request instanceof RequestVote) {
                     CompletableFuture<RequestVoteResponse> completableFuture = new CompletableFuture<>();
                     RequestVoteResponse response = RequestVoteResponse.granted(Term.create(0), MemberId.create(UUID.randomUUID().toString()));
                     completableFuture.complete(response);
-                    return (CompletableFuture<RES>) completableFuture;
+                    return (CompletableFuture<R>) completableFuture;
                 }
 
                 if (request instanceof LeaderHeartbeat) {
