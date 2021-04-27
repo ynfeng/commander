@@ -1,28 +1,37 @@
 package com.github.ynfeng.commander.raft;
 
 import com.github.ynfeng.commander.support.ManageableSupport;
+import java.time.Instant;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class ElectionTimeoutDetector extends ManageableSupport {
+public class ElectionTimer extends ManageableSupport {
     private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
-    private final long electionTimeoutDetectionInterval;
     private final Runnable timeoutAction;
+    private final long timeout;
+    private volatile long lastResetTime;
 
-    public ElectionTimeoutDetector(long electionTimeoutDetectionInterval, Runnable timeoutAction) {
-        this.electionTimeoutDetectionInterval = electionTimeoutDetectionInterval;
+    public ElectionTimer(long timeout, Runnable timeoutAction) {
         this.timeoutAction = timeoutAction;
+        this.timeout = timeout;
+        lastResetTime = Instant.now().toEpochMilli();
     }
 
     private boolean isTimeout() {
-        return true;
+        long now = Instant.now().toEpochMilli();
+        long escapeTime = now - lastResetTime;
+        return escapeTime > timeout;
+    }
+
+    public void reset() {
+        lastResetTime = Instant.now().toEpochMilli();
     }
 
     @Override
     protected void doStart() {
         executor.scheduleWithFixedDelay(this::detectElectionTimeout,
-            electionTimeoutDetectionInterval,
-            electionTimeoutDetectionInterval,
+            timeout,
+            timeout,
             TimeUnit.MILLISECONDS);
     }
 

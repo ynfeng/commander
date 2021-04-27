@@ -27,4 +27,5 @@ public abstract class ManageableSupport implements Manageable {
     public boolean isStarted() {
         return isStarted.get();
     }
+
 }

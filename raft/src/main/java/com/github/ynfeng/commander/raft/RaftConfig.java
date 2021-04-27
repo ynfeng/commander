@@ -1,13 +1,23 @@
 package com.github.ynfeng.commander.raft;
 
 public class RaftConfig {
-    private long electionTimeoutDetectionInterval;
+    private long electionTimeout = 500;
+    private long leaderHeartbeatInterval = 150;
+    private int serverThreadPoolSize = Runtime.getRuntime().availableProcessors() * 2;
 
     private RaftConfig() {
     }
 
-    public long electionTimeoutDetectionInterval() {
-        return electionTimeoutDetectionInterval;
+    public long electionTimeout() {
+        return electionTimeout;
+    }
+
+    public int threadPoolSize() {
+        return serverThreadPoolSize;
+    }
+
+    public long leaderHeartbeatInterval() {
+        return leaderHeartbeatInterval;
     }
 
     public static Builder builder() {
@@ -15,16 +25,30 @@ public class RaftConfig {
     }
 
     public static class Builder {
-        private long intervalMs;
+        private long timeoutMs;
+        private int serverThreadPoolSize;
+        private long leaderHeartbeatInterval;
 
-        public Builder electionTimeoutDetectionInterval(long intervalMs) {
-            this.intervalMs = intervalMs;
+        public Builder electionTimeout(long timeoutMs) {
+            this.timeoutMs = timeoutMs;
+            return this;
+        }
+
+        public Builder serverThreadPoolSize(int serverThreadPoolSize) {
+            this.serverThreadPoolSize = serverThreadPoolSize;
+            return this;
+        }
+
+        public Builder leaderHeartbeatInterval(long leaderHeartbeatInterval) {
+            this.leaderHeartbeatInterval = leaderHeartbeatInterval;
             return this;
         }
 
         public RaftConfig build() {
             RaftConfig config = new RaftConfig();
-            config.electionTimeoutDetectionInterval = intervalMs;
+            config.electionTimeout = timeoutMs;
+            config.serverThreadPoolSize = serverThreadPoolSize;
+            config.leaderHeartbeatInterval = leaderHeartbeatInterval;
             return config;
         }
     }
