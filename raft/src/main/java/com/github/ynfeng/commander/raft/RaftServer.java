@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class RaftServer extends ManageableSupport implements RaftMember, RaftContext {
     private final RaftConfig raftConfig;
     private Address localAddress;
-    private volatile RaftRole role;
+    private final AtomicReference<RaftRole> role = new AtomicReference<>();
     private MemberId localMemberId;
     private RaftGroup raftGroup;
     private final ElectionTimer electionTimer;
@@ -27,7 +27,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private RaftServer(RaftConfig raftConfig) {
         this.raftConfig = raftConfig;
         currentTerm.set(Term.create(0));
-        role = new Follower();
+        role.set(new Follower());
         electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::electionTimeout);
         serverThreadPool = Executors.newFixedThreadPool(raftConfig.threadPoolSize());
     }
@@ -42,13 +42,13 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     private void becomeCandidate() {
         changeRole(new Candidate(this));
-        role.requestVote();
+        role.get().requestVote();
     }
 
     private void changeRole(RaftRole role) {
-        this.role.destory();
-        this.role = role;
-        this.role.prepare();
+        this.role.get().destory();
+        this.role.set(role);
+        this.role.get().prepare();
     }
 
     public static Builder builder() {
