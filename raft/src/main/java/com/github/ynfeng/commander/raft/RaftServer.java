@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class RaftServer extends ManageableSupport implements RaftMember, RaftContext {
     private final RaftConfig raftConfig;
@@ -20,22 +21,21 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private final ElectionTimer electionTimer;
     private RaftMemberDiscovery raftMemberDiscovery;
     private RemoteMemberCommunicator remoteMemberCommunicator;
-    private volatile Term currentTerm;
+    private final AtomicReference<Term> currentTerm = new AtomicReference<>();
     private final ExecutorService serverThreadPool;
 
     private RaftServer(RaftConfig raftConfig) {
         this.raftConfig = raftConfig;
-        currentTerm = Term.create(0);
+        currentTerm.set(Term.create(0));
         role = new Follower();
         electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::electionTimeout);
         serverThreadPool = Executors.newFixedThreadPool(raftConfig.threadPoolSize());
     }
 
-    @SuppressWarnings("NonAtomicOperationOnVolatileField")
     private void electionTimeout() {
         serverThreadPool.submit(() -> {
             electionTimer.reset();
-            currentTerm = currentTerm.nextTerm();
+            currentTerm.set(currentTerm.get().nextTerm());
             becomeCandidate();
         });
     }
@@ -99,13 +99,13 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public Term currentTerm() {
-        return currentTerm;
+        return currentTerm.get();
     }
 
     @Override
     public void tryUpdateCurrentTerm(Term term) {
-        if (term.greaterThan(currentTerm)) {
-            currentTerm = term;
+        if (term.greaterThan(currentTerm.get())) {
+            currentTerm.set(term);
         }
     }
 
