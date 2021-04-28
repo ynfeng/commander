@@ -14,4 +14,8 @@ public class RemoteMember {
     public static RemoteMember create(MemberId memberId, Address address) {
         return new RemoteMember(memberId, address);
     }
+
+    public MemberId id() {
+        return memberId;
+    }
 }

@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class RemoteMemberCommunicatorStub implements RemoteMemberCommunicator {
     @Override
-    public <REQ extends Request, RES extends Response> CompletableFuture<RES> send(RemoteMember remoteMember, REQ request) {
+    public <T extends Request, R extends Response> CompletableFuture<R> send(RemoteMember remoteMember, T request) {
         return null;
     }
 }
