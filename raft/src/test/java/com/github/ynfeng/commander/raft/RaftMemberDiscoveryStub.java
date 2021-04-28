@@ -2,7 +2,6 @@ package com.github.ynfeng.commander.raft;
 
 import com.google.common.collect.Lists;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class RaftMemberDiscoveryStub implements RaftMemberDiscovery {
@@ -10,11 +9,6 @@ public class RaftMemberDiscoveryStub implements RaftMemberDiscovery {
 
     public void addRemoteMember(RemoteMember... remoteMember) {
         remoteMembers.addAll(Arrays.asList(remoteMember));
-    }
-
-    @Override
-    public List<RemoteMember> remoteMembers() {
-        return Collections.unmodifiableList(remoteMembers);
     }
 
     @Override
@@ -30,5 +24,10 @@ public class RaftMemberDiscoveryStub implements RaftMemberDiscovery {
     @Override
     public boolean isStarted() {
         return true;
+    }
+
+    @Override
+    public List<RemoteMember> remoteMembers(MemberId localMemberId) {
+        return remoteMembers;
     }
 }

@@ -79,7 +79,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public List<RemoteMember> remoteMembers() {
-        return raftMemberDiscovery.remoteMembers();
+        return raftMemberDiscovery.remoteMembers(localMemberId);
     }
 
     @Override
