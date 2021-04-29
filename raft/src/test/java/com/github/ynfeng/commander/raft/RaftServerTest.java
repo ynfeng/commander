@@ -41,24 +41,8 @@ class RaftServerTest {
     @Test
     void should_become_leader_and_send_leader_heartbeat() {
         AtomicReference<LeaderHeartbeat> hbref = new AtomicReference<>();
-        RemoteMemberCommunicator communicator = new RemoteMemberCommunicator() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public <T extends Request, R extends Response> CompletableFuture<R> send(RemoteMember remoteMember, T request) {
-                if (request instanceof RequestVote) {
-                    CompletableFuture<RequestVoteResponse> completableFuture = new CompletableFuture<>();
-                    RequestVoteResponse response = RequestVoteResponse.granted(Term.create(0), MemberId.create(UUID.randomUUID().toString()));
-                    completableFuture.complete(response);
-                    return (CompletableFuture<R>) completableFuture;
-                }
-
-                if (request instanceof LeaderHeartbeat) {
-                    hbref.set((LeaderHeartbeat) request);
-                }
-
-                return new CompletableFuture<>();
-            }
-        };
+        RemoteMemberCommunicatorStub communicator = new RemoteMemberCommunicatorStub();
+        communicator.onReceiveHearbeat(hbref::set);
         communicatorHub.reset();
         communicatorHub.addCommunicator(MemberId.create("server2") ,communicator);
         communicatorHub.addCommunicator(MemberId.create("server3") ,communicator);
