@@ -5,13 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
-import com.github.ynfeng.commander.raft.protocol.Request;
-import com.github.ynfeng.commander.raft.protocol.RequestVote;
-import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
-import com.github.ynfeng.commander.raft.protocol.Response;
 import com.github.ynfeng.commander.support.Address;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
