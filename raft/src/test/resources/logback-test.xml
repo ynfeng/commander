@@ -1,0 +1,22 @@
+<configuration debug="true">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="TESTABLE" class="com.github.ynfeng.commander.testtools.TestableLoggerAppender">
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="com.github.ynfeng.commander" level="ERROR">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="TESTABLE"/>
+    </logger>
+    <logger name="com.github.ynfeng.commander.system" level="TRACE"/>
+
+    <root level="TRACE">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

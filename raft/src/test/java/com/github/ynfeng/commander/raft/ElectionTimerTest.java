@@ -19,7 +19,7 @@ class ElectionTimerTest {
         timer.start();
 
         await()
-            .atMost(200, TimeUnit.MILLISECONDS)
+            .atMost(1000, TimeUnit.MILLISECONDS)
             .until(timeout::get, is(true));
     }
 
