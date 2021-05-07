@@ -15,6 +15,10 @@ public class Term {
         return new Term(t);
     }
 
+    public boolean lessThan(Term term) {
+        return curTerm < term.curTerm;
+    }
+
     public boolean greaterThan(Term term) {
         return curTerm > term.curTerm;
     }

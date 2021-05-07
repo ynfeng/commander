@@ -13,6 +13,10 @@ public class RequestVote implements Request {
         return new Builder();
     }
 
+    public Term term() {
+        return term;
+    }
+
     public static class Builder {
         private Term term;
         private MemberId cadidateId;

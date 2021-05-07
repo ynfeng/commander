@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.raft.roles;
 import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
+import com.github.ynfeng.commander.raft.Term;
 import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
@@ -70,6 +71,10 @@ public class Candidate implements RaftRole {
 
     @Override
     public RequestVoteResponse handleRequestVote(RequestVote requestVote) {
-        return RequestVoteResponse.granted(raftContext.currentTerm(), raftContext.localMermberId());
+        Term currentTerm = raftContext.currentTerm();
+        if (requestVote.term().lessThan(currentTerm)) {
+            return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
+        }
+        return RequestVoteResponse.granted(currentTerm, raftContext.localMermberId());
     }
 }
