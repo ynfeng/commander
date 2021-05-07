@@ -117,7 +117,7 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
         return openChannel(address);
     }
 
-    @SuppressWarnings({"checkstyle:LineLength", "checkstyle:ParameterNumber"})
+    @SuppressWarnings( {"checkstyle:LineLength", "checkstyle:ParameterNumber"})
     private <T> CompletableFuture<T> doSend(Message message,
                                             boolean keepAlive,
                                             Supplier<ClientConnection> connectionSupplier,

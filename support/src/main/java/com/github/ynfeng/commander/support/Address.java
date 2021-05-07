@@ -54,4 +54,12 @@ public class Address {
     public String host() {
         return host.ip();
     }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+            "host=" + host +
+            ", port=" + port +
+            '}';
+    }
 }

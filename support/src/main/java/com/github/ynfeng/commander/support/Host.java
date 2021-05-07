@@ -57,4 +57,11 @@ public class Host {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Host{" +
+            "ip='" + ip + '\'' +
+            '}';
+    }
 }

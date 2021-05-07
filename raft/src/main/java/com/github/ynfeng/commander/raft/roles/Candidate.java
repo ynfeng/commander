@@ -6,6 +6,7 @@ import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Candidate implements RaftRole {
@@ -18,18 +19,12 @@ public class Candidate implements RaftRole {
 
     @Override
     public void prepare() {
-        //do nothing
+        requestVote();
     }
 
-    @Override
     public void requestVote() {
         voteToSelf();
         askEachRemoteMemberToVote();
-    }
-
-    @Override
-    public void destory() {
-        //do nothing
     }
 
     private void voteToSelf() {
@@ -37,7 +32,8 @@ public class Candidate implements RaftRole {
     }
 
     private void askEachRemoteMemberToVote() {
-        raftContext.remoteMembers().forEach(this::askToVote);
+        List<RemoteMember> remoteMembers = raftContext.remoteMembers();
+        remoteMembers.forEach(this::askToVote);
     }
 
     private void askToVote(RemoteMember remoteMember) {
@@ -45,6 +41,15 @@ public class Candidate implements RaftRole {
         RequestVote request = createVoteRequest();
         CompletableFuture<RequestVoteResponse> responseFuture = communicator.send(remoteMember, request);
         responseFuture.thenAccept(this::handleVoteResponse);
+    }
+
+    private RequestVote createVoteRequest() {
+        return RequestVote.builder()
+            .candidateId(raftContext.localMermberId())
+            .lastLogTerm(raftContext.lastLogTerm())
+            .lastLogIndex(raftContext.lastLogIndex())
+            .term(raftContext.currentTerm())
+            .build();
     }
 
     private void handleVoteResponse(RequestVoteResponse response) {
@@ -58,12 +63,13 @@ public class Candidate implements RaftRole {
         }
     }
 
-    private RequestVote createVoteRequest() {
-        return RequestVote.builder()
-            .candidateId(raftContext.localMermberId())
-            .lastLogTerm(raftContext.lastLogTerm())
-            .lastLogIndex(raftContext.lastLogIndex())
-            .term(raftContext.currentTerm())
-            .build();
+    @Override
+    public void destory() {
+        //do nothing
+    }
+
+    @Override
+    public RequestVoteResponse handleRequestVote(RequestVote requestVote) {
+        return RequestVoteResponse.granted(raftContext.currentTerm(), raftContext.localMermberId());
     }
 }

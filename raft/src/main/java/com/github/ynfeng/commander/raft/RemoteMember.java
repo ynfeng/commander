@@ -18,4 +18,12 @@ public class RemoteMember {
     public MemberId id() {
         return memberId;
     }
+
+    @Override
+    public String toString() {
+        return "RemoteMember{" +
+            "memberId=" + memberId +
+            ", address=" + address +
+            '}';
+    }
 }

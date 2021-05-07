@@ -1,5 +1,8 @@
-package com.github.ynfeng.commander.raft;
+package com.github.ynfeng.commander._fixture;
 
+import com.github.ynfeng.commander.raft.MemberId;
+import com.github.ynfeng.commander.raft.RaftMemberDiscovery;
+import com.github.ynfeng.commander.raft.RemoteMember;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;

@@ -4,6 +4,8 @@ import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
+import com.github.ynfeng.commander.raft.protocol.RequestVote;
+import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -47,12 +49,12 @@ public class Leader implements RaftRole {
     }
 
     @Override
-    public void requestVote() {
-        throw new UnsupportedOperationException();
+    public void destory() {
+        executor.shutdownNow();
     }
 
     @Override
-    public void destory() {
-        executor.shutdownNow();
+    public RequestVoteResponse handleRequestVote(RequestVote requestVote) {
+        return null;
     }
 }

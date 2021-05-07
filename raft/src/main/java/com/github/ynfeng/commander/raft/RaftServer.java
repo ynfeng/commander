@@ -1,5 +1,7 @@
 package com.github.ynfeng.commander.raft;
 
+import com.github.ynfeng.commander.raft.protocol.RequestVote;
+import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.roles.Candidate;
 import com.github.ynfeng.commander.raft.roles.Follower;
 import com.github.ynfeng.commander.raft.roles.Leader;
@@ -27,7 +29,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private RaftServer(RaftConfig raftConfig) {
         this.raftConfig = raftConfig;
         currentTerm.set(Term.create(0));
-        role.set(new Follower());
+        role.set(new Follower(this));
         electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::electionTimeout);
         serverThreadPool = Executors.newFixedThreadPool(raftConfig.threadPoolSize());
     }
@@ -42,7 +44,6 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     private void becomeCandidate() {
         changeRole(new Candidate(this));
-        role.get().requestVote();
     }
 
     private void changeRole(RaftRole role) {
@@ -57,8 +58,13 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     protected void doStart() {
+        remoteMemberCommunicator.registerHandler(RequestVote.class, this::handleRequestVote);
         raftMemberDiscovery.start();
         electionTimer.start();
+    }
+
+    private RequestVoteResponse handleRequestVote(RequestVote requestVote) {
+        return role.get().handleRequestVote(requestVote);
     }
 
     @Override
