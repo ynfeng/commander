@@ -9,7 +9,7 @@ import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.roles.Candidate;
 import org.junit.jupiter.api.Test;
 
-class RaftRoleTest {
+class RaftRoleVoteTest {
 
     @Test
     void should_decline_to_vote_when_request_term_less_than_current_term() {
