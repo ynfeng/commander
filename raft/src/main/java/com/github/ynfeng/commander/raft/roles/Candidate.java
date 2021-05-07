@@ -6,8 +6,6 @@ import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
-import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 

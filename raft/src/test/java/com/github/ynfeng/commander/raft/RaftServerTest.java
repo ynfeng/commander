@@ -60,6 +60,8 @@ class RaftServerTest {
         assertThat(heartbeat.leaderCommit(), is(0L));
     }
 
+
+
     private static RaftServer createRaftServer(RemoteMemberCommunicator communicator, MemberId localMemberId, RemoteMember... remoteMembers) {
         RaftMemberDiscoveryStub raftMemberDiscovery = new RaftMemberDiscoveryStub();
         raftMemberDiscovery.addRemoteMember(remoteMembers);
