@@ -36,7 +36,7 @@ class RaftServerTest {
     }
 
     @Test
-    void should_become_leader_and_send_leader_heartbeat() {
+    void should_elect_leader() {
         FakeRemoteMemberCommunicator server1Communicator = new FakeRemoteMemberCommunicator(communicatorHub);
         communicatorHub.registerCommunicator(MemberId.create("server1"), server1Communicator);
         RaftServer raftServer1 = createRaftServer(server1Communicator, MemberId.create("server1"), REMOTE_MEMBER2, REMOTE_MEMBER3);
