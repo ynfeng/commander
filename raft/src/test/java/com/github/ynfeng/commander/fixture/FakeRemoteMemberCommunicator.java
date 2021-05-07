@@ -1,4 +1,4 @@
-package com.github.ynfeng.commander._fixture;
+package com.github.ynfeng.commander.fixture;
 
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;

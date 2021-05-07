@@ -4,9 +4,9 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-import com.github.ynfeng.commander._fixture.FakeRemoteMemberCommunicator;
-import com.github.ynfeng.commander._fixture.RaftMemberDiscoveryStub;
-import com.github.ynfeng.commander._fixture.RemoteMemberCommunicatorHub;
+import com.github.ynfeng.commander.fixture.FakeRemoteMemberCommunicator;
+import com.github.ynfeng.commander.fixture.RaftMemberDiscoveryStub;
+import com.github.ynfeng.commander.fixture.RemoteMemberCommunicatorHub;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.support.Address;
 import java.util.concurrent.TimeUnit;
