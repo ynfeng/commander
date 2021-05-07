@@ -8,13 +8,17 @@ import com.github.ynfeng.commander.raft.roles.Leader;
 import com.github.ynfeng.commander.raft.roles.RaftRole;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.ManageableSupport;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import org.slf4j.Logger;
 
 public class RaftServer extends ManageableSupport implements RaftMember, RaftContext {
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final RaftConfig raftConfig;
     private Address localAddress;
     private final AtomicReference<RaftRole> role = new AtomicReference<>();
@@ -31,7 +35,8 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
         currentTerm.set(Term.create(0));
         role.set(new Follower(this));
         electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::electionTimeout);
-        serverThreadPool = Executors.newFixedThreadPool(raftConfig.threadPoolSize());
+        serverThreadPool = Executors.newFixedThreadPool(raftConfig.threadPoolSize(),
+            new ThreadFactoryBuilder().setNameFormat("raft-server-thread-%d").build());
     }
 
     private void electionTimeout() {
@@ -39,6 +44,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
             electionTimer.reset();
             currentTerm.set(currentTerm.get().nextTerm());
             becomeCandidate();
+            LOGGER.info("{} election timeout become candidate.", localMemberId.id());
         });
     }
 
@@ -61,6 +67,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
         remoteMemberCommunicator.registerHandler(RequestVote.class, this::handleRequestVote);
         raftMemberDiscovery.start();
         electionTimer.start();
+        LOGGER.info("{} started.", localMemberId.id());
     }
 
     private RequestVoteResponse handleRequestVote(RequestVote requestVote) {
@@ -122,6 +129,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public void becomeLeader() {
+        LOGGER.info("{} become leader.", localMemberId.id());
         serverThreadPool.submit(() ->
             changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval())));
     }

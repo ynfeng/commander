@@ -11,6 +11,10 @@ public class MemberId {
         return new MemberId(id);
     }
 
+    public String id() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
