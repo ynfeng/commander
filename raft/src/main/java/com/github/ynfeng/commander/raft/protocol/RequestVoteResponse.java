@@ -14,7 +14,7 @@ public class RequestVoteResponse implements Response {
         this.voterId = voterId;
     }
 
-    public static RequestVoteResponse granted(Term currentTerm, MemberId voterId) {
+    public static RequestVoteResponse voted(Term currentTerm, MemberId voterId) {
         return new RequestVoteResponse(currentTerm, voterId, true);
     }
 

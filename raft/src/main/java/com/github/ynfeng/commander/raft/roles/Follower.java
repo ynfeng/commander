@@ -23,6 +23,6 @@ public class Follower implements RaftRole {
 
     @Override
     public RequestVoteResponse handleRequestVote(RequestVote requestVote) {
-        return RequestVoteResponse.granted(raftContext.currentTerm(), raftContext.localMermberId());
+        return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
     }
 }

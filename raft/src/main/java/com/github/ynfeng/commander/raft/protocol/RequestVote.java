@@ -17,6 +17,10 @@ public class RequestVote implements Request {
         return term;
     }
 
+    public MemberId candidateId() {
+        return candidateId;
+    }
+
     public static class Builder {
         private Term term;
         private MemberId cadidateId;

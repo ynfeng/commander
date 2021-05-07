@@ -29,7 +29,7 @@ public class Candidate implements RaftRole {
     }
 
     private void voteToSelf() {
-        voteTracker.voteGranted(raftContext.localMermberId());
+        voteTracker.getMemberVote(raftContext.localMermberId());
     }
 
     private void askEachRemoteMemberToVote() {
@@ -55,7 +55,7 @@ public class Candidate implements RaftRole {
 
     private void handleVoteResponse(RequestVoteResponse response) {
         if (response.isVoteGranted()) {
-            voteTracker.voteGranted(response.voterId());
+            voteTracker.getMemberVote(response.voterId());
             if (voteTracker.isQuorum(raftContext.quorum())) {
                 raftContext.becomeLeader();
             }
@@ -72,9 +72,20 @@ public class Candidate implements RaftRole {
     @Override
     public RequestVoteResponse handleRequestVote(RequestVote requestVote) {
         Term currentTerm = raftContext.currentTerm();
+
+        if (voteTracker.hasVoted() && voteTracker.isVotedFor(requestVote.candidateId())) {
+            return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
+        }
+
+        if (voteTracker.hasVoted()) {
+            return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
+        }
+
         if (requestVote.term().lessThan(currentTerm)) {
             return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
         }
-        return RequestVoteResponse.granted(currentTerm, raftContext.localMermberId());
+
+        voteTracker.votedFor(requestVote.candidateId());
+        return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
     }
 }

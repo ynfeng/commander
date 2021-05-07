@@ -51,4 +51,63 @@ class RaftRoleTest {
         assertThat(response.voterId(), is(MemberId.create("server2")));
     }
 
+    @Test
+    void should_decline_when_already_voted_for_other_candidate() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(0));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        Candidate candidate = new Candidate(raftContext);
+
+        RequestVote requestVote = RequestVote.builder()
+            .term(Term.create(0))
+            .candidateId(MemberId.create("server1"))
+            .lastLogIndex(0)
+            .lastLogTerm(Term.create(0))
+            .build();
+        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
+        assertThat(response.isVoteGranted(), is(true));
+        assertThat(response.term(), is(Term.create(0)));
+        assertThat(response.voterId(), is(MemberId.create("server2")));
+
+        requestVote = RequestVote.builder()
+            .term(Term.create(0))
+            .candidateId(MemberId.create("server3"))
+            .lastLogIndex(0)
+            .lastLogTerm(Term.create(0))
+            .build();
+        response = candidate.handleRequestVote(requestVote);
+        assertThat(response.isVoteGranted(), is(false));
+        assertThat(response.term(), is(Term.create(0)));
+        assertThat(response.voterId(), is(MemberId.create("server2")));
+    }
+
+    @Test
+    void should_vote_when_already_voted_to_current_candidate() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(0));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        Candidate candidate = new Candidate(raftContext);
+
+        RequestVote requestVote = RequestVote.builder()
+            .term(Term.create(0))
+            .candidateId(MemberId.create("server1"))
+            .lastLogIndex(0)
+            .lastLogTerm(Term.create(0))
+            .build();
+        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
+        assertThat(response.isVoteGranted(), is(true));
+        assertThat(response.term(), is(Term.create(0)));
+        assertThat(response.voterId(), is(MemberId.create("server2")));
+
+        requestVote = RequestVote.builder()
+            .term(Term.create(0))
+            .candidateId(MemberId.create("server1"))
+            .lastLogIndex(0)
+            .lastLogTerm(Term.create(0))
+            .build();
+        response = candidate.handleRequestVote(requestVote);
+        assertThat(response.isVoteGranted(), is(true));
+        assertThat(response.term(), is(Term.create(0)));
+        assertThat(response.voterId(), is(MemberId.create("server2")));
+    }
 }
