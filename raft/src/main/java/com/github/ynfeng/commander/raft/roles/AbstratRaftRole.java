@@ -17,7 +17,7 @@ public abstract class AbstratRaftRole implements RaftRole {
     @Override
     public synchronized RequestVoteResponse handleRequestVote(RequestVote requestVote) {
         Term currentTerm = raftContext.currentTerm();
-        tryResetVoterTracker(requestVote.term());
+        resetVoteTrackerIfNewTerm(requestVote.term());
 
         if (voteTracker.hasVoted() && voteTracker.isVotedFor(requestVote.candidateId())) {
             return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
@@ -36,7 +36,7 @@ public abstract class AbstratRaftRole implements RaftRole {
         return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
     }
 
-    private void tryResetVoterTracker(Term requestTerm) {
+    private void resetVoteTrackerIfNewTerm(Term requestTerm) {
         Term currentTerm = raftContext.currentTerm();
         if (requestTerm.greaterThan(currentTerm)) {
             voteTracker.reset();
