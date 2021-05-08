@@ -31,4 +31,9 @@ public class VoteTracker {
     public boolean hasVoted() {
         return voteTo.get() != null;
     }
+
+    public void reset() {
+        voteTo.set(null);
+        voters.clear();
+    }
 }

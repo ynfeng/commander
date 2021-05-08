@@ -18,6 +18,10 @@ public abstract class AbstratRaftRole implements RaftRole {
     public RequestVoteResponse handleRequestVote(RequestVote requestVote) {
         Term currentTerm = raftContext.currentTerm();
 
+        if(requestVote.term().greaterThan(currentTerm)) {
+            voteTracker.reset();
+        }
+
         if (voteTracker.hasVoted() && voteTracker.isVotedFor(requestVote.candidateId())) {
             return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
         }
