@@ -16,7 +16,7 @@ public class VoteTracker {
         return voters.size() >= quorum;
     }
 
-    public void votedFor(MemberId candidateId) {
+    public void votedTo(MemberId candidateId) {
         voteTo.set(candidateId);
     }
 

@@ -19,7 +19,7 @@ public abstract class AbstratRaftRole implements RaftRole {
         Term currentTerm = raftContext.currentTerm();
         resetVoteTrackerIfNewTerm(requestVote.term());
 
-        if (voteTracker.hasVoted() && voteTracker.isVotedFor(requestVote.candidateId())) {
+        if (voteTracker.isVotedFor(requestVote.candidateId())) {
             return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
         }
 
@@ -31,7 +31,7 @@ public abstract class AbstratRaftRole implements RaftRole {
             return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
         }
 
-        voteTracker.votedFor(requestVote.candidateId());
+        voteTracker.votedTo(requestVote.candidateId());
         raftContext.tryUpdateCurrentTerm(requestVote.term());
         return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
     }
