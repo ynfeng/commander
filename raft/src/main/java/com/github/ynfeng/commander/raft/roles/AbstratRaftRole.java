@@ -16,6 +16,7 @@ public abstract class AbstratRaftRole implements RaftRole {
 
     @Override
     public RequestVoteResponse handleRequestVote(RequestVote requestVote) {
+        raftContext.tryUpdateCurrentTerm(requestVote.term());
         Term currentTerm = raftContext.currentTerm();
 
         if(requestVote.term().greaterThan(currentTerm)) {

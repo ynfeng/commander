@@ -43,7 +43,7 @@ public class RaftContextMock implements RaftContext {
 
     @Override
     public void tryUpdateCurrentTerm(Term term) {
-
+        currentTerm = term;
     }
 
     @Override

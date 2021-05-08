@@ -136,4 +136,24 @@ class RaftRoleVoteTest {
         response = candidate.handleRequestVote(requestVote);
         assertThat(response.isVoteGranted(), is(true));
     }
+
+    @Test
+    void should_update_to_newest_term() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(0));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        Candidate candidate = new Candidate(raftContext);
+
+        RequestVote requestVote = RequestVote.builder()
+            .term(Term.create(1))
+            .candidateId(MemberId.create("server1"))
+            .lastLogIndex(0)
+            .lastLogTerm(Term.create(0))
+            .build();
+        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
+        assertThat(response.isVoteGranted(), is(true));
+
+        assertThat(raftContext.currentTerm(), is(Term.create(1)));
+    }
+
 }
