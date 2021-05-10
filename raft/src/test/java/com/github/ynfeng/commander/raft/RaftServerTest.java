@@ -2,7 +2,6 @@ package com.github.ynfeng.commander.raft;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.fixture.FakeRemoteMemberCommunicator;
 import com.github.ynfeng.commander.fixture.RaftMemberDiscoveryStub;
