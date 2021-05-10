@@ -21,6 +21,14 @@ public class RequestVote implements Request {
         return candidateId;
     }
 
+    public long lastLogIndex() {
+        return lastLogIndex;
+    }
+
+    public Term lastLogTerm() {
+        return lastLogTerm;
+    }
+
     public static class Builder {
         private Term term;
         private MemberId cadidateId;

@@ -156,4 +156,43 @@ class RaftRoleVoteTest {
         assertThat(raftContext.currentTerm(), is(Term.create(1)));
     }
 
+    @Test
+    void should_decline_vote_when_last_log_was_not_newest() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(0));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        raftContext.setLastLogIndex(1);
+        raftContext.setLastLogTerm(Term.create(1));
+
+        Candidate candidate = new Candidate(raftContext);
+
+        RequestVote requestVote = RequestVote.builder()
+            .term(Term.create(1))
+            .candidateId(MemberId.create("server1"))
+            .lastLogIndex(0)
+            .lastLogTerm(Term.create(0))
+            .build();
+        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
+        assertThat(response.isVoteGranted(), is(false));
+    }
+
+    @Test
+    void should_vote_when_last_log_was_newest() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(0));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        raftContext.setLastLogIndex(1);
+        raftContext.setLastLogTerm(Term.create(1));
+
+        Candidate candidate = new Candidate(raftContext);
+
+        RequestVote requestVote = RequestVote.builder()
+            .term(Term.create(1))
+            .candidateId(MemberId.create("server1"))
+            .lastLogIndex(3)
+            .lastLogTerm(Term.create(3))
+            .build();
+        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
+        assertThat(response.isVoteGranted(), is(true));
+    }
 }

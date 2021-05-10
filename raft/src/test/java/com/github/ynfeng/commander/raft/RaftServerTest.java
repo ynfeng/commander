@@ -53,11 +53,7 @@ class RaftServerTest {
         raftServer2.start();
         raftServer3.start();
 
-        LeaderHeartbeat heartbeat = server2Communicator.expectRequest(LeaderHeartbeat.class);
-        assertThat(heartbeat.term(), is(Term.create(1)));
-        assertThat(heartbeat.prevLogIndex(), is(0L));
-        assertThat(heartbeat.prevLogTerm(), is(Term.create(0)));
-        assertThat(heartbeat.leaderCommit(), is(0L));
+        server2Communicator.expectRequest(LeaderHeartbeat.class);
     }
 
     private static RaftServer createRaftServer(RemoteMemberCommunicator communicator, MemberId localMemberId, RemoteMember... remoteMembers) {

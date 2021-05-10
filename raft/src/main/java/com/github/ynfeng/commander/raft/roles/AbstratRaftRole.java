@@ -14,10 +14,16 @@ public abstract class AbstratRaftRole implements RaftRole {
         this.raftContext = raftContext;
     }
 
+    @SuppressWarnings( {"checkstyle:CyclomaticComplexity", "checkstyle:MethodLength"})
     @Override
     public synchronized RequestVoteResponse handleRequestVote(RequestVote requestVote) {
         Term currentTerm = raftContext.currentTerm();
         resetVoteTrackerIfNewTerm(requestVote.term());
+
+        if (requestVote.lastLogIndex() < raftContext.lastLogIndex()
+            || requestVote.lastLogTerm().lessThan(raftContext.lastLogTerm())) {
+            return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
+        }
 
         if (voteTracker.isVotedFor(requestVote.candidateId())) {
             return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());

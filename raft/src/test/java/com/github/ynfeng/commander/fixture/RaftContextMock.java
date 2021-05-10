@@ -10,6 +10,8 @@ import java.util.List;
 public class RaftContextMock implements RaftContext {
     private Term currentTerm;
     private MemberId localMermberId;
+    private int lastLogIndex = 0;
+    private Term lastLogTerm = Term.create(0);
 
     @Override
     public MemberId localMermberId() {
@@ -28,12 +30,12 @@ public class RaftContextMock implements RaftContext {
 
     @Override
     public Term lastLogTerm() {
-        return null;
+        return lastLogTerm;
     }
 
     @Override
     public long lastLogIndex() {
-        return 0;
+        return lastLogIndex;
     }
 
     @Override
@@ -82,5 +84,13 @@ public class RaftContextMock implements RaftContext {
 
     public void setLocalMemberId(MemberId localMemberId) {
         this.localMermberId = localMemberId;
+    }
+
+    public void setLastLogIndex(int lastLogIndex) {
+        this.lastLogIndex = lastLogIndex;
+    }
+
+    public void setLastLogTerm(Term lastLogTerm) {
+        this.lastLogTerm = lastLogTerm;
     }
 }
