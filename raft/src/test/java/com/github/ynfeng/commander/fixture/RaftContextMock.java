@@ -10,7 +10,7 @@ import java.util.List;
 public class RaftContextMock implements RaftContext {
     private Term currentTerm;
     private MemberId localMermberId;
-    private int lastLogIndex = 0;
+    private int lastLogIndex;
     private Term lastLogTerm = Term.create(0);
 
     @Override
@@ -78,12 +78,32 @@ public class RaftContextMock implements RaftContext {
 
     }
 
+    @Override
+    public void becomeFollower(MemberId leaderId) {
+
+    }
+
+    @Override
+    public void pauseElectionTimer() {
+
+    }
+
+    @Override
+    public void resumeElectionTimer() {
+
+    }
+
+    @Override
+    public void setLeader(MemberId leaderId) {
+
+    }
+
     public void setCurrentTerm(Term currentTerm) {
         this.currentTerm = currentTerm;
     }
 
     public void setLocalMemberId(MemberId localMemberId) {
-        this.localMermberId = localMemberId;
+        localMermberId = localMemberId;
     }
 
     public void setLastLogIndex(int lastLogIndex) {

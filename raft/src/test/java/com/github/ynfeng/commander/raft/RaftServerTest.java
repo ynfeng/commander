@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class RaftServerTest {
-    private static final RemoteMember REMOTE_MEMBER1 = RemoteMember.create(MemberId.create("server2"), Address.of("127.0.0.1", 8081));
+    private static final RemoteMember REMOTE_MEMBER1 = RemoteMember.create(MemberId.create("server1"), Address.of("127.0.0.1", 8081));
     private static final RemoteMember REMOTE_MEMBER2 = RemoteMember.create(MemberId.create("server2"), Address.of("127.0.0.1", 8082));
     private static final RemoteMember REMOTE_MEMBER3 = RemoteMember.create(MemberId.create("server3"), Address.of("127.0.0.1", 8083));
     private final RemoteMemberCommunicatorHub communicatorHub = new RemoteMemberCommunicatorHub();
@@ -35,7 +35,7 @@ class RaftServerTest {
     }
 
     @Test
-    void should_elect_leader() {
+    void should_receive_heartbeat_after_leader_elected() {
         FakeRemoteMemberCommunicator server1Communicator = new FakeRemoteMemberCommunicator(communicatorHub);
         communicatorHub.registerCommunicator(MemberId.create("server1"), server1Communicator);
         RaftServer raftServer1 = createRaftServer(server1Communicator, MemberId.create("server1"), REMOTE_MEMBER2, REMOTE_MEMBER3);
@@ -48,9 +48,9 @@ class RaftServerTest {
         communicatorHub.registerCommunicator(MemberId.create("server3"), server3Communicator);
         RaftServer raftServer3 = createRaftServer(server3Communicator, MemberId.create("server3"), REMOTE_MEMBER1, REMOTE_MEMBER2);
 
-        raftServer1.start();
-        raftServer2.start();
         raftServer3.start();
+        raftServer2.start();
+        raftServer1.start();
 
         server2Communicator.expectRequest(LeaderHeartbeat.class);
     }
@@ -62,7 +62,7 @@ class RaftServerTest {
             .localAddress(Address.of("127.0.0.1", 8080))
             .localMemberId(localMemberId)
             .raftConfig(RaftConfig.builder()
-                .electionTimeout(500)
+                .electionTimeout(1000)
                 .leaderHeartbeatInterval(100)
                 .serverThreadPoolSize(3)
                 .build())

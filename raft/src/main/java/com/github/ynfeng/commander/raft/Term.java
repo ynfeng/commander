@@ -23,6 +23,14 @@ public class Term {
         return curTerm > term.curTerm;
     }
 
+    public boolean lessOrEqual(Term term) {
+        return curTerm <= term.curTerm;
+    }
+
+    public boolean greaterOrEqual(Term term) {
+        return curTerm >= term.curTerm;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {

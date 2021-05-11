@@ -5,8 +5,11 @@ import com.github.ynfeng.commander.raft.Term;
 import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
+import org.slf4j.Logger;
 
 public abstract class AbstratRaftRole implements RaftRole {
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final VoteTracker voteTracker = new VoteTracker();
     private final RaftContext raftContext;
 
@@ -26,6 +29,7 @@ public abstract class AbstratRaftRole implements RaftRole {
         }
 
         if (voteTracker.isVotedFor(requestVote.candidateId())) {
+            LOGGER.info("{} vote to {}", raftContext.localMermberId().id(), requestVote.candidateId().id());
             return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
         }
 
@@ -37,6 +41,7 @@ public abstract class AbstratRaftRole implements RaftRole {
             return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
         }
 
+        LOGGER.info("{} vote to {}", raftContext.localMermberId().id(), requestVote.candidateId().id());
         voteTracker.votedTo(requestVote.candidateId());
         raftContext.tryUpdateCurrentTerm(requestVote.term());
         return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());

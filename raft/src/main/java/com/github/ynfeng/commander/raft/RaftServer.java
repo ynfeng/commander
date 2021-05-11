@@ -1,5 +1,7 @@
 package com.github.ynfeng.commander.raft;
 
+import com.github.ynfeng.commander.raft.protocol.EmptyResponse;
+import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.roles.Candidate;
@@ -22,6 +24,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private final RaftConfig raftConfig;
     private Address localAddress;
     private final AtomicReference<RaftRole> role = new AtomicReference<>();
+    private final AtomicReference<MemberId> leader = new AtomicReference<>();
     private MemberId localMemberId;
     private RaftGroup raftGroup;
     private final ElectionTimer electionTimer;
@@ -33,10 +36,9 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private RaftServer(RaftConfig raftConfig) {
         this.raftConfig = raftConfig;
         currentTerm.set(Term.create(0));
-        role.set(new Follower(this));
-        electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::electionTimeout);
         serverThreadPool = Executors.newFixedThreadPool(raftConfig.threadPoolSize(),
             new ThreadFactoryBuilder().setNameFormat("raft-server-thread-%d").build());
+        electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::electionTimeout);
     }
 
     private void electionTimeout() {
@@ -44,16 +46,18 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
             electionTimer.reset();
             currentTerm.set(currentTerm.get().nextTerm());
             becomeCandidate();
-            LOGGER.info("{} election timeout become candidate.", localMemberId.id());
         });
     }
 
     private void becomeCandidate() {
+        LOGGER.info("{} become candidate.", localMemberId.id());
         changeRole(new Candidate(this));
     }
 
     private void changeRole(RaftRole role) {
-        this.role.get().destory();
+        if (this.role.get() != null) {
+            this.role.get().destory();
+        }
         this.role.set(role);
         this.role.get().prepare();
     }
@@ -65,9 +69,15 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     @Override
     protected void doStart() {
         remoteMemberCommunicator.registerHandler(RequestVote.class, this::handleRequestVote);
+        remoteMemberCommunicator.registerHandler(LeaderHeartbeat.class, this::handleLeaderHeartbeat);
         raftMemberDiscovery.start();
         electionTimer.start();
         LOGGER.info("{} started.", localMemberId.id());
+    }
+
+    private EmptyResponse handleLeaderHeartbeat(LeaderHeartbeat heartbeat) {
+        role.get().handleHeartBeat(heartbeat);
+        return new EmptyResponse();
     }
 
     private RequestVoteResponse handleRequestVote(RequestVote requestVote) {
@@ -129,9 +139,10 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public void becomeLeader() {
-        LOGGER.info("{} become leader.", localMemberId.id());
-        serverThreadPool.submit(() ->
-            changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval())));
+        serverThreadPool.submit(() -> {
+            LOGGER.info("{} become leader.", localMemberId.id());
+            changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval()));
+        });
     }
 
     @Override
@@ -152,6 +163,30 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     @Override
     public void resetElectionTimer() {
         electionTimer.reset();
+    }
+
+    @Override
+    public void becomeFollower(MemberId leaderId) {
+        serverThreadPool.submit(() -> {
+            LOGGER.info("{} become follower current leader is {}.", localMemberId.id(), leaderId.id());
+            leader.set(leaderId);
+            changeRole(new Follower(this));
+        });
+    }
+
+    @Override
+    public void pauseElectionTimer() {
+        electionTimer.pause();
+    }
+
+    @Override
+    public void resumeElectionTimer() {
+        electionTimer.resume();
+    }
+
+    @Override
+    public void setLeader(MemberId leaderId) {
+        leader.set(leaderId);
     }
 
     public static class Builder {

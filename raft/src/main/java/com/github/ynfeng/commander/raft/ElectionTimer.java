@@ -1,15 +1,19 @@
 package com.github.ynfeng.commander.raft;
 
 import com.github.ynfeng.commander.support.ManageableSupport;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.time.Instant;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 public class ElectionTimer extends ManageableSupport {
-    private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+    private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,
+        new ThreadFactoryBuilder().setNameFormat("election-timer-thread-%d").build());
     private final Runnable timeoutAction;
     private final long timeout;
     private volatile long lastResetTime;
+    private volatile boolean pause;
 
     public ElectionTimer(long timeout, Runnable timeoutAction) {
         this.timeoutAction = timeoutAction;
@@ -18,13 +22,17 @@ public class ElectionTimer extends ManageableSupport {
     }
 
     private boolean isTimeout() {
+        if (pause) {
+            return false;
+        }
         long now = Instant.now().toEpochMilli();
         long escapeTime = now - lastResetTime;
         return escapeTime > timeout;
     }
 
     public void reset() {
-        lastResetTime = Instant.now().toEpochMilli();
+        long randomMs = ThreadLocalRandom.current().nextLong(150, 300);
+        lastResetTime = Instant.now().toEpochMilli() - randomMs;
     }
 
     @Override
@@ -44,5 +52,13 @@ public class ElectionTimer extends ManageableSupport {
     @Override
     protected void doShutdown() {
         executor.shutdownNow();
+    }
+
+    public void pause() {
+        pause = true;
+    }
+
+    public void resume() {
+        pause = false;
     }
 }

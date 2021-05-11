@@ -5,11 +5,6 @@
             <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <appender name="TESTABLE" class="com.github.ynfeng.commander.testtools.TestableLoggerAppender">
-        <encoder>
-            <pattern>%msg%n</pattern>
-        </encoder>
-    </appender>
     <logger name="com.github.ynfeng.commander" level="ERROR">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="TESTABLE"/>

@@ -1,6 +1,7 @@
 package com.github.ynfeng.commander.raft.roles;
 
 import com.github.ynfeng.commander.raft.RaftContext;
+import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 
 public class Follower extends AbstratRaftRole {
 
@@ -10,11 +11,19 @@ public class Follower extends AbstratRaftRole {
 
     @Override
     public void prepare() {
-        //do nothing
+        raftContext().resumeElectionTimer();
     }
 
     @Override
     public void destory() {
         //do nothing
+    }
+
+    @Override
+    public void handleHeartBeat(LeaderHeartbeat heartbeat) {
+        if (heartbeat.isLegal(raftContext())) {
+            raftContext().resetElectionTimer();
+            raftContext().setLeader(heartbeat.leaderId());
+        }
     }
 }

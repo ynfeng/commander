@@ -4,6 +4,7 @@ import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
+import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import java.util.List;
@@ -17,6 +18,7 @@ public class Candidate extends AbstratRaftRole {
 
     @Override
     public void prepare() {
+        raftContext().resumeElectionTimer();
         requestVote();
     }
 
@@ -65,5 +67,13 @@ public class Candidate extends AbstratRaftRole {
     @Override
     public void destory() {
         //do nothing
+    }
+
+    @Override
+    public void handleHeartBeat(LeaderHeartbeat heartbeat) {
+        if (heartbeat.isLegal(raftContext())) {
+            raftContext().resetElectionTimer();
+            raftContext().becomeFollower(heartbeat.leaderId());
+        }
     }
 }

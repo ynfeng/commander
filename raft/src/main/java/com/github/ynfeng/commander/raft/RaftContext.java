@@ -28,4 +28,12 @@ public interface RaftContext {
     Term prevLogTerm();
 
     void resetElectionTimer();
+
+    void becomeFollower(MemberId leaderId);
+
+    void pauseElectionTimer();
+
+    void resumeElectionTimer();
+
+    void setLeader(MemberId leaderId);
 }
