@@ -6,34 +6,33 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class VoteTracker {
     private final Set<MemberId> voters = Sets.newConcurrentHashSet();
-    private final AtomicReference<MemberId> voteTo = new AtomicReference<>();
-
-    public void getMemberVote(MemberId localMermberId) {
-        voters.add(localMermberId);
-    }
+    private final AtomicReference<VoteTo> vote = new AtomicReference<>();
+    private final AtomicReference<Term> currentTerm = new AtomicReference<>();
 
     public boolean isQuorum(int quorum) {
         return voters.size() >= quorum;
     }
 
-    public void votedTo(MemberId candidateId) {
-        voteTo.set(candidateId);
-    }
-
-    public boolean isVotedFor(MemberId candidateId) {
-        if (voteTo.get() == null) {
+    public boolean isAlreadyVote(Term term, MemberId memberId) {
+        if (vote.get() == null) {
             return false;
         }
-
-        return voteTo.get().equals(candidateId);
+        VoteTo voteTo = vote.get();
+        return voteTo.term.equals(term) && memberId.equals(voteTo.memberId);
     }
 
-    public boolean hasVoted() {
-        return voteTo.get() != null;
+    public void recordVote(Term term, MemberId memberId) {
+        VoteTo voteTo = new VoteTo(term, memberId);
+        vote.set(voteTo);
     }
 
-    public void reset() {
-        voteTo.set(null);
-        voters.clear();
+    static class VoteTo {
+        private final Term term;
+        private final MemberId memberId;
+
+        VoteTo(Term term, MemberId memberId) {
+            this.memberId = memberId;
+            this.term = term;
+        }
     }
 }
