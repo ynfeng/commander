@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class VoteTrackerTest {
 
     @Test
-    void should_record_vote() {
+    void should_record_vote_cast() {
         VoteTracker voteTracker = new VoteTracker();
         voteTracker.recordVote(Term.create(0), MemberId.create("server1"));
 
