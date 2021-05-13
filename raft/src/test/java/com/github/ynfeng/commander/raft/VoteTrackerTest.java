@@ -10,10 +10,10 @@ class VoteTrackerTest {
     @Test
     void should_record_vote_cast() {
         VoteTracker voteTracker = new VoteTracker();
-        voteTracker.recordVote(Term.create(0), MemberId.create("server1"));
+        voteTracker.recordVoteCast(Term.create(0), MemberId.create("server1"));
 
-        assertThat(voteTracker.isAlreadyVote(Term.create(0), MemberId.create("server1")), is(true));
-        assertThat(voteTracker.isAlreadyVote(Term.create(0), MemberId.create("server2")), is(false));
-        assertThat(voteTracker.isAlreadyVote(Term.create(1), MemberId.create("server1")), is(false));
+        assertThat(voteTracker.isAlreadyVoteTo(Term.create(0), MemberId.create("server1")), is(true));
+        assertThat(voteTracker.isAlreadyVoteTo(Term.create(0), MemberId.create("server2")), is(false));
+        assertThat(voteTracker.isAlreadyVoteTo(Term.create(1), MemberId.create("server1")), is(false));
     }
 }

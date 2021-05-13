@@ -13,7 +13,7 @@ public class VoteTracker {
         return voters.size() >= quorum;
     }
 
-    public boolean isAlreadyVote(Term term, MemberId memberId) {
+    public boolean isAlreadyVoteTo(Term term, MemberId memberId) {
         if (vote.get() == null) {
             return false;
         }
@@ -21,7 +21,7 @@ public class VoteTracker {
         return voteTo.term.equals(term) && memberId.equals(voteTo.memberId);
     }
 
-    public void recordVote(Term term, MemberId memberId) {
+    public void recordVoteCast(Term term, MemberId memberId) {
         VoteTo voteTo = new VoteTo(term, memberId);
         vote.set(voteTo);
     }
