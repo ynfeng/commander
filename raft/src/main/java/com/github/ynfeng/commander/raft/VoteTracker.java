@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class VoteTracker {
-    private final AtomicReference<VoteTo> vote = new AtomicReference<>();
+    private final AtomicReference<VoteTo> voteTo = new AtomicReference<>();
     private final Set<MemberId> votes = Sets.newConcurrentHashSet();
 
     public boolean isQuorum(int quorum) {
@@ -13,16 +13,16 @@ public class VoteTracker {
     }
 
     public boolean isAlreadyVoteTo(Term term, MemberId memberId) {
-        if (vote.get() == null) {
+        if (voteTo.get() == null) {
             return false;
         }
-        VoteTo voteTo = vote.get();
+        VoteTo voteTo = this.voteTo.get();
         return voteTo.term.equals(term) && memberId.equals(voteTo.memberId);
     }
 
     public void recordVoteCast(Term term, MemberId memberId) {
         VoteTo voteTo = new VoteTo(term, memberId);
-        vote.set(voteTo);
+        this.voteTo.set(voteTo);
     }
 
     public void voteToMe(MemberId memberId) {
@@ -31,6 +31,17 @@ public class VoteTracker {
 
     public boolean isVoteToMe(MemberId memberId) {
         return votes.contains(memberId);
+    }
+
+    public boolean canVote(Term term, MemberId memberId) {
+        VoteTo voteTo = this.voteTo.get();
+        if (voteTo == null) {
+            return true;
+        }
+        if (voteTo.term.equals(term) && voteTo.memberId.equals(memberId)) {
+            return true;
+        }
+        return voteTo.term.lessThan(term);
     }
 
     static class VoteTo {

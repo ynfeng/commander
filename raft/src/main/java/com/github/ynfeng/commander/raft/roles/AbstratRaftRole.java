@@ -32,6 +32,10 @@ public abstract class AbstratRaftRole implements RaftRole {
             return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
         }
 
+        if (!voteTracker.canVote(requestVote.term(), requestVote.candidateId())) {
+            return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
+        }
+
         if (requestVote.term().lessThan(currentTerm)) {
             return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
         }

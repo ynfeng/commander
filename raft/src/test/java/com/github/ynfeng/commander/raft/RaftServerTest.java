@@ -10,10 +10,8 @@ import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.support.Address;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
 class RaftServerTest {
     private static final RemoteMember REMOTE_MEMBER1 = RemoteMember.create(MemberId.create("server1"), Address.of("127.0.0.1", 8081));
     private static final RemoteMember REMOTE_MEMBER2 = RemoteMember.create(MemberId.create("server2"), Address.of("127.0.0.1", 8082));

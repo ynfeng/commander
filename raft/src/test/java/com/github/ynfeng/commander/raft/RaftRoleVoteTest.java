@@ -7,10 +7,8 @@ import com.github.ynfeng.commander.fixture.RaftContextMock;
 import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.roles.Candidate;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-@Disabled
 class RaftRoleVoteTest {
 
     @Test
