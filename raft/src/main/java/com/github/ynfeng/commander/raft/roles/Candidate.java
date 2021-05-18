@@ -29,7 +29,7 @@ public class Candidate extends AbstratRaftRole {
 
     private void voteToSelf() {
         MemberId localMermberId = raftContext().localMermberId();
-//        voteTracker().getMemberVote(localMermberId);
+        voteTracker().voteToMe(localMermberId);
     }
 
     private void askEachRemoteMemberToVote() {
@@ -55,7 +55,7 @@ public class Candidate extends AbstratRaftRole {
 
     private void handleVoteResponse(RequestVoteResponse response) {
         if (response.isVoteGranted()) {
-//            voteTracker().getMemberVote(response.voterId());
+            voteTracker().voteToMe(response.voterId());
             if (voteTracker().isQuorum(raftContext().quorum())) {
                 raftContext().becomeLeader();
             }
