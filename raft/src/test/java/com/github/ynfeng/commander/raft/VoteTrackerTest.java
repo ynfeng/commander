@@ -16,4 +16,14 @@ class VoteTrackerTest {
         assertThat(voteTracker.isAlreadyVoteTo(Term.create(0), MemberId.create("server2")), is(false));
         assertThat(voteTracker.isAlreadyVoteTo(Term.create(1), MemberId.create("server1")), is(false));
     }
+
+    @Test
+    void should_record_vote() {
+        VoteTracker voteTracker = new VoteTracker();
+
+        voteTracker.voteToMe(MemberId.create("server1"));
+
+        assertThat(voteTracker.isVoteToMe(MemberId.create("server1")), is(true));
+        assertThat(voteTracker.isVoteToMe(MemberId.create("server2")), is(false));
+    }
 }

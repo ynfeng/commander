@@ -5,12 +5,11 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class VoteTracker {
-    private final Set<MemberId> voters = Sets.newConcurrentHashSet();
     private final AtomicReference<VoteTo> vote = new AtomicReference<>();
-    private final AtomicReference<Term> currentTerm = new AtomicReference<>();
+    private final Set<MemberId> votes = Sets.newConcurrentHashSet();
 
     public boolean isQuorum(int quorum) {
-        return voters.size() >= quorum;
+        return votes.size() >= quorum;
     }
 
     public boolean isAlreadyVoteTo(Term term, MemberId memberId) {
@@ -24,6 +23,14 @@ public class VoteTracker {
     public void recordVoteCast(Term term, MemberId memberId) {
         VoteTo voteTo = new VoteTo(term, memberId);
         vote.set(voteTo);
+    }
+
+    public void voteToMe(MemberId memberId) {
+        votes.add(memberId);
+    }
+
+    public boolean isVoteToMe(MemberId memberId) {
+        return votes.contains(memberId);
     }
 
     static class VoteTo {
