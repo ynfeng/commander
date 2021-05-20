@@ -21,7 +21,7 @@ public class Follower extends AbstratRaftRole {
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
-        if (heartbeat.isLegal(raftContext())) {
+        if (heartbeat.term().greaterOrEqual(raftContext().currentTerm())) {
             raftContext().resetElectionTimer();
             raftContext().setLeader(heartbeat.leaderId());
         }

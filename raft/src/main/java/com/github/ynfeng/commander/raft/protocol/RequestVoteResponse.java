@@ -5,12 +5,12 @@ import com.github.ynfeng.commander.raft.Term;
 
 public class RequestVoteResponse implements Response {
     private final Term term;
-    private final boolean voteGranted;
+    private final boolean voted;
     private final MemberId voterId;
 
-    private RequestVoteResponse(Term term, MemberId voterId, boolean voteGranted) {
+    private RequestVoteResponse(Term term, MemberId voterId, boolean voted) {
         this.term = term;
-        this.voteGranted = voteGranted;
+        this.voted = voted;
         this.voterId = voterId;
     }
 
@@ -22,8 +22,8 @@ public class RequestVoteResponse implements Response {
         return new RequestVoteResponse(currentTerm, voterId, false);
     }
 
-    public boolean isVoteGranted() {
-        return voteGranted;
+    public boolean isVoted() {
+        return voted;
     }
 
     public Term term() {

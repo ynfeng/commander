@@ -1,7 +1,6 @@
 package com.github.ynfeng.commander.raft.protocol;
 
 import com.github.ynfeng.commander.raft.MemberId;
-import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.Term;
 
 public class LeaderHeartbeat implements Request {
@@ -44,12 +43,6 @@ public class LeaderHeartbeat implements Request {
             ", prevLogTerm=" + prevLogTerm +
             ", leaderCommit=" + leaderCommit +
             '}';
-    }
-
-    public boolean isLegal(RaftContext raftContext) {
-        return term().greaterOrEqual(raftContext.currentTerm())
-            && prevLogIndex() >= raftContext.prevLogIndex()
-            && prevLogTerm().greaterOrEqual(raftContext.prevLogTerm());
     }
 
     public static class Builder {

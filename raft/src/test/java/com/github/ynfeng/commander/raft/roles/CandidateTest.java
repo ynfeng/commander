@@ -1,15 +1,16 @@
-package com.github.ynfeng.commander.raft;
+package com.github.ynfeng.commander.raft.roles;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.fixture.RaftContextMock;
-import com.github.ynfeng.commander.raft.protocol.RequestVote;
+import com.github.ynfeng.commander.raft.MemberId;
+import com.github.ynfeng.commander.raft.Term;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
-import com.github.ynfeng.commander.raft.roles.Candidate;
+import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import org.junit.jupiter.api.Test;
 
-class RaftRoleVoteTest {
+class CandidateTest {
 
     @Test
     void should_decline_to_vote_when_request_term_less_than_current_term() {
@@ -18,15 +19,15 @@ class RaftRoleVoteTest {
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Candidate candidate = new Candidate(raftContext);
 
-        RequestVote requestVote = RequestVote.builder()
+        VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(0))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
 
-        assertThat(response.isVoteGranted(), is(false));
+        assertThat(response.isVoted(), is(false));
         assertThat(response.term(), is(Term.create(1)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
     }
@@ -38,15 +39,15 @@ class RaftRoleVoteTest {
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Candidate candidate = new Candidate(raftContext);
 
-        RequestVote requestVote = RequestVote.builder()
+        VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(0))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
 
-        assertThat(response.isVoteGranted(), is(true));
+        assertThat(response.isVoted(), is(true));
         assertThat(response.term(), is(Term.create(0)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
     }
@@ -58,25 +59,25 @@ class RaftRoleVoteTest {
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Candidate candidate = new Candidate(raftContext);
 
-        RequestVote requestVote = RequestVote.builder()
+        VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(0))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(true));
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(true));
         assertThat(response.term(), is(Term.create(0)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
 
-        requestVote = RequestVote.builder()
+        voteRequest = VoteRequest.builder()
             .term(Term.create(0))
             .candidateId(MemberId.create("server3"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(false));
+        response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(false));
         assertThat(response.term(), is(Term.create(0)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
     }
@@ -88,25 +89,25 @@ class RaftRoleVoteTest {
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Candidate candidate = new Candidate(raftContext);
 
-        RequestVote requestVote = RequestVote.builder()
+        VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(0))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(true));
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(true));
         assertThat(response.term(), is(Term.create(0)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
 
-        requestVote = RequestVote.builder()
+        voteRequest = VoteRequest.builder()
             .term(Term.create(0))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(true));
+        response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(true));
         assertThat(response.term(), is(Term.create(0)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
     }
@@ -118,23 +119,23 @@ class RaftRoleVoteTest {
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Candidate candidate = new Candidate(raftContext);
 
-        RequestVote requestVote = RequestVote.builder()
+        VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(0))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(true));
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(true));
 
-        requestVote = RequestVote.builder()
+        voteRequest = VoteRequest.builder()
             .term(Term.create(1))
             .candidateId(MemberId.create("server3"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(true));
+        response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(true));
     }
 
     @Test
@@ -144,14 +145,14 @@ class RaftRoleVoteTest {
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Candidate candidate = new Candidate(raftContext);
 
-        RequestVote requestVote = RequestVote.builder()
+        VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(1))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(true));
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(true));
 
         assertThat(raftContext.currentTerm(), is(Term.create(1)));
     }
@@ -166,14 +167,14 @@ class RaftRoleVoteTest {
 
         Candidate candidate = new Candidate(raftContext);
 
-        RequestVote requestVote = RequestVote.builder()
+        VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(1))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(false));
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(false));
     }
 
     @Test
@@ -186,13 +187,13 @@ class RaftRoleVoteTest {
 
         Candidate candidate = new Candidate(raftContext);
 
-        RequestVote requestVote = RequestVote.builder()
+        VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(1))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(3)
             .lastLogTerm(Term.create(3))
             .build();
-        RequestVoteResponse response = candidate.handleRequestVote(requestVote);
-        assertThat(response.isVoteGranted(), is(true));
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(true));
     }
 }

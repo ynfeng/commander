@@ -3,7 +3,7 @@ package com.github.ynfeng.commander.raft.protocol;
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.Term;
 
-public class RequestVote implements Request {
+public class VoteRequest implements Request {
     private Term term;
     private MemberId candidateId;
     private long lastLogIndex;
@@ -58,13 +58,13 @@ public class RequestVote implements Request {
             return this;
         }
 
-        public RequestVote build() {
-            RequestVote requestVote = new RequestVote();
-            requestVote.term = term;
-            requestVote.candidateId = cadidateId;
-            requestVote.lastLogIndex = lastLogIndex;
-            requestVote.lastLogTerm = lastLogTerm;
-            return requestVote;
+        public VoteRequest build() {
+            VoteRequest voteRequest = new VoteRequest();
+            voteRequest.term = term;
+            voteRequest.candidateId = cadidateId;
+            voteRequest.lastLogIndex = lastLogIndex;
+            voteRequest.lastLogTerm = lastLogTerm;
+            return voteRequest;
         }
     }
 }

@@ -5,8 +5,8 @@ import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
-import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
+import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -18,7 +18,9 @@ public class Candidate extends AbstratRaftRole {
 
     @Override
     public void prepare() {
+        raftContext().voteTracker().resetVotes();
         raftContext().resumeElectionTimer();
+        raftContext().nextTerm();
         requestVote();
     }
 
@@ -39,13 +41,13 @@ public class Candidate extends AbstratRaftRole {
 
     private void askToVote(RemoteMember remoteMember) {
         RemoteMemberCommunicator communicator = raftContext().remoteMemberCommunicator();
-        RequestVote request = createVoteRequest();
+        VoteRequest request = createVoteRequest();
         CompletableFuture<RequestVoteResponse> responseFuture = communicator.send(remoteMember, request);
         responseFuture.thenAccept(this::handleVoteResponse);
     }
 
-    private RequestVote createVoteRequest() {
-        return RequestVote.builder()
+    private VoteRequest createVoteRequest() {
+        return VoteRequest.builder()
             .candidateId(raftContext().localMermberId())
             .lastLogTerm(raftContext().lastLogTerm())
             .lastLogIndex(raftContext().lastLogIndex())
@@ -54,7 +56,7 @@ public class Candidate extends AbstratRaftRole {
     }
 
     private void handleVoteResponse(RequestVoteResponse response) {
-        if (response.isVoteGranted()) {
+        if (response.isVoted()) {
             voteTracker().voteToMe(response.voterId());
             if (voteTracker().isQuorum(raftContext().quorum())) {
                 raftContext().becomeLeader();
@@ -71,7 +73,7 @@ public class Candidate extends AbstratRaftRole {
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
-        if (heartbeat.isLegal(raftContext())) {
+        if (heartbeat.term().greaterOrEqual(raftContext().currentTerm())) {
             raftContext().resetElectionTimer();
             raftContext().becomeFollower(heartbeat.leaderId());
         }

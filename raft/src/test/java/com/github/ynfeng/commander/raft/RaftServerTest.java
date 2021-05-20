@@ -55,6 +55,17 @@ class RaftServerTest {
         server2Communicator.expectRequest(LeaderHeartbeat.class);
     }
 
+    @Test
+    void should_next_term_when_become_candicate() {
+        RaftServer raftServer = createRaftServer(new FakeRemoteMemberCommunicator(communicatorHub), MemberId.create("server1"), REMOTE_MEMBER2, REMOTE_MEMBER3);
+
+        raftServer.start();
+
+        await()
+            .atMost(2, TimeUnit.SECONDS)
+            .until(raftServer::currentTerm, is(Term.create(1)));
+    }
+
     private static RaftServer createRaftServer(RemoteMemberCommunicator communicator, MemberId localMemberId, RemoteMember... remoteMembers) {
         RaftMemberDiscoveryStub raftMemberDiscovery = new RaftMemberDiscoveryStub();
         raftMemberDiscovery.addRemoteMember(remoteMembers);

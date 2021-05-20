@@ -3,6 +3,8 @@ package com.github.ynfeng.commander.raft;
 import java.util.List;
 
 public interface RaftContext {
+    void becomeCandidate();
+
     MemberId localMermberId();
 
     List<RemoteMember> remoteMembers();
@@ -36,4 +38,8 @@ public interface RaftContext {
     void resumeElectionTimer();
 
     void setLeader(MemberId leaderId);
+
+    VoteTracker voteTracker();
+
+    void nextTerm();
 }

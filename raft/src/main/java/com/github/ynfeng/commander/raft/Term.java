@@ -56,4 +56,8 @@ public class Term {
             + "curTerm=" + curTerm
             + '}';
     }
+
+    public int value() {
+        return curTerm;
+    }
 }

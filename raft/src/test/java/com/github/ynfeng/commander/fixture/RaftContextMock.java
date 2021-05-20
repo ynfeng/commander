@@ -5,6 +5,7 @@ import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.Term;
+import com.github.ynfeng.commander.raft.VoteTracker;
 import java.util.List;
 
 public class RaftContextMock implements RaftContext {
@@ -12,6 +13,15 @@ public class RaftContextMock implements RaftContext {
     private MemberId localMermberId;
     private int lastLogIndex;
     private Term lastLogTerm = Term.create(0);
+    private boolean becomeCandidateCalled;
+    private boolean becomeLeaderCalled;
+    private final VoteTracker voteTracker = new VoteTracker();
+    private boolean becomeFollowerCalled;
+
+    @Override
+    public void becomeCandidate() {
+        becomeCandidateCalled = true;
+    }
 
     @Override
     public MemberId localMermberId() {
@@ -55,7 +65,7 @@ public class RaftContextMock implements RaftContext {
 
     @Override
     public void becomeLeader() {
-
+        becomeCandidateCalled = true;
     }
 
     @Override
@@ -80,7 +90,7 @@ public class RaftContextMock implements RaftContext {
 
     @Override
     public void becomeFollower(MemberId leaderId) {
-
+        becomeFollowerCalled = true;
     }
 
     @Override
@@ -98,6 +108,16 @@ public class RaftContextMock implements RaftContext {
 
     }
 
+    @Override
+    public VoteTracker voteTracker() {
+        return voteTracker;
+    }
+
+    @Override
+    public void nextTerm() {
+
+    }
+
     public void setCurrentTerm(Term currentTerm) {
         this.currentTerm = currentTerm;
     }
@@ -112,5 +132,17 @@ public class RaftContextMock implements RaftContext {
 
     public void setLastLogTerm(Term lastLogTerm) {
         this.lastLogTerm = lastLogTerm;
+    }
+
+    public boolean calledBecomeCandidate() {
+        return becomeCandidateCalled;
+    }
+
+    public boolean calledBecomeLeader() {
+        return becomeLeaderCalled;
+    }
+
+    public boolean calledBecomeFollower() {
+        return becomeFollowerCalled;
     }
 }

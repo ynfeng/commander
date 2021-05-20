@@ -2,8 +2,8 @@ package com.github.ynfeng.commander.raft;
 
 import com.github.ynfeng.commander.raft.protocol.EmptyResponse;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
-import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
+import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import com.github.ynfeng.commander.raft.roles.Candidate;
 import com.github.ynfeng.commander.raft.roles.Follower;
 import com.github.ynfeng.commander.raft.roles.Leader;
@@ -32,6 +32,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private RemoteMemberCommunicator remoteMemberCommunicator;
     private final AtomicReference<Term> currentTerm = new AtomicReference<>();
     private final ExecutorService serverThreadPool;
+    private final VoteTracker voteTracker = new VoteTracker();
 
     private RaftServer(RaftConfig raftConfig) {
         this.raftConfig = raftConfig;
@@ -44,12 +45,12 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private void electionTimeout() {
         serverThreadPool.submit(() -> {
             electionTimer.reset();
-            currentTerm.set(currentTerm.get().nextTerm());
             becomeCandidate();
         });
     }
 
-    private void becomeCandidate() {
+    @Override
+    public void becomeCandidate() {
         LOGGER.info("{} become candidate.", localMemberId.id());
         changeRole(new Candidate(this));
     }
@@ -68,7 +69,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     protected void doStart() {
-        remoteMemberCommunicator.registerHandler(RequestVote.class, this::handleRequestVote);
+        remoteMemberCommunicator.registerHandler(VoteRequest.class, this::handleRequestVote);
         remoteMemberCommunicator.registerHandler(LeaderHeartbeat.class, this::handleLeaderHeartbeat);
         raftMemberDiscovery.start();
         electionTimer.start();
@@ -80,8 +81,8 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
         return new EmptyResponse();
     }
 
-    private RequestVoteResponse handleRequestVote(RequestVote requestVote) {
-        return role.get().handleRequestVote(requestVote);
+    private RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
+        return role.get().handleRequestVote(voteRequest);
     }
 
     @Override
@@ -187,6 +188,16 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     @Override
     public void setLeader(MemberId leaderId) {
         leader.set(leaderId);
+    }
+
+    @Override
+    public VoteTracker voteTracker() {
+        return voteTracker;
+    }
+
+    @Override
+    public void nextTerm() {
+        currentTerm.set(currentTerm.get().nextTerm());
     }
 
     public static class Builder {

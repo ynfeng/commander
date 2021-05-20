@@ -4,8 +4,8 @@ import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
-import com.github.ynfeng.commander.raft.protocol.RequestVote;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
+import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -13,13 +13,14 @@ import java.util.concurrent.TimeUnit;
 public class Leader extends AbstratRaftRole {
     private final RaftContext raftContext;
     private final long heartbeatInterval;
-    private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,
+    private final ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(1,
         new ThreadFactoryBuilder().setNameFormat("heartbeat-thread-%d").build());
 
     public Leader(RaftContext raftContext, long heartbeatInterval) {
         super(raftContext);
         this.raftContext = raftContext;
         this.heartbeatInterval = heartbeatInterval;
+        raftContext.voteTracker().resetAll();
     }
 
     private void heartbeat() {
@@ -45,7 +46,7 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public void prepare() {
-        executor.scheduleWithFixedDelay(this::heartbeat,
+        heartbeatExecutor.scheduleWithFixedDelay(this::heartbeat,
             heartbeatInterval,
             heartbeatInterval,
             TimeUnit.MILLISECONDS);
@@ -53,17 +54,23 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public void destory() {
-        executor.shutdownNow();
+        heartbeatExecutor.shutdownNow();
     }
 
     @Override
-    public RequestVoteResponse handleRequestVote(RequestVote requestVote) {
-        return null;
+    public RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
+        if (canVote(voteRequest)) {
+            raftContext.voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
+            RequestVoteResponse response = RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
+            raftContext.becomeCandidate();
+            return response;
+        }
+        return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
     }
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
-        if (heartbeat.isLegal(raftContext())) {
+        if (heartbeat.term().greaterThan(raftContext().currentTerm())) {
             raftContext().becomeFollower(heartbeat.leaderId());
         }
     }

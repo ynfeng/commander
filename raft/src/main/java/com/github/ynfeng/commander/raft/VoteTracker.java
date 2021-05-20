@@ -44,6 +44,15 @@ public class VoteTracker {
         return voteTo.term.lessThan(term);
     }
 
+    public void resetAll() {
+        votes.clear();
+        voteTo.set(null);
+    }
+
+    public void resetVotes() {
+        votes.clear();
+    }
+
     static class VoteTo {
         private final Term term;
         private final MemberId memberId;
