@@ -64,7 +64,6 @@ class RaftServerTest {
         raftServer.start();
 
         await()
-            .atMost(2, TimeUnit.SECONDS)
             .until(raftServer::currentTerm, is(Term.create(1)));
     }
 
