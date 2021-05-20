@@ -145,4 +145,8 @@ public class RaftContextMock implements RaftContext {
     public boolean calledBecomeFollower() {
         return becomeFollowerCalled;
     }
+
+    public Term calledUpdateTerm() {
+        return currentTerm;
+    }
 }

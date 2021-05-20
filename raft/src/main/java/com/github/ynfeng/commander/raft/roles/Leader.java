@@ -4,8 +4,6 @@ import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
-import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
-import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -55,17 +53,6 @@ public class Leader extends AbstratRaftRole {
     @Override
     public void destory() {
         heartbeatExecutor.shutdownNow();
-    }
-
-    @Override
-    public RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
-        if (canVote(voteRequest)) {
-            raftContext.voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
-            RequestVoteResponse response = RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
-            raftContext.becomeCandidate();
-            return response;
-        }
-        return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
     }
 
     @Override

@@ -19,35 +19,21 @@ public abstract class AbstratRaftRole implements RaftRole {
     @SuppressWarnings( {"MethodLength"})
     @Override
     public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
-        Term currentTerm = raftContext.currentTerm();
-
-        if (voteRequest.lastLogIndex() < raftContext.lastLogIndex()
-            || voteRequest.lastLogTerm().lessThan(raftContext.lastLogTerm())) {
-            return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
+        if (canVote(voteRequest)) {
+            raftContext.voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
+            raftContext.tryUpdateCurrentTerm(voteRequest.term());
+            raftContext.becomeCandidate();
+            return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }
-
-        if (voteTracker().isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
-            LOGGER.info("{} vote to {} at term {}", raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
-            return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
-        }
-
-        if (!voteTracker().canVote(voteRequest.term(), voteRequest.candidateId())) {
-            return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
-        }
-
-        if (voteRequest.term().lessThan(currentTerm)) {
-            return RequestVoteResponse.declined(currentTerm, raftContext.localMermberId());
-        }
-
-        LOGGER.info("{} vote to {} at term {}", raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
-        voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
-        raftContext.tryUpdateCurrentTerm(voteRequest.term());
-
-        return RequestVoteResponse.voted(currentTerm, raftContext.localMermberId());
+        return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
     }
 
     protected boolean canVote(VoteRequest voteRequest) {
         Term currentTerm = raftContext.currentTerm();
+
+        if (voteRequest.term().lessThan(currentTerm)) {
+            return false;
+        }
 
         if (voteRequest.lastLogIndex() < raftContext.lastLogIndex()
             || voteRequest.lastLogTerm().lessThan(raftContext.lastLogTerm())) {
@@ -58,11 +44,7 @@ public abstract class AbstratRaftRole implements RaftRole {
             return true;
         }
 
-        if (!voteTracker().canVote(voteRequest.term(), voteRequest.candidateId())) {
-            return false;
-        }
-
-        return voteRequest.term().greaterThan(currentTerm);
+        return voteTracker().canVote(voteRequest.term(), voteRequest.candidateId());
     }
 
     protected VoteTracker voteTracker() {

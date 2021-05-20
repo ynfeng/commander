@@ -31,6 +31,7 @@ class LeaderTest {
         assertThat(response.isVoted(), is(true));
         assertThat(response.voterId(), is(MemberId.create("server2")));
         assertThat(raftContext.calledBecomeCandidate(), is(true));
+        assertThat(raftContext.calledUpdateTerm(), is(Term.create(2)));
     }
 
     @Test
