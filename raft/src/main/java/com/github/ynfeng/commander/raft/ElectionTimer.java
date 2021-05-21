@@ -18,7 +18,7 @@ public class ElectionTimer extends ManageableSupport {
     public ElectionTimer(long timeout, Runnable timeoutAction) {
         this.timeoutAction = timeoutAction;
         this.timeout = timeout;
-        lastResetTime = Instant.now().toEpochMilli();
+        reset();
     }
 
     private boolean isTimeout() {

@@ -141,7 +141,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     @Override
     public void becomeLeader() {
         serverThreadPool.submit(() -> {
-            LOGGER.info("{} become leader.", localMemberId.id());
+            LOGGER.info("{} become leader at term {}.", localMemberId.id(), currentTerm().value());
             changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval()));
         });
     }
