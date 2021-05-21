@@ -9,10 +9,13 @@ import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
 
 public class Candidate extends AbstratRaftRole {
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final VoteTracker voteTracker;
 
     public Candidate(RaftContext raftContext) {
@@ -63,8 +66,10 @@ public class Candidate extends AbstratRaftRole {
     public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
         RaftContext raftContext = raftContext();
         if (canVote(voteRequest)) {
-            raftContext.voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
+            voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
             raftContext.tryUpdateCurrentTerm(voteRequest.term());
+            LOGGER.info("{} vote to {} at term {}",
+                raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }
         return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());

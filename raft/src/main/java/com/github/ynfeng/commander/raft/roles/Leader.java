@@ -7,11 +7,14 @@ import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
 
 public class Leader extends AbstratRaftRole {
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final RaftContext raftContext;
     private final long heartbeatInterval;
     private final VoteTracker voteTracker;
@@ -61,6 +64,8 @@ public class Leader extends AbstratRaftRole {
             voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
             raftContext.tryUpdateCurrentTerm(voteRequest.term());
             raftContext.becomeCandidate();
+            LOGGER.info("{} vote to {} at term {}",
+                raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }
         return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
