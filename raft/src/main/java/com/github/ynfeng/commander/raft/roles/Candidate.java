@@ -21,24 +21,25 @@ public class Candidate extends AbstratRaftRole {
     public Candidate(RaftContext raftContext) {
         super(raftContext);
         voteTracker = raftContext.voteTracker();
+        raftContext().nextTerm();
+        voteToSelf();
     }
 
     @Override
     public void prepare() {
-        voteTracker.resetVotes();
         raftContext().resumeElectionTimer();
-        raftContext().nextTerm();
+        voteTracker.resetVotes();
         requestVote();
     }
 
     public void requestVote() {
-        voteToSelf();
         askEachRemoteMemberToVote();
     }
 
     private void voteToSelf() {
         MemberId localMermberId = raftContext().localMermberId();
         voteTracker.voteToMe(localMermberId);
+        voteTracker.recordVoteCast(raftContext().currentTerm(), raftContext().localMermberId());
     }
 
     private void askEachRemoteMemberToVote() {
@@ -68,7 +69,7 @@ public class Candidate extends AbstratRaftRole {
         if (canVote(voteRequest)) {
             voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
             raftContext.tryUpdateCurrentTerm(voteRequest.term());
-            LOGGER.info("{} vote to {} at term {}",
+            LOGGER.info("{} is candicate vote to {} at term {}",
                 raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }

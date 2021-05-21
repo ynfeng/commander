@@ -31,7 +31,7 @@ public class ElectionTimer extends ManageableSupport {
     }
 
     public void reset() {
-        long randomMs = ThreadLocalRandom.current().nextLong(150, 300);
+        long randomMs = ThreadLocalRandom.current().nextLong(500, 2000);
         lastResetTime = Instant.now().toEpochMilli() - randomMs;
     }
 

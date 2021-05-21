@@ -68,4 +68,19 @@ class LeaderTest {
 
         assertThat(raftContext.calledBecomeFollower(), is(true));
     }
+
+    @Test
+    void should_become_candicate_when_receive_same_term_heartbeat() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(1));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        Leader leader = new Leader(raftContext, 1000);
+
+        LeaderHeartbeat heartbeat = LeaderHeartbeat.builder()
+            .term(Term.create(1))
+            .build();
+        leader.handleHeartBeat(heartbeat);
+
+        assertThat(raftContext.calledBecomeCandidate(), is(true));
+    }
 }

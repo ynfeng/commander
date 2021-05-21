@@ -54,6 +54,11 @@ class RaftServerTest {
         raftServer2.start();
         raftServer1.start();
 
+        try {
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         server2Communicator.expectRequest(LeaderHeartbeat.class);
     }
 

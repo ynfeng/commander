@@ -64,7 +64,7 @@ public class Leader extends AbstratRaftRole {
             voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
             raftContext.tryUpdateCurrentTerm(voteRequest.term());
             raftContext.becomeCandidate();
-            LOGGER.info("{} vote to {} at term {}",
+            LOGGER.info("{} is leader vote to {} at term {}",
                 raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }
@@ -80,6 +80,10 @@ public class Leader extends AbstratRaftRole {
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
         if (heartbeat.term().greaterThan(raftContext().currentTerm())) {
             raftContext().becomeFollower(heartbeat.leaderId());
+        }
+
+        if (heartbeat.term().equals(raftContext.currentTerm())) {
+            raftContext().becomeCandidate();
         }
     }
 }

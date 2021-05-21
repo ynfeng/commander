@@ -33,14 +33,14 @@ class CandidateTest {
     }
 
     @Test
-    void should_vote_when_request_term_greater_or_equal_current_term() {
+    void should_vote_when_request_term_greater_than_current_term() {
         RaftContextMock raftContext = new RaftContextMock();
         raftContext.setCurrentTerm(Term.create(0));
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Candidate candidate = new Candidate(raftContext);
 
         VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(0))
+            .term(Term.create(1))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
@@ -48,7 +48,7 @@ class CandidateTest {
         RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
 
         assertThat(response.isVoted(), is(true));
-        assertThat(response.term(), is(Term.create(0)));
+        assertThat(response.term(), is(Term.create(1)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
     }
 
@@ -60,55 +60,25 @@ class CandidateTest {
         Candidate candidate = new Candidate(raftContext);
 
         VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(0))
+            .term(Term.create(1))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
         RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
         assertThat(response.isVoted(), is(true));
-        assertThat(response.term(), is(Term.create(0)));
+        assertThat(response.term(), is(Term.create(1)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
 
         voteRequest = VoteRequest.builder()
-            .term(Term.create(0))
+            .term(Term.create(1))
             .candidateId(MemberId.create("server3"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
         response = candidate.handleRequestVote(voteRequest);
         assertThat(response.isVoted(), is(false));
-        assertThat(response.term(), is(Term.create(0)));
-        assertThat(response.voterId(), is(MemberId.create("server2")));
-    }
-
-    @Test
-    void should_vote_when_already_voted_to_current_candidate() {
-        RaftContextMock raftContext = new RaftContextMock();
-        raftContext.setCurrentTerm(Term.create(0));
-        raftContext.setLocalMemberId(MemberId.create("server2"));
-        Candidate candidate = new Candidate(raftContext);
-
-        VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(0))
-            .candidateId(MemberId.create("server1"))
-            .lastLogIndex(0)
-            .lastLogTerm(Term.create(0))
-            .build();
-        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
-        assertThat(response.isVoted(), is(true));
-        assertThat(response.term(), is(Term.create(0)));
-        assertThat(response.voterId(), is(MemberId.create("server2")));
-
-        voteRequest = VoteRequest.builder()
-            .term(Term.create(0))
-            .candidateId(MemberId.create("server1"))
-            .lastLogIndex(0)
-            .lastLogTerm(Term.create(0))
-            .build();
-        response = candidate.handleRequestVote(voteRequest);
-        assertThat(response.isVoted(), is(true));
-        assertThat(response.term(), is(Term.create(0)));
+        assertThat(response.term(), is(Term.create(1)));
         assertThat(response.voterId(), is(MemberId.create("server2")));
     }
 
@@ -120,7 +90,7 @@ class CandidateTest {
         Candidate candidate = new Candidate(raftContext);
 
         VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(0))
+            .term(Term.create(1))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
@@ -129,7 +99,7 @@ class CandidateTest {
         assertThat(response.isVoted(), is(true));
 
         voteRequest = VoteRequest.builder()
-            .term(Term.create(1))
+            .term(Term.create(2))
             .candidateId(MemberId.create("server3"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
