@@ -3,6 +3,7 @@ package com.github.ynfeng.commander.raft.roles;
 import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
+import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class Leader extends AbstratRaftRole {
     private final RaftContext raftContext;
     private final long heartbeatInterval;
+    private final VoteTracker voteTracker;
     private final ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(1,
         new ThreadFactoryBuilder().setNameFormat("heartbeat-thread-%d").build());
 
@@ -20,6 +22,7 @@ public class Leader extends AbstratRaftRole {
         super(raftContext);
         this.raftContext = raftContext;
         this.heartbeatInterval = heartbeatInterval;
+        voteTracker = raftContext().voteTracker();
         raftContext.voteTracker().resetAll();
     }
 
@@ -55,7 +58,7 @@ public class Leader extends AbstratRaftRole {
     @Override
     public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
         if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
-            raftContext.voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
+            voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
             raftContext.tryUpdateCurrentTerm(voteRequest.term());
             raftContext.becomeCandidate();
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());

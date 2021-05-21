@@ -5,6 +5,7 @@ import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.Term;
+import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
@@ -12,14 +13,16 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class Candidate extends AbstratRaftRole {
+    private final VoteTracker voteTracker;
 
     public Candidate(RaftContext raftContext) {
         super(raftContext);
+        voteTracker = raftContext.voteTracker();
     }
 
     @Override
     public void prepare() {
-        raftContext().voteTracker().resetVotes();
+        voteTracker.resetVotes();
         raftContext().resumeElectionTimer();
         raftContext().nextTerm();
         requestVote();
@@ -32,7 +35,7 @@ public class Candidate extends AbstratRaftRole {
 
     private void voteToSelf() {
         MemberId localMermberId = raftContext().localMermberId();
-        voteTracker().voteToMe(localMermberId);
+        voteTracker.voteToMe(localMermberId);
     }
 
     private void askEachRemoteMemberToVote() {
@@ -81,17 +84,17 @@ public class Candidate extends AbstratRaftRole {
             return false;
         }
 
-        if (voteTracker().isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
+        if (voteTracker.isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
             return true;
         }
 
-        return voteTracker().canVote(voteRequest.term(), voteRequest.candidateId());
+        return voteTracker.canVote(voteRequest.term(), voteRequest.candidateId());
     }
 
     private void handleVoteResponse(RequestVoteResponse response) {
         if (response.isVoted()) {
-            voteTracker().voteToMe(response.voterId());
-            if (voteTracker().isQuorum(raftContext().quorum())) {
+            voteTracker.voteToMe(response.voterId());
+            if (voteTracker.isQuorum(raftContext().quorum())) {
                 raftContext().becomeLeader();
             }
         } else {
