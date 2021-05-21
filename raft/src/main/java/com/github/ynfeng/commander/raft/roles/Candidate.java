@@ -4,6 +4,7 @@ import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
+import com.github.ynfeng.commander.raft.Term;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
@@ -61,10 +62,30 @@ public class Candidate extends AbstratRaftRole {
         if (canVote(voteRequest)) {
             raftContext.voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
             raftContext.tryUpdateCurrentTerm(voteRequest.term());
-            raftContext.becomeCandidate();
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }
         return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
+    }
+
+    private boolean canVote(VoteRequest voteRequest) {
+        RaftContext raftContext = raftContext();
+
+        Term currentTerm = raftContext.currentTerm();
+
+        if (voteRequest.term().lessThan(currentTerm)) {
+            return false;
+        }
+
+        if (voteRequest.lastLogIndex() < raftContext.lastLogIndex()
+            || voteRequest.lastLogTerm().lessThan(raftContext.lastLogTerm())) {
+            return false;
+        }
+
+        if (voteTracker().isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
+            return true;
+        }
+
+        return voteTracker().canVote(voteRequest.term(), voteRequest.candidateId());
     }
 
     private void handleVoteResponse(RequestVoteResponse response) {

@@ -38,7 +38,7 @@ public class VoteTracker {
         if (voteTo == null) {
             return true;
         }
-        if (voteTo.term.equals(term) && voteTo.memberId.equals(memberId)) {
+        if (isAlreadyVoteTo(term, memberId)) {
             return true;
         }
         return voteTo.term.lessThan(term);
