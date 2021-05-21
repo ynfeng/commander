@@ -16,17 +16,6 @@ public abstract class AbstratRaftRole implements RaftRole {
         this.raftContext = raftContext;
     }
 
-    @SuppressWarnings( {"MethodLength"})
-    @Override
-    public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
-        if (canVote(voteRequest)) {
-            raftContext.voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
-            raftContext.tryUpdateCurrentTerm(voteRequest.term());
-            raftContext.becomeCandidate();
-            return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
-        }
-        return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
-    }
 
     protected boolean canVote(VoteRequest voteRequest) {
         Term currentTerm = raftContext.currentTerm();

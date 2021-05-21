@@ -55,6 +55,18 @@ public class Candidate extends AbstratRaftRole {
             .build();
     }
 
+    @Override
+    public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
+        RaftContext raftContext = raftContext();
+        if (canVote(voteRequest)) {
+            raftContext.voteTracker().recordVoteCast(voteRequest.term(), voteRequest.candidateId());
+            raftContext.tryUpdateCurrentTerm(voteRequest.term());
+            raftContext.becomeCandidate();
+            return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
+        }
+        return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
+    }
+
     private void handleVoteResponse(RequestVoteResponse response) {
         if (response.isVoted()) {
             voteTracker().voteToMe(response.voterId());
