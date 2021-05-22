@@ -17,6 +17,7 @@ public class Follower extends AbstratRaftRole {
     @Override
     public void prepare() {
         raftContext().resumeElectionTimer();
+        raftContext().resetElectionTimer();
         voteTracker.resetVotes();
     }
 
@@ -38,5 +39,8 @@ public class Follower extends AbstratRaftRole {
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
+        if (heartbeat.term().equals(raftContext().currentTerm())) {
+            raftContext().resetElectionTimer();
+        }
     }
 }

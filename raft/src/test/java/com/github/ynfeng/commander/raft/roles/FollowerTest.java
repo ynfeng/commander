@@ -6,9 +6,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.github.ynfeng.commander.fixture.RaftContextMock;
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.Term;
+import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import org.junit.jupiter.api.Test;
+import sun.plugin2.message.HeartbeatMessage;
 
 class FollowerTest {
 
@@ -88,5 +90,25 @@ class FollowerTest {
 
         assertThat(response.isVoted(), is(true));
         assertThat(raftContext.currentTerm(), is(Term.create(2)));
+    }
+
+    @Test
+    void should_reset_election_timer_when_recieve_same_term_heartbeat() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(1));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        Follower follower = new Follower(raftContext);
+
+        LeaderHeartbeat heartbeat =  LeaderHeartbeat
+            .builder()
+            .term(Term.create(1))
+            .leaderId(MemberId.create("server1"))
+            .prevLogTerm(Term.create(0))
+            .prevLogIndex(0)
+            .build();
+
+        follower.handleHeartBeat(heartbeat);
+
+        assertThat(raftContext.calledResetElectionTimer(), is(true));
     }
 }

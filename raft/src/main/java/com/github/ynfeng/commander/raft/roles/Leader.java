@@ -52,6 +52,7 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public void prepare() {
+        raftContext().pauseElectionTimer();
         heartbeatExecutor.scheduleWithFixedDelay(this::heartbeat,
             heartbeatInterval,
             heartbeatInterval,
@@ -79,7 +80,7 @@ public class Leader extends AbstratRaftRole {
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
         if (heartbeat.term().greaterThan(raftContext().currentTerm())) {
-            raftContext().becomeFollower(heartbeat.leaderId());
+            raftContext().becomeFollower(heartbeat.term(), heartbeat.leaderId());
         }
 
         if (heartbeat.term().equals(raftContext.currentTerm())) {

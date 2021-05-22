@@ -17,6 +17,7 @@ public class RaftContextMock implements RaftContext {
     private boolean becomeLeaderCalled;
     private final VoteTracker voteTracker = new VoteTracker();
     private boolean becomeFollowerCalled;
+    private boolean electionTimerReseted;
 
     @Override
     public void becomeCandidate() {
@@ -85,11 +86,11 @@ public class RaftContextMock implements RaftContext {
 
     @Override
     public void resetElectionTimer() {
-
+        electionTimerReseted = true;
     }
 
     @Override
-    public void becomeFollower(MemberId leaderId) {
+    public void becomeFollower(Term term, MemberId leaderId) {
         becomeFollowerCalled = true;
     }
 
@@ -100,7 +101,6 @@ public class RaftContextMock implements RaftContext {
 
     @Override
     public void resumeElectionTimer() {
-
     }
 
     @Override
@@ -148,5 +148,9 @@ public class RaftContextMock implements RaftContext {
 
     public Term calledUpdateTerm() {
         return currentTerm;
+    }
+
+    public boolean calledResetElectionTimer() {
+        return electionTimerReseted;
     }
 }

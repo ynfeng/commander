@@ -31,7 +31,7 @@ public interface RaftContext {
 
     void resetElectionTimer();
 
-    void becomeFollower(MemberId leaderId);
+    void becomeFollower(Term term, MemberId leaderId);
 
     void pauseElectionTimer();
 

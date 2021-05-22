@@ -27,6 +27,7 @@ public class Candidate extends AbstratRaftRole {
 
     @Override
     public void prepare() {
+        raftContext().resetElectionTimer();
         raftContext().resumeElectionTimer();
         voteTracker.resetVotes();
         requestVote();
@@ -117,7 +118,7 @@ public class Candidate extends AbstratRaftRole {
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
         if (heartbeat.term().greaterOrEqual(raftContext().currentTerm())) {
             raftContext().resetElectionTimer();
-            raftContext().becomeFollower(heartbeat.leaderId());
+            raftContext().becomeFollower(heartbeat.term(), heartbeat.leaderId());
         }
     }
 }
