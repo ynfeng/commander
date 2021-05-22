@@ -10,7 +10,6 @@ import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import org.junit.jupiter.api.Test;
-import sun.plugin2.message.HeartbeatMessage;
 
 class FollowerTest {
 
@@ -99,7 +98,7 @@ class FollowerTest {
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Follower follower = new Follower(raftContext);
 
-        LeaderHeartbeat heartbeat =  LeaderHeartbeat
+        LeaderHeartbeat heartbeat = LeaderHeartbeat
             .builder()
             .term(Term.create(1))
             .leaderId(MemberId.create("server1"))
