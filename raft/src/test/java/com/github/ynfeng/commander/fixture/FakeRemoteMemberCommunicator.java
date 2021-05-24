@@ -20,9 +20,11 @@ public class FakeRemoteMemberCommunicator implements RemoteMemberCommunicator {
     private final Object watitLock = new Object();
     private final AtomicInteger leaderHeartbeatTimes = new AtomicInteger();
     private final AtomicReference<LeaderHeartbeatRecord> lastLeaderHeartBeatHolder = new AtomicReference<>(new LeaderHeartbeatRecord(Term.create(0), MemberId.create("none")));
+    private final MemberId memberId;
 
-    public FakeRemoteMemberCommunicator(RemoteMemberCommunicatorHub hub) {
+    public FakeRemoteMemberCommunicator(RemoteMemberCommunicatorHub hub, MemberId memberId) {
         this.hub = hub;
+        this.memberId = memberId;
     }
 
     @Override
@@ -62,5 +64,9 @@ public class FakeRemoteMemberCommunicator implements RemoteMemberCommunicator {
         synchronized (watitLock) {
             watitLock.wait();
         }
+    }
+
+    public MemberId getMemberId() {
+        return memberId;
     }
 }

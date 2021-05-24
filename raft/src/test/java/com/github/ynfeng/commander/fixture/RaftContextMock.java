@@ -18,6 +18,7 @@ public class RaftContextMock implements RaftContext {
     private final VoteTracker voteTracker = new VoteTracker();
     private boolean becomeFollowerCalled;
     private boolean electionTimerReseted;
+    private MemberId leaderId;
 
     @Override
     public void becomeCandidate() {
@@ -118,6 +119,11 @@ public class RaftContextMock implements RaftContext {
 
     }
 
+    @Override
+    public MemberId currentLeader() {
+        return leaderId;
+    }
+
     public void setCurrentTerm(Term currentTerm) {
         this.currentTerm = currentTerm;
     }
@@ -152,5 +158,9 @@ public class RaftContextMock implements RaftContext {
 
     public boolean calledResetElectionTimer() {
         return electionTimerReseted;
+    }
+
+    public void setCurrentLeader(MemberId leaderId) {
+        this.leaderId = leaderId;
     }
 }

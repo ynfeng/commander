@@ -95,6 +95,7 @@ class FollowerTest {
     void should_reset_election_timer_when_recieve_same_term_heartbeat() {
         RaftContextMock raftContext = new RaftContextMock();
         raftContext.setCurrentTerm(Term.create(1));
+        raftContext.setCurrentLeader(MemberId.create("server1"));
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Follower follower = new Follower(raftContext);
 

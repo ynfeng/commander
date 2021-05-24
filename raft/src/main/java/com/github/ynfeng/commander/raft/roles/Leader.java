@@ -82,9 +82,5 @@ public class Leader extends AbstratRaftRole {
         if (heartbeat.term().greaterThan(raftContext().currentTerm())) {
             raftContext().becomeFollower(heartbeat.term(), heartbeat.leaderId());
         }
-
-        if (heartbeat.term().equals(raftContext.currentTerm())) {
-            raftContext().becomeCandidate();
-        }
     }
 }

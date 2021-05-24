@@ -42,4 +42,6 @@ public interface RaftContext {
     VoteTracker voteTracker();
 
     void nextTerm();
+
+    MemberId currentLeader();
 }
