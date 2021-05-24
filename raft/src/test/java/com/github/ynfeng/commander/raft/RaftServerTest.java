@@ -6,11 +6,9 @@ import static org.hamcrest.CoreMatchers.is;
 import com.github.ynfeng.commander.fixture.FakeRemoteMemberCommunicator;
 import com.github.ynfeng.commander.fixture.RaftMemberDiscoveryStub;
 import com.github.ynfeng.commander.fixture.RemoteMemberCommunicatorHub;
-import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.support.Address;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class RaftServerTest {
@@ -36,8 +34,7 @@ class RaftServerTest {
     }
 
     @Test
-    @Disabled
-    void should_receive_heartbeat_after_leader_elected() {
+    void should_elected_leader_given_3_members() throws InterruptedException {
         FakeRemoteMemberCommunicator server1Communicator = new FakeRemoteMemberCommunicator(communicatorHub);
         communicatorHub.registerCommunicator(MemberId.create("server1"), server1Communicator);
         RaftServer raftServer1 = createRaftServer(server1Communicator, MemberId.create("server1"), REMOTE_MEMBER2, REMOTE_MEMBER3);
@@ -54,12 +51,7 @@ class RaftServerTest {
         raftServer2.start();
         raftServer1.start();
 
-        try {
-            Thread.sleep(100000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        server2Communicator.expectRequest(LeaderHeartbeat.class);
+        server2Communicator.expectLeader();
     }
 
     @Test

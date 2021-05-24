@@ -1,19 +1,25 @@
 package com.github.ynfeng.commander.fixture;
 
+import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
+import com.github.ynfeng.commander.raft.Term;
+import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.Request;
 import com.github.ynfeng.commander.raft.protocol.Response;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class FakeRemoteMemberCommunicator implements RemoteMemberCommunicator {
     private final RemoteMemberCommunicatorHub hub;
     private final Map<Class<? extends Request>, Function<? extends Request, ? extends Response>> handlers = Maps.newHashMap();
-    private final Object lock = new Object();
-    private Request receivedRequest;
+    private final Object watitLock = new Object();
+    private final AtomicInteger leaderHeartbeatTimes = new AtomicInteger();
+    private final AtomicReference<LeaderHeartbeatRecord> lastLeaderHeartBeatHolder = new AtomicReference<>(new LeaderHeartbeatRecord(Term.create(0), MemberId.create("none")));
 
     public FakeRemoteMemberCommunicator(RemoteMemberCommunicatorHub hub) {
         this.hub = hub;
@@ -29,28 +35,32 @@ public class FakeRemoteMemberCommunicator implements RemoteMemberCommunicator {
         handlers.put(requestType, action);
     }
 
-    @SuppressWarnings("unchecked")
     public Response receiveRequest(Request request) {
-        synchronized (lock) {
-            receivedRequest = request;
-            lock.notifyAll();
+        LeaderHeartbeatRecord lastLeaderHeartbeat = lastLeaderHeartBeatHolder.get();
+        if (request instanceof LeaderHeartbeat) {
+            LeaderHeartbeat heartbeat = (LeaderHeartbeat) request;
+            if (lastLeaderHeartbeat.isSame(heartbeat.term(), heartbeat.leaderId())) {
+                int times = leaderHeartbeatTimes.incrementAndGet();
+                if (times == 5) {
+                    synchronized (watitLock) {
+                        watitLock.notifyAll();
+                    }
+                }
+            } else {
+                leaderHeartbeatTimes.set(0);
+            }
+            lastLeaderHeartBeatHolder.set(new LeaderHeartbeatRecord(heartbeat.term(), heartbeat.leaderId()));
         }
         Function<Request, Response> function = (Function<Request, Response>) handlers.get(request.getClass());
         return function.apply(request);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends Request> T expectRequest(Class<T> requestType) {
-        while (true) {
-            synchronized (lock) {
-                try {
-                    lock.wait();
-                    if (receivedRequest.getClass().equals(requestType)) {
-                        return (T) receivedRequest;
-                    }
-                } catch (InterruptedException ignored) {
-                }
-            }
+    public void expectLeader() throws InterruptedException {
+        if (leaderHeartbeatTimes.get() >= 5) {
+            return;
+        }
+        synchronized (watitLock) {
+            watitLock.wait();
         }
     }
 }
