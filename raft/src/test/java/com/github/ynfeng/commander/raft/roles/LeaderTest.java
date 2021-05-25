@@ -14,11 +14,11 @@ import org.junit.jupiter.api.Test;
 class LeaderTest {
 
     @Test
-    void should_become_candidate_when_receive_greater_term_vote_request() {
+    void should_become_candicate_when_recive_greater_term_vote_request() {
         RaftContextMock raftContext = new RaftContextMock();
         raftContext.setCurrentTerm(Term.create(1));
         raftContext.setLocalMemberId(MemberId.create("server2"));
-        Leader leader = new Leader(raftContext, 1000);
+        Leader leader = new Leader(raftContext, 100);
 
         VoteRequest voteRequest = VoteRequest.builder()
             .term(Term.create(2))
@@ -26,31 +26,30 @@ class LeaderTest {
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = leader.handleRequestVote(voteRequest);
 
-        assertThat(response.isVoted(), is(true));
-        assertThat(response.voterId(), is(MemberId.create("server2")));
+        RequestVoteResponse response = leader.handleRequestVote(voteRequest);
+        assertThat(response.isVoted(), is(false));
+        assertThat(raftContext.currentTerm(), is(Term.create(2)));
         assertThat(raftContext.calledBecomeCandidate(), is(true));
-        assertThat(raftContext.calledUpdateTerm(), is(Term.create(2)));
     }
 
     @Test
-    void should_deceline_vote_when_receive_lower_term_vote_request() {
+    void should_not_become_candicate_when_receive_less_or_equal_term_vote_request() {
         RaftContextMock raftContext = new RaftContextMock();
         raftContext.setCurrentTerm(Term.create(1));
         raftContext.setLocalMemberId(MemberId.create("server2"));
-        Leader leader = new Leader(raftContext, 1000);
+        Leader leader = new Leader(raftContext, 100);
 
         VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(0))
+            .term(Term.create(1))
             .candidateId(MemberId.create("server1"))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
-        RequestVoteResponse response = leader.handleRequestVote(voteRequest);
 
+        RequestVoteResponse response = leader.handleRequestVote(voteRequest);
         assertThat(response.isVoted(), is(false));
-        assertThat(response.voterId(), is(MemberId.create("server2")));
+        assertThat(raftContext.currentTerm(), is(Term.create(1)));
         assertThat(raftContext.calledBecomeCandidate(), is(false));
     }
 
@@ -59,12 +58,17 @@ class LeaderTest {
         RaftContextMock raftContext = new RaftContextMock();
         raftContext.setCurrentTerm(Term.create(1));
         raftContext.setLocalMemberId(MemberId.create("server2"));
-        Leader leader = new Leader(raftContext, 1000);
+        Leader leader = new Leader(raftContext, 100);
 
-        LeaderHeartbeat heartbeat = LeaderHeartbeat.builder()
+        LeaderHeartbeat leaderHeartbeat = LeaderHeartbeat.builder()
+            .prevLogIndex(0)
             .term(Term.create(2))
+            .leaderId(MemberId.create("server1"))
+            .prevLogTerm(Term.create(0))
+            .leaderCommit(0)
             .build();
-        leader.handleHeartBeat(heartbeat);
+
+        leader.handleHeartBeat(leaderHeartbeat);
 
         assertThat(raftContext.calledBecomeFollower(), is(true));
     }
