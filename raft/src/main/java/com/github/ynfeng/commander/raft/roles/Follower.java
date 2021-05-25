@@ -31,9 +31,7 @@ public class Follower extends AbstratRaftRole {
         if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
             raftContext().becomeCandidate();
             raftContext().tryUpdateCurrentTerm(voteRequest.term());
-            return RequestVoteResponse.voted(raftContext().currentTerm(), raftContext().localMermberId());
         }
-
         return RequestVoteResponse.declined(raftContext().currentTerm(), raftContext().localMermberId());
     }
 

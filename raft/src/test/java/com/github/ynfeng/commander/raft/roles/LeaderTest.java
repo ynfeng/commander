@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 class LeaderTest {
 
     @Test
-    void should_become_candicate_when_recive_greater_term_vote_request() {
+    void should_become_candicate_when_receive_greater_term_vote_request() {
         RaftContextMock raftContext = new RaftContextMock();
         raftContext.setCurrentTerm(Term.create(1));
         raftContext.setLocalMemberId(MemberId.create("server2"));
@@ -49,6 +49,8 @@ class LeaderTest {
 
         RequestVoteResponse response = leader.handleRequestVote(voteRequest);
         assertThat(response.isVoted(), is(false));
+        assertThat(response.voterId(), is(MemberId.create("server2")));
+        assertThat(response.term(), is(Term.create(1)));
         assertThat(raftContext.currentTerm(), is(Term.create(1)));
         assertThat(raftContext.calledBecomeCandidate(), is(false));
     }
