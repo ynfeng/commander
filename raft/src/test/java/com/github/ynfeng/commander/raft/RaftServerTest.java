@@ -78,6 +78,12 @@ class RaftServerTest {
         raftServer2.start();
         raftServer1.start();
         raftServer4.start();
+
+        Thread.sleep(1000 * 10);
+        System.out.println();
+        System.out.println("shutdown server");
+        raftServer1.shutdown();
+        Thread.sleep(1000 * 60);
     }
 
     @Test

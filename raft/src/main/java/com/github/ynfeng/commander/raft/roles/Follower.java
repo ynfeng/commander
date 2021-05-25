@@ -5,8 +5,11 @@ import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
+import org.slf4j.Logger;
 
 public class Follower extends AbstratRaftRole {
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
 
     public Follower(RaftContext raftContext) {
         super(raftContext);

@@ -37,6 +37,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     }
 
     private void electionTimeout() {
+        LOGGER.info("{} election time out at term {}", localMermberId().id(), currentTerm().value());
         electionTimer.reset();
         becomeCandidate();
     }
@@ -80,6 +81,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     protected void doShutdown() {
         electionTimer.shutdown();
         raftMemberDiscovery.shutdown();
+        role.get().destory();
     }
 
     @Override
