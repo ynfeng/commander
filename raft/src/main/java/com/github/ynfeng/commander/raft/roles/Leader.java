@@ -57,13 +57,15 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
-        if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
-            raftContext.tryUpdateCurrentTerm(voteRequest.term());
-            raftContext.becomeCandidate();
-            LOGGER.info("{} is leader vote to {} at term {}",
-                raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
+        synchronized (raftContext) {
+            if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
+                raftContext.tryUpdateCurrentTerm(voteRequest.term());
+                raftContext.becomeCandidate();
+                LOGGER.info("{} is leader vote to {} at term {}",
+                    raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
+            }
+            return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
         }
-        return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
     }
 
     @Override
@@ -73,8 +75,10 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
-        if (heartbeat.term().greaterThan(raftContext().currentTerm())) {
-            raftContext().becomeFollower(heartbeat.term(), heartbeat.leaderId());
+        synchronized (raftContext) {
+            if (heartbeat.term().greaterThan(raftContext().currentTerm())) {
+                raftContext.becomeFollower(heartbeat.term(), heartbeat.leaderId());
+            }
         }
     }
 }

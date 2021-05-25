@@ -28,18 +28,22 @@ public class Follower extends AbstratRaftRole {
 
     @Override
     public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
-        if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
-            raftContext().becomeCandidate();
-            raftContext().tryUpdateCurrentTerm(voteRequest.term());
+        synchronized (raftContext()) {
+            if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
+                raftContext().becomeCandidate();
+                raftContext().tryUpdateCurrentTerm(voteRequest.term());
+            }
+            return RequestVoteResponse.declined(raftContext().currentTerm(), raftContext().localMermberId());
         }
-        return RequestVoteResponse.declined(raftContext().currentTerm(), raftContext().localMermberId());
     }
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
-        if (heartbeat.term().equals(raftContext().currentTerm())
-            && heartbeat.leaderId().equals(raftContext().currentLeader())) {
-            raftContext().resetElectionTimer();
+        synchronized (raftContext()) {
+            if (heartbeat.term().equals(raftContext().currentTerm())
+                && heartbeat.leaderId().equals(raftContext().currentLeader())) {
+                raftContext().resetElectionTimer();
+            }
         }
     }
 }
