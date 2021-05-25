@@ -28,7 +28,12 @@ class RaftServerTest {
 
     @Test
     void should_start_raft_server() {
-        RaftServer raftServer = createDefaultRaftServer(new FakeRemoteMemberCommunicator(communicatorHub, MemberId.create("server1")), REMOTE_MEMBER2, REMOTE_MEMBER3);
+        RaftGroup raftGroup = RaftGroup.create()
+            .addMemberId(MemberId.create("server1"))
+            .addMemberId(MemberId.create("server2"))
+            .addMemberId(MemberId.create("server3"));
+        FakeRemoteMemberCommunicator communicator = new FakeRemoteMemberCommunicator(communicatorHub, MemberId.create("server1"));
+        RaftServer raftServer = createDefaultRaftServer(communicator, raftGroup, REMOTE_MEMBER2, REMOTE_MEMBER3);
 
         raftServer.start();
 
@@ -40,24 +45,33 @@ class RaftServerTest {
     @Test
     @Disabled
     void should_elected_leader_given_3_members() throws InterruptedException {
-        RaftServer raftServer1 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server1")), 0, 3);
-        RaftServer raftServer2 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server2")), 1, 3);
-        RaftServer raftServer3 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server3")), 2, 3);
+        RaftGroup raftGroup = RaftGroup.create()
+            .addMemberId(MemberId.create("server1"))
+            .addMemberId(MemberId.create("server2"))
+            .addMemberId(MemberId.create("server3"));
+        RaftServer raftServer1 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server1")), raftGroup, 0, 3);
+        RaftServer raftServer2 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server2")), raftGroup, 1, 3);
+        RaftServer raftServer3 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server3")), raftGroup, 2, 3);
 
-        raftServer3.start();
         raftServer2.start();
+        raftServer3.start();
         raftServer1.start();
-
     }
 
     @Test
     @Disabled
     void should_elected_leader_given_5_members() throws InterruptedException {
-        RaftServer raftServer1 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server1")), 0, 5);
-        RaftServer raftServer2 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server2")), 1, 5);
-        RaftServer raftServer3 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server3")), 2, 5);
-        RaftServer raftServer4 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server4")), 3, 5);
-        RaftServer raftServer5 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server5")), 4, 5);
+        RaftGroup raftGroup = RaftGroup.create()
+            .addMemberId(MemberId.create("server1"))
+            .addMemberId(MemberId.create("server2"))
+            .addMemberId(MemberId.create("server3"))
+            .addMemberId(MemberId.create("server4"))
+            .addMemberId(MemberId.create("server5"));
+        RaftServer raftServer1 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server1")), raftGroup, 0, 5);
+        RaftServer raftServer2 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server2")), raftGroup, 1, 5);
+        RaftServer raftServer3 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server3")), raftGroup, 2, 5);
+        RaftServer raftServer4 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server4")), raftGroup, 3, 5);
+        RaftServer raftServer5 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server5")), raftGroup, 4, 5);
 
         raftServer5.start();
         raftServer3.start();
@@ -68,8 +82,12 @@ class RaftServerTest {
 
     @Test
     void should_next_term_when_become_candicate() {
+        RaftGroup raftGroup = RaftGroup.create()
+            .addMemberId(MemberId.create("server1"))
+            .addMemberId(MemberId.create("server2"))
+            .addMemberId(MemberId.create("server3"));
         FakeRemoteMemberCommunicator communicator = new FakeRemoteMemberCommunicator(communicatorHub, MemberId.create("server1"));
-        RaftServer raftServer = createDefaultRaftServer(communicator, REMOTE_MEMBER2, REMOTE_MEMBER3);
+        RaftServer raftServer = createDefaultRaftServer(communicator, raftGroup, REMOTE_MEMBER2, REMOTE_MEMBER3);
 
         raftServer.start();
 
@@ -91,8 +109,9 @@ class RaftServerTest {
         return result;
     }
 
-    private static RaftServer createRaftServer(FakeRemoteMemberCommunicator communicator, int serverIdx, int size) {
-        return createDefaultRaftServer(communicator, getRemoteMembers(serverIdx, size));
+    private static RaftServer createRaftServer(FakeRemoteMemberCommunicator communicator, RaftGroup raftGroup, int serverIdx, int size) {
+
+        return createDefaultRaftServer(communicator, raftGroup, getRemoteMembers(serverIdx, size));
     }
 
     private FakeRemoteMemberCommunicator createFakeRemoteMemberCommunicator(MemberId memberId) {
@@ -102,7 +121,7 @@ class RaftServerTest {
     }
 
 
-    private static RaftServer createDefaultRaftServer(FakeRemoteMemberCommunicator communicator, RemoteMember... remoteMembers) {
+    private static RaftServer createDefaultRaftServer(FakeRemoteMemberCommunicator communicator, RaftGroup raftGroup, RemoteMember... remoteMembers) {
         RaftMemberDiscoveryStub raftMemberDiscovery = new RaftMemberDiscoveryStub();
         raftMemberDiscovery.addRemoteMember(remoteMembers);
         return RaftServer.builder()
@@ -115,10 +134,7 @@ class RaftServerTest {
                 .build())
             .raftMemberDiscovery(raftMemberDiscovery)
             .remoteMemberCommunicator(communicator)
-            .raftGroup(RaftGroup.create()
-                .addMemberId(MemberId.create("server1"))
-                .addMemberId(MemberId.create("server2"))
-                .addMemberId(MemberId.create("server3")))
+            .raftGroup(raftGroup)
             .build();
     }
 }

@@ -22,13 +22,14 @@ public class Candidate extends AbstratRaftRole {
         voteTracker = raftContext.voteTracker();
         raftContext().nextTerm();
         voteToSelf();
+        LOGGER.info("{} become candidate at term {}.",
+            raftContext.localMermberId().id(), raftContext.currentTerm().value());
     }
 
     @Override
     public void prepare() {
         raftContext().resetElectionTimer();
         raftContext().resumeElectionTimer();
-        voteTracker.resetVotes();
         requestVote();
     }
 
@@ -63,32 +64,8 @@ public class Candidate extends AbstratRaftRole {
             .build();
     }
 
-    @SuppressWarnings( {"checkstyle:CyclomaticComplexity", "checkstyle:MethodLength"})
-    @Override
-    public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
-        RaftContext raftContext = raftContext();
-
-        synchronized (raftContext) {
-            if (voteTracker.isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
-                return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
-            }
-
-            if (voteTracker.termIsVoted(voteRequest.term())) {
-                return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
-            }
-
-            if (voteRequest.term().greaterOrEqual(raftContext.currentTerm())
-                && voteRequest.lastLogIndex() >= raftContext.lastLogIndex()
-                && voteRequest.lastLogTerm().greaterOrEqual(raftContext.lastLogTerm())) {
-                return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
-            }
-
-            return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
-        }
-    }
-
     private void handleVoteResponse(RequestVoteResponse response) {
-        if (response.isVoted()) {
+        if (response.isVoted() && !raftContext().isLeader()) {
             voteTracker.voteToMe(response.voterId());
             if (voteTracker.isQuorum(raftContext().quorum())) {
                 raftContext().becomeLeader();
@@ -98,6 +75,36 @@ public class Candidate extends AbstratRaftRole {
         }
     }
 
+    @SuppressWarnings( {"checkstyle:CyclomaticComplexity", "checkstyle:MethodLength"})
+    @Override
+    public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
+        RaftContext raftContext = raftContext();
+
+        if (voteTracker.isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
+            LOGGER.info("{} vote to {} at term {}",
+                raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
+            raftContext.tryUpdateCurrentTerm(voteRequest.term());
+            return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
+        }
+
+        if (voteTracker.termIsVoted(voteRequest.term())) {
+
+            return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
+        }
+
+        if (voteRequest.term().greaterOrEqual(raftContext.currentTerm())
+            && voteRequest.lastLogIndex() >= raftContext.lastLogIndex()
+            && voteRequest.lastLogTerm().greaterOrEqual(raftContext.lastLogTerm())) {
+            LOGGER.info("{} vote to {} at term {}",
+                raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
+            voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
+            raftContext.tryUpdateCurrentTerm(voteRequest.term());
+            return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
+        }
+
+        return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
+    }
+
     @Override
     public void destory() {
         //do nothing
@@ -105,7 +112,7 @@ public class Candidate extends AbstratRaftRole {
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
-        if (heartbeat.term().equals(raftContext().currentTerm())) {
+        if (heartbeat.term().greaterOrEqual(raftContext().currentTerm())) {
             raftContext().resetElectionTimer();
             raftContext().becomeFollower(heartbeat.term(), heartbeat.leaderId());
         }

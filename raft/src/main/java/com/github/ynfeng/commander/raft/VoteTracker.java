@@ -44,13 +44,9 @@ public class VoteTracker {
         return voteTo.term.lessThan(term);
     }
 
-    public void resetAll() {
+    public void reset() {
         votes.clear();
         voteTo.set(null);
-    }
-
-    public void resetVotes() {
-        votes.clear();
     }
 
     public boolean termIsVoted(Term term) {

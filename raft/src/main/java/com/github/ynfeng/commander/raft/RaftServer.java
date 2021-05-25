@@ -12,10 +12,7 @@ import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.base.Preconditions;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 
@@ -31,27 +28,21 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private RaftMemberDiscovery raftMemberDiscovery;
     private RemoteMemberCommunicator remoteMemberCommunicator;
     private final AtomicReference<Term> currentTerm = new AtomicReference<>();
-    private final ExecutorService serverThreadPool;
     private final VoteTracker voteTracker = new VoteTracker();
 
     private RaftServer(RaftConfig raftConfig) {
         this.raftConfig = raftConfig;
         currentTerm.set(Term.create(0));
-        serverThreadPool = Executors.newFixedThreadPool(raftConfig.threadPoolSize(),
-            new ThreadFactoryBuilder().setNameFormat("raft-server-thread-%d").build());
         electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::electionTimeout);
     }
 
     private void electionTimeout() {
-        serverThreadPool.submit(() -> {
-            electionTimer.reset();
-            becomeCandidate();
-        });
+        electionTimer.reset();
+        becomeCandidate();
     }
 
     @Override
     public void becomeCandidate() {
-        LOGGER.info("{} become candidate.", localMemberId.id());
         changeRole(new Candidate(this));
     }
 
@@ -140,10 +131,8 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public void becomeLeader() {
-        serverThreadPool.submit(() -> {
-            LOGGER.info("{} become leader at term {}.", localMemberId.id(), currentTerm().value());
-            changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval()));
-        });
+        LOGGER.info("{} become leader at term {}.", localMemberId.id(), currentTerm().value());
+        changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval()));
     }
 
     @Override
@@ -168,12 +157,10 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public void becomeFollower(Term term, MemberId leaderId) {
-        serverThreadPool.submit(() -> {
-            LOGGER.info("{} become follower at {} current leader is {}.",
-                localMemberId.id(), term.value(), leaderId.id());
-            leader.set(leaderId);
-            changeRole(new Follower(this));
-        });
+        LOGGER.info("{} become follower at term {} current leader is {}.",
+            localMemberId.id(), term.value(), leaderId.id());
+        leader.set(leaderId);
+        changeRole(new Follower(this));
     }
 
     @Override
@@ -204,6 +191,14 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     @Override
     public MemberId currentLeader() {
         return leader.get();
+    }
+
+    @Override
+    public boolean isLeader() {
+        if (role.get() == null) {
+            return false;
+        }
+        return role.get() instanceof Leader;
     }
 
     public static class Builder {

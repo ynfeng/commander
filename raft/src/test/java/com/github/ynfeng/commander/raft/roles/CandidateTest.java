@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.github.ynfeng.commander.fixture.RaftContextMock;
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.Term;
+import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
@@ -137,26 +138,6 @@ class CandidateTest {
     }
 
     @Test
-    void should_not_reset_election_timer_when_receive_greater_term_heartbeat() {
-        RaftContextMock raftContext = new RaftContextMock();
-        raftContext.setCurrentTerm(Term.create(1));
-        raftContext.setLocalMemberId(MemberId.create("server2"));
-        Candidate candidate = new Candidate(raftContext);
-
-        LeaderHeartbeat leaderHeartbeat = LeaderHeartbeat.builder()
-            .prevLogIndex(0)
-            .term(Term.create(2))
-            .leaderId(MemberId.create("server1"))
-            .prevLogTerm(Term.create(0))
-            .leaderCommit(0)
-            .build();
-
-        candidate.handleHeartBeat(leaderHeartbeat);
-
-        assertThat(raftContext.calledResetElectionTimer(), is(false));
-    }
-
-    @Test
     void should_not_reset_election_timer_when_receive_lower_term_heartbeat() {
         RaftContextMock raftContext = new RaftContextMock();
         raftContext.setCurrentTerm(Term.create(1));
@@ -194,7 +175,7 @@ class CandidateTest {
 
         assertThat(response.isVoted(), is(true));
         assertThat(response.voterId(), is(MemberId.create("server2")));
-        assertThat(response.term(), is(Term.create(1)));
+        assertThat(response.term(), is(Term.create(2)));
     }
 
     @Test
@@ -261,5 +242,46 @@ class CandidateTest {
         assertThat(response.isVoted(), is(false));
         assertThat(response.voterId(), is(MemberId.create("server2")));
         assertThat(response.term(), is(Term.create(1)));
+    }
+
+    @Test
+    void should_record_vote_cast_when_vote() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(1));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        Candidate candidate = new Candidate(raftContext);
+
+        VoteRequest voteRequest = VoteRequest.builder()
+            .term(Term.create(2))
+            .candidateId(MemberId.create("server3"))
+            .lastLogIndex(0)
+            .lastLogTerm(Term.create(0))
+            .build();
+
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
+
+        VoteTracker voteTracker = raftContext.voteTracker();
+        assertThat(response.isVoted(), is(true));
+        assertThat(voteTracker.isAlreadyVoteTo(Term.create(2), MemberId.create("server3")), is(true));
+    }
+
+    @Test
+    void should_update_current_when_vote() {
+        RaftContextMock raftContext = new RaftContextMock();
+        raftContext.setCurrentTerm(Term.create(1));
+        raftContext.setLocalMemberId(MemberId.create("server2"));
+        Candidate candidate = new Candidate(raftContext);
+
+        VoteRequest voteRequest = VoteRequest.builder()
+            .term(Term.create(2))
+            .candidateId(MemberId.create("server3"))
+            .lastLogIndex(0)
+            .lastLogTerm(Term.create(0))
+            .build();
+
+        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
+
+        assertThat(response.isVoted(), is(true));
+        assertThat(raftContext.calledUpdateTerm(), is(Term.create(2)));
     }
 }

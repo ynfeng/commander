@@ -128,6 +128,11 @@ public class RaftContextMock implements RaftContext {
         return leaderId;
     }
 
+    @Override
+    public boolean isLeader() {
+        return false;
+    }
+
     public void setCurrentTerm(Term currentTerm) {
         this.currentTerm = currentTerm;
     }

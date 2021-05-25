@@ -44,4 +44,6 @@ public interface RaftContext {
     void nextTerm();
 
     MemberId currentLeader();
+
+    boolean isLeader();
 }

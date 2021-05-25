@@ -6,14 +6,11 @@ import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
-import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
 
 public class Leader extends AbstratRaftRole {
-    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final RaftContext raftContext;
     private final long heartbeatInterval;
     private final ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(1,
@@ -23,7 +20,7 @@ public class Leader extends AbstratRaftRole {
         super(raftContext);
         this.raftContext = raftContext;
         this.heartbeatInterval = heartbeatInterval;
-        raftContext.voteTracker().resetAll();
+        raftContext.voteTracker().reset();
     }
 
     private void heartbeat() {
@@ -57,15 +54,11 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
-        synchronized (raftContext) {
-            if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
-                raftContext.tryUpdateCurrentTerm(voteRequest.term());
-                raftContext.becomeCandidate();
-                LOGGER.info("{} is leader vote to {} at term {}",
-                    raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
-            }
-            return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
+        if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
+            raftContext.tryUpdateCurrentTerm(voteRequest.term());
+            raftContext.becomeCandidate();
         }
+        return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
     }
 
     @Override
@@ -75,10 +68,8 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
-        synchronized (raftContext) {
-            if (heartbeat.term().greaterThan(raftContext().currentTerm())) {
-                raftContext.becomeFollower(heartbeat.term(), heartbeat.leaderId());
-            }
+        if (heartbeat.term().greaterThan(raftContext().currentTerm())) {
+            raftContext.becomeFollower(heartbeat.term(), heartbeat.leaderId());
         }
     }
 }
