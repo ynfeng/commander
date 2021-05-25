@@ -53,6 +53,14 @@ public class VoteTracker {
         votes.clear();
     }
 
+    public boolean termIsVoted(Term term) {
+        VoteTo voteTo = this.voteTo.get();
+        if (voteTo == null) {
+            return false;
+        }
+        return voteTo.term.equals(term);
+    }
+
     static class VoteTo {
         private final Term term;
         private final MemberId memberId;

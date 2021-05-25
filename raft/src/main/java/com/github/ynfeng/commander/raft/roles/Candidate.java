@@ -64,16 +64,25 @@ public class Candidate extends AbstratRaftRole {
             .build();
     }
 
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     @Override
     public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
         RaftContext raftContext = raftContext();
-        if (canVote(voteRequest)) {
-            voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
-            raftContext.tryUpdateCurrentTerm(voteRequest.term());
-            LOGGER.info("{} is candicate vote to {} at term {}",
-                raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
+
+        if (voteTracker.isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }
+
+        if (voteTracker.termIsVoted(voteRequest.term())) {
+            return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
+        }
+
+        if (voteRequest.term().greaterOrEqual(raftContext.currentTerm())
+            && voteRequest.lastLogIndex() >= raftContext.lastLogIndex()
+            && voteRequest.lastLogTerm().greaterOrEqual(raftContext.lastLogTerm())) {
+            return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
+        }
+
         return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());
     }
 
@@ -116,7 +125,7 @@ public class Candidate extends AbstratRaftRole {
 
     @Override
     public void handleHeartBeat(LeaderHeartbeat heartbeat) {
-        if (heartbeat.term().greaterOrEqual(raftContext().currentTerm())) {
+        if (heartbeat.term().equals(raftContext().currentTerm())) {
             raftContext().resetElectionTimer();
             raftContext().becomeFollower(heartbeat.term(), heartbeat.leaderId());
         }

@@ -169,7 +169,8 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     @Override
     public void becomeFollower(Term term, MemberId leaderId) {
         serverThreadPool.submit(() -> {
-            LOGGER.info("{} become follower at {} current leader is {}.", localMemberId.id(), term.value(), leaderId.id());
+            LOGGER.info("{} become follower at {} current leader is {}.",
+                localMemberId.id(), term.value(), leaderId.id());
             leader.set(leaderId);
             changeRole(new Follower(this));
         });

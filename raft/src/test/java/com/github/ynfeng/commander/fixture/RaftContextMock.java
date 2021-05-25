@@ -15,10 +15,14 @@ public class RaftContextMock implements RaftContext {
     private Term lastLogTerm = Term.create(0);
     private boolean becomeCandidateCalled;
     private boolean becomeLeaderCalled;
-    private final VoteTracker voteTracker = new VoteTracker();
+    private VoteTracker voteTracker = new VoteTracker();
     private boolean becomeFollowerCalled;
     private boolean electionTimerReseted;
     private MemberId leaderId;
+
+    public void setVoteTracker(VoteTracker voteTracker) {
+        this.voteTracker = voteTracker;
+    }
 
     @Override
     public void becomeCandidate() {
