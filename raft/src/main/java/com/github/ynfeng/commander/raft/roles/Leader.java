@@ -20,7 +20,6 @@ public class Leader extends AbstratRaftRole {
         super(raftContext);
         this.raftContext = raftContext;
         this.heartbeatInterval = heartbeatInterval;
-        raftContext.voteTracker().reset();
     }
 
     private void heartbeat() {
@@ -55,7 +54,6 @@ public class Leader extends AbstratRaftRole {
     @Override
     public RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
         if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
-            raftContext.tryUpdateCurrentTerm(voteRequest.term());
             raftContext.becomeCandidate();
         }
         return RequestVoteResponse.declined(raftContext.currentTerm(), raftContext.localMermberId());

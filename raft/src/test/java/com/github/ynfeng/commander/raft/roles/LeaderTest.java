@@ -29,7 +29,7 @@ class LeaderTest {
 
         RequestVoteResponse response = leader.handleRequestVote(voteRequest);
         assertThat(response.isVoted(), is(false));
-        assertThat(raftContext.currentTerm(), is(Term.create(2)));
+        assertThat(raftContext.currentTerm(), is(Term.create(1)));
         assertThat(raftContext.calledBecomeCandidate(), is(true));
     }
 

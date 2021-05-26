@@ -175,7 +175,7 @@ class CandidateTest {
 
         assertThat(response.isVoted(), is(true));
         assertThat(response.voterId(), is(MemberId.create("server2")));
-        assertThat(response.term(), is(Term.create(2)));
+        assertThat(response.term(), is(Term.create(1)));
     }
 
     @Test
@@ -263,25 +263,5 @@ class CandidateTest {
         VoteTracker voteTracker = raftContext.voteTracker();
         assertThat(response.isVoted(), is(true));
         assertThat(voteTracker.isAlreadyVoteTo(Term.create(2), MemberId.create("server3")), is(true));
-    }
-
-    @Test
-    void should_update_current_when_vote() {
-        RaftContextMock raftContext = new RaftContextMock();
-        raftContext.setCurrentTerm(Term.create(1));
-        raftContext.setLocalMemberId(MemberId.create("server2"));
-        Candidate candidate = new Candidate(raftContext);
-
-        VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(2))
-            .candidateId(MemberId.create("server3"))
-            .lastLogIndex(0)
-            .lastLogTerm(Term.create(0))
-            .build();
-
-        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
-
-        assertThat(response.isVoted(), is(true));
-        assertThat(raftContext.calledUpdateTerm(), is(Term.create(2)));
     }
 }

@@ -29,7 +29,7 @@ class FollowerTest {
 
         assertThat(response.isVoted(), is(false));
         assertThat(response.voterId(), is(MemberId.create("server2")));
-        assertThat(response.term(), is(Term.create(2)));
+        assertThat(response.term(), is(Term.create(1)));
         assertThat(raftContext.calledBecomeCandidate(), is(true));
     }
 

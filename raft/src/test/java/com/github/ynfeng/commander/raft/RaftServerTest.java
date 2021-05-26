@@ -56,6 +56,8 @@ class RaftServerTest {
         raftServer2.start();
         raftServer3.start();
         raftServer1.start();
+
+        Thread.sleep(1000 * 10);
     }
 
     @Test

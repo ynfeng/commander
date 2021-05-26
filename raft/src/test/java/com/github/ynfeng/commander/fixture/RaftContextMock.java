@@ -60,11 +60,6 @@ public class RaftContextMock implements RaftContext {
     }
 
     @Override
-    public void tryUpdateCurrentTerm(Term term) {
-        currentTerm = term;
-    }
-
-    @Override
     public int quorum() {
         return 0;
     }
@@ -106,11 +101,6 @@ public class RaftContextMock implements RaftContext {
 
     @Override
     public void resumeElectionTimer() {
-    }
-
-    @Override
-    public void setLeader(MemberId leaderId) {
-
     }
 
     @Override

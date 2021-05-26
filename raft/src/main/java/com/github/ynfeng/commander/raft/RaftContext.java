@@ -17,8 +17,6 @@ public interface RaftContext {
 
     Term currentTerm();
 
-    void tryUpdateCurrentTerm(Term term);
-
     int quorum();
 
     void becomeLeader();
@@ -36,8 +34,6 @@ public interface RaftContext {
     void pauseElectionTimer();
 
     void resumeElectionTimer();
-
-    void setLeader(MemberId leaderId);
 
     VoteTracker voteTracker();
 

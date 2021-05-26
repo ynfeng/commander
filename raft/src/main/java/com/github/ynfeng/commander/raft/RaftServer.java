@@ -37,13 +37,13 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     }
 
     private void electionTimeout() {
-        LOGGER.info("{} election time out at term {}", localMermberId().id(), currentTerm().value());
         electionTimer.reset();
         becomeCandidate();
     }
 
     @Override
     public void becomeCandidate() {
+        voteTracker().reset();
         changeRole(new Candidate(this));
     }
 
@@ -120,13 +120,6 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     }
 
     @Override
-    public void tryUpdateCurrentTerm(Term term) {
-        if (term.greaterThan(currentTerm.get())) {
-            currentTerm.set(term);
-        }
-    }
-
-    @Override
     public int quorum() {
         return raftGroup.quorum();
     }
@@ -162,6 +155,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
         LOGGER.info("{} become follower at term {} current leader is {}.",
             localMemberId.id(), term.value(), leaderId.id());
         leader.set(leaderId);
+        currentTerm.set(term);
         changeRole(new Follower(this));
     }
 
@@ -173,11 +167,6 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     @Override
     public void resumeElectionTimer() {
         electionTimer.resume();
-    }
-
-    @Override
-    public void setLeader(MemberId leaderId) {
-        leader.set(leaderId);
     }
 
     @Override
