@@ -1,15 +1,23 @@
 package com.github.ynfeng.commander.raft;
 
 import com.github.ynfeng.commander.support.ManageableSupport;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.time.Instant;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
 
 public class ElectionTimer extends ManageableSupport {
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,
-        new ThreadFactoryBuilder().setNameFormat("election-timer-thread-%d").build());
+        new ThreadFactoryBuilder()
+            .setUncaughtExceptionHandler((t, e) -> {
+                LOGGER.error("election timer error.", e);
+            })
+            .setNameFormat("election-timer-thread-%d")
+            .build());
     private final Runnable timeoutAction;
     private final long timeout;
     private volatile long lastResetTime;
@@ -31,7 +39,7 @@ public class ElectionTimer extends ManageableSupport {
     }
 
     public void reset() {
-        long randomMs = ThreadLocalRandom.current().nextLong(150, 300);
+        long randomMs = ThreadLocalRandom.current().nextLong(150, 500);
         lastResetTime = Instant.now().toEpochMilli() + randomMs;
     }
 
