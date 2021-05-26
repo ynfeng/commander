@@ -14,12 +14,12 @@ public class RemoteMemberCommunicatorSpy {
 
     public void reset() {
         leaderHeartbeatTimes.set(0);
-        lastLeaderHeartBeatHolder.set(null);
+        lastLeaderHeartBeatHolder.set(new LeaderHeartbeatRecord(Term.create(0), MemberId.create("none")));
     }
 
     public void receiveRequest(Request request) {
-        LeaderHeartbeatRecord lastLeaderHeartbeat = lastLeaderHeartBeatHolder.get();
         if (request instanceof LeaderHeartbeat) {
+            LeaderHeartbeatRecord lastLeaderHeartbeat = lastLeaderHeartBeatHolder.get();
             LeaderHeartbeat heartbeat = (LeaderHeartbeat) request;
             if (lastLeaderHeartbeat.isSame(heartbeat.term(), heartbeat.leaderId())) {
                 int times = leaderHeartbeatTimes.incrementAndGet();

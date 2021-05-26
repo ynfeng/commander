@@ -2,15 +2,19 @@ package com.github.ynfeng.commander.raft;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.github.ynfeng.commander.fixture.FakeRemoteMemberCommunicator;
 import com.github.ynfeng.commander.fixture.RaftMemberDiscoveryStub;
 import com.github.ynfeng.commander.fixture.RemoteMemberCommunicatorHub;
 import com.github.ynfeng.commander.fixture.RemoteMemberCommunicatorSpy;
 import com.github.ynfeng.commander.support.Address;
+import com.google.common.collect.ImmutableMap;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 class RaftServerTest {
@@ -45,7 +49,6 @@ class RaftServerTest {
     }
 
     @Test
-    @Disabled
     void should_elected_leader_given_3_members() throws InterruptedException {
         RaftGroup raftGroup = RaftGroup.create()
             .addMemberId(MemberId.create("server1"))
@@ -59,10 +62,12 @@ class RaftServerTest {
         raftServer3.start();
         raftServer1.start();
 
-        Thread.sleep(1000 * 10);
+        MemberId leaderId = spy.expectLeader();
+        assertThat(leaderId, notNullValue());
     }
 
     @Test
+    @RepeatedTest(5)
     @Disabled
     void should_elected_leader_given_5_members() throws InterruptedException {
         RaftGroup raftGroup = RaftGroup.create()
@@ -76,18 +81,22 @@ class RaftServerTest {
         RaftServer raftServer3 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server3")), raftGroup, 2, 5);
         RaftServer raftServer4 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server4")), raftGroup, 3, 5);
         RaftServer raftServer5 = createRaftServer(createFakeRemoteMemberCommunicator(MemberId.create("server5")), raftGroup, 4, 5);
+        ImmutableMap<MemberId, RaftServer> servers = ImmutableMap.<MemberId, RaftServer>builder()
+            .put(MemberId.create("server1"), raftServer1)
+            .put(MemberId.create("server2"), raftServer2)
+            .put(MemberId.create("server3"), raftServer3)
+            .put(MemberId.create("server4"), raftServer4)
+            .put(MemberId.create("server5"), raftServer5)
+            .build();
 
-        raftServer5.start();
-        raftServer3.start();
-        raftServer2.start();
-        raftServer1.start();
-        raftServer4.start();
+        servers.values().forEach(RaftServer::start);
 
-        Thread.sleep(1000 * 10);
-        System.out.println();
-        System.out.println("shutdown server");
-        raftServer1.shutdown();
-        Thread.sleep(1000 * 60);
+        MemberId leaderId = spy.expectLeader();
+        spy.reset();
+        servers.get(leaderId).shutdown();
+
+        leaderId = spy.expectLeader();
+        assertThat(leaderId, notNullValue());
     }
 
     @Test

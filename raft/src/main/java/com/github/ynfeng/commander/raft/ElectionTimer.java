@@ -27,12 +27,12 @@ public class ElectionTimer extends ManageableSupport {
         }
         long now = Instant.now().toEpochMilli();
         long escapeTime = now - lastResetTime;
-        return escapeTime > timeout;
+        return escapeTime >= timeout;
     }
 
     public void reset() {
         long randomMs = ThreadLocalRandom.current().nextLong(150, 300);
-        lastResetTime = Instant.now().toEpochMilli() - randomMs;
+        lastResetTime = Instant.now().toEpochMilli() + randomMs;
     }
 
     @Override

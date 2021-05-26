@@ -41,7 +41,7 @@ public class FakeRemoteMemberCommunicator implements RemoteMemberCommunicator {
 
     public Response receiveRequest(Request request) {
         Function<Request, Response> function = (Function<Request, Response>) handlers.get(request.getClass());
-//        spy.receiveRequest(request);
+        spy.receiveRequest(request);
         return function.apply(request);
     }
 

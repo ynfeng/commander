@@ -6,11 +6,14 @@ import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
+import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
 
 public class Leader extends AbstratRaftRole {
+    private final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final RaftContext raftContext;
     private final long heartbeatInterval;
     private final ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(1,
@@ -61,7 +64,8 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public void destory() {
-        heartbeatExecutor.shutdownNow();
+        heartbeatExecutor.shutdown();
+        LOGGER.info("leader {} has shutdown.", raftContext().localMermberId().id());
     }
 
     @Override
