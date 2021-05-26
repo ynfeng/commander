@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 public class Leader extends AbstratRaftRole {
-    private final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final RaftContext raftContext;
     private final long heartbeatInterval;
     private final ScheduledThreadPoolExecutor heartbeatExecutor = new ScheduledThreadPoolExecutor(1,

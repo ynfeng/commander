@@ -94,7 +94,10 @@ public class Candidate extends AbstratRaftRole {
             && voteRequest.lastLogIndex() >= raftContext.lastLogIndex()
             && voteRequest.lastLogTerm().greaterOrEqual(raftContext.lastLogTerm())) {
             LOGGER.info("{} vote to {} at term {} current term {}",
-                raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value(), raftContext().currentTerm().value());
+                raftContext.localMermberId().id(),
+                voteRequest.candidateId().id(),
+                voteRequest.term().value(),
+                raftContext().currentTerm().value());
             voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }
