@@ -64,7 +64,7 @@ public class Leader extends AbstratRaftRole {
 
     @Override
     public void destory() {
-        heartbeatExecutor.shutdown();
+        heartbeatExecutor.shutdownNow();
         LOGGER.info("leader {} has shutdown.", raftContext().localMermberId().id());
     }
 

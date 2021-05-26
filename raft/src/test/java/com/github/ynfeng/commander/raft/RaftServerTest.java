@@ -13,8 +13,6 @@ import com.github.ynfeng.commander.support.Address;
 import com.google.common.collect.ImmutableMap;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 class RaftServerTest {
@@ -64,11 +62,13 @@ class RaftServerTest {
 
         MemberId leaderId = spy.expectLeader();
         assertThat(leaderId, notNullValue());
+
+        raftServer1.shutdown();
+        raftServer2.shutdown();
+        raftServer3.shutdown();
     }
 
     @Test
-    @RepeatedTest(5)
-    @Disabled
     void should_elected_leader_given_5_members() throws InterruptedException {
         RaftGroup raftGroup = RaftGroup.create()
             .addMemberId(MemberId.create("server1"))
@@ -92,11 +92,8 @@ class RaftServerTest {
         servers.values().forEach(RaftServer::start);
 
         MemberId leaderId = spy.expectLeader();
-        spy.reset();
-        servers.get(leaderId).shutdown();
-
-        leaderId = spy.expectLeader();
         assertThat(leaderId, notNullValue());
+        servers.values().forEach(RaftServer::shutdown);
     }
 
     @Test
