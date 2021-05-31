@@ -1,6 +1,9 @@
 package com.github.ynfeng.commander.raft;
 
+import com.github.ynfeng.commander.raft.protocol.Request;
+import com.github.ynfeng.commander.raft.protocol.Response;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface RaftContext {
     void becomeCandidate();
@@ -8,8 +11,6 @@ public interface RaftContext {
     MemberId localMermberId();
 
     List<RemoteMember> remoteMembers();
-
-    RemoteMemberCommunicator remoteMemberCommunicator();
 
     Term lastLogTerm();
 
@@ -42,4 +43,6 @@ public interface RaftContext {
     MemberId currentLeader();
 
     boolean isLeader();
+
+    <R extends Response> CompletableFuture<R> sendRequest(RemoteMember remoteMember, Request request);
 }

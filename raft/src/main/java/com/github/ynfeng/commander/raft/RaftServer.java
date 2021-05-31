@@ -2,7 +2,9 @@ package com.github.ynfeng.commander.raft;
 
 import com.github.ynfeng.commander.raft.protocol.EmptyResponse;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
+import com.github.ynfeng.commander.raft.protocol.Request;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
+import com.github.ynfeng.commander.raft.protocol.Response;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import com.github.ynfeng.commander.raft.roles.Candidate;
 import com.github.ynfeng.commander.raft.roles.Follower;
@@ -13,6 +15,7 @@ import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.base.Preconditions;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 
@@ -97,11 +100,6 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     @Override
     public List<RemoteMember> remoteMembers() {
         return raftMemberDiscovery.remoteMembers(localMemberId);
-    }
-
-    @Override
-    public RemoteMemberCommunicator remoteMemberCommunicator() {
-        return remoteMemberCommunicator;
     }
 
     @Override
@@ -190,6 +188,11 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
             return false;
         }
         return role.get() instanceof Leader;
+    }
+
+    @Override
+    public <R extends Response> CompletableFuture<R> sendRequest(RemoteMember remoteMember, Request request) {
+        return remoteMemberCommunicator.send(remoteMember, request);
     }
 
     public static class Builder {

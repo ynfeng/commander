@@ -23,7 +23,7 @@ public class Follower extends AbstratRaftRole {
     }
 
     @Override
-    public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
+    public RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
         if (voteRequest.term().greaterThan(raftContext().currentTerm())) {
             raftContext().becomeCandidate();
         }

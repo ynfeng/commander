@@ -6,7 +6,10 @@ import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.Term;
 import com.github.ynfeng.commander.raft.VoteTracker;
+import com.github.ynfeng.commander.raft.protocol.Request;
+import com.github.ynfeng.commander.raft.protocol.Response;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class RaftContextMock implements RaftContext {
     private Term currentTerm;
@@ -36,11 +39,6 @@ public class RaftContextMock implements RaftContext {
 
     @Override
     public List<RemoteMember> remoteMembers() {
-        return null;
-    }
-
-    @Override
-    public RemoteMemberCommunicator remoteMemberCommunicator() {
         return null;
     }
 
@@ -121,6 +119,11 @@ public class RaftContextMock implements RaftContext {
     @Override
     public boolean isLeader() {
         return false;
+    }
+
+    @Override
+    public <R extends Response> CompletableFuture<R> sendRequest(RemoteMember remoteMember, Request request) {
+        return null;
     }
 
     public void setCurrentTerm(Term currentTerm) {

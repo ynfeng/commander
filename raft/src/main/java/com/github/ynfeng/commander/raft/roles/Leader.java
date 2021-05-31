@@ -2,7 +2,6 @@ package com.github.ynfeng.commander.raft.roles;
 
 import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
-import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
@@ -30,9 +29,8 @@ public class Leader extends AbstratRaftRole {
     }
 
     private void sendHeartbeatToFollower(RemoteMember remoteMember) {
-        RemoteMemberCommunicator communicator = raftContext.remoteMemberCommunicator();
         LeaderHeartbeat heartbeat = createHeartbeat();
-        communicator.send(remoteMember, heartbeat);
+        raftContext().sendRequest(remoteMember, heartbeat);
     }
 
     private LeaderHeartbeat createHeartbeat() {

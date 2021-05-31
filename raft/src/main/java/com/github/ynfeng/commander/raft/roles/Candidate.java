@@ -3,7 +3,6 @@ package com.github.ynfeng.commander.raft.roles;
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
-import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
@@ -51,9 +50,8 @@ public class Candidate extends AbstratRaftRole {
     }
 
     private void askToVote(RemoteMember remoteMember) {
-        RemoteMemberCommunicator communicator = raftContext().remoteMemberCommunicator();
         VoteRequest request = createVoteRequest();
-        CompletableFuture<RequestVoteResponse> responseFuture = communicator.send(remoteMember, request);
+        CompletableFuture<RequestVoteResponse> responseFuture = raftContext().sendRequest(remoteMember, request);
         responseFuture.thenAccept(this::handleVoteResponse);
     }
 
@@ -77,7 +75,7 @@ public class Candidate extends AbstratRaftRole {
 
     @SuppressWarnings( {"checkstyle:CyclomaticComplexity", "checkstyle:MethodLength"})
     @Override
-    public synchronized RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
+    public RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
         RaftContext raftContext = raftContext();
 
         if (voteTracker.isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
