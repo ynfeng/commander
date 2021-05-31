@@ -36,16 +36,12 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     private RaftServer(RaftConfig raftConfig) {
         this.raftConfig = raftConfig;
         currentTerm.set(Term.create(0));
-        electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::electionTimeout);
-    }
-
-    private void electionTimeout() {
-        electionTimer.reset();
-        becomeCandidate();
+        electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::becomeCandidate);
     }
 
     @Override
     public void becomeCandidate() {
+        electionTimer.reset();
         voteTracker().reset();
         changeRole(new Candidate(this));
     }
