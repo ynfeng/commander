@@ -75,7 +75,9 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
         remoteMemberCommunicator.registerHandler(LeaderHeartbeat.class, this::handleLeaderHeartbeat);
         raftMemberDiscovery.start();
         electionTimer.start();
-        LOGGER.info("{} started.", localMemberId.id());
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("{} started.", localMemberId.id());
+        }
     }
 
     private EmptyResponse handleLeaderHeartbeat(LeaderHeartbeat heartbeat) {

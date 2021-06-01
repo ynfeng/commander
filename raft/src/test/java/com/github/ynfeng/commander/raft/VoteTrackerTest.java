@@ -3,7 +3,11 @@ package com.github.ynfeng.commander.raft;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class VoteTrackerTest {
 
@@ -34,8 +38,9 @@ class VoteTrackerTest {
         assertThat(voteTracker.canVote(Term.create(0), MemberId.create("server1")), is(true));
     }
 
-    @Test
-    void can_not_vote_when_alreay_vote_to_greater_term() {
+    @ParameterizedTest
+    @MethodSource("checkAlreadyVoteArguments")
+    void can_check_already_vote() {
         VoteTracker voteTracker = new VoteTracker();
 
         voteTracker.recordVoteCast(Term.create(1), MemberId.create("server1"));
@@ -43,21 +48,10 @@ class VoteTrackerTest {
         assertThat(voteTracker.canVote(Term.create(0), MemberId.create("server1")), is(false));
     }
 
-    @Test
-    void can_vote_when_already_vote_to_lower_term() {
-        VoteTracker voteTracker = new VoteTracker();
-
-        voteTracker.recordVoteCast(Term.create(1), MemberId.create("server1"));
-
-        assertThat(voteTracker.canVote(Term.create(2), MemberId.create("server1")), is(true));
-    }
-
-    @Test
-    void can_vote_when_alreay_vote_same_member_in_same_term() {
-        VoteTracker voteTracker = new VoteTracker();
-
-        voteTracker.recordVoteCast(Term.create(1), MemberId.create("server1"));
-
-        assertThat(voteTracker.canVote(Term.create(1), MemberId.create("server1")), is(true));
+    static Stream<Arguments> checkAlreadyVoteArguments() {
+        return Stream.of(
+            Arguments.of(0, false),
+            Arguments.of(2, true),
+            Arguments.of(1, true));
     }
 }

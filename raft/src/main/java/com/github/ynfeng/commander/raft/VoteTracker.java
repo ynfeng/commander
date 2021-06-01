@@ -16,13 +16,13 @@ public class VoteTracker {
         if (voteTo.get() == null) {
             return false;
         }
-        VoteTo voteTo = this.voteTo.get();
-        return voteTo.term.equals(term) && memberId.equals(voteTo.memberId);
+        VoteTo vote = voteTo.get();
+        return vote.term.equals(term) && memberId.equals(vote.memberId);
     }
 
     public void recordVoteCast(Term term, MemberId memberId) {
-        VoteTo voteTo = new VoteTo(term, memberId);
-        this.voteTo.set(voteTo);
+        VoteTo vote = new VoteTo(term, memberId);
+        voteTo.set(vote);
     }
 
     public void voteToMe(MemberId memberId) {
@@ -34,14 +34,14 @@ public class VoteTracker {
     }
 
     public boolean canVote(Term term, MemberId memberId) {
-        VoteTo voteTo = this.voteTo.get();
-        if (voteTo == null) {
+        VoteTo vote = voteTo.get();
+        if (vote == null) {
             return true;
         }
         if (isAlreadyVoteTo(term, memberId)) {
             return true;
         }
-        return voteTo.term.lessThan(term);
+        return vote.term.lessThan(term);
     }
 
     public void reset() {
@@ -50,11 +50,11 @@ public class VoteTracker {
     }
 
     public boolean termIsVoted(Term term) {
-        VoteTo voteTo = this.voteTo.get();
-        if (voteTo == null) {
+        VoteTo vote = voteTo.get();
+        if (vote == null) {
             return false;
         }
-        return voteTo.term.equals(term);
+        return vote.term.equals(term);
     }
 
     static class VoteTo {

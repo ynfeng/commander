@@ -21,8 +21,10 @@ public class Candidate extends AbstratRaftRole {
         voteTracker = raftContext.voteTracker();
         raftContext().nextTerm();
         voteToSelf();
-        LOGGER.info("{} become candidate at term {}.",
-            raftContext.localMermberId().id(), raftContext.currentTerm().value());
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("{} become candidate at term {}.",
+                raftContext.localMermberId().id(), raftContext.currentTerm().value());
+        }
     }
 
     @Override
@@ -79,8 +81,10 @@ public class Candidate extends AbstratRaftRole {
         RaftContext raftContext = raftContext();
 
         if (voteTracker.isAlreadyVoteTo(voteRequest.term(), voteRequest.candidateId())) {
-            LOGGER.info("{} revote to {} at term {}",
-                raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("{} revote to {} at term {}",
+                    raftContext.localMermberId().id(), voteRequest.candidateId().id(), voteRequest.term().value());
+            }
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }
 
@@ -91,11 +95,13 @@ public class Candidate extends AbstratRaftRole {
         if (voteRequest.term().greaterOrEqual(raftContext.currentTerm())
             && voteRequest.lastLogIndex() >= raftContext.lastLogIndex()
             && voteRequest.lastLogTerm().greaterOrEqual(raftContext.lastLogTerm())) {
-            LOGGER.info("{} vote to {} at term {} current term {}",
-                raftContext.localMermberId().id(),
-                voteRequest.candidateId().id(),
-                voteRequest.term().value(),
-                raftContext().currentTerm().value());
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("{} vote to {} at term {} current term {}",
+                    raftContext.localMermberId().id(),
+                    voteRequest.candidateId().id(),
+                    voteRequest.term().value(),
+                    raftContext().currentTerm().value());
+            }
             voteTracker.recordVoteCast(voteRequest.term(), voteRequest.candidateId());
             return RequestVoteResponse.voted(raftContext.currentTerm(), raftContext.localMermberId());
         }

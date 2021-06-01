@@ -71,13 +71,10 @@ class ProcessDefinitionBuilderTest {
 
     @Test
     void should_throw_exception_when_duplicate_ref_name() {
-        ProcessDefinitionException exception = assertThrows(ProcessDefinitionException.class, () -> {
-            processDefinitionBuilder
-                .withNodes(
-                    new EndDefinition("end"),
-                    new EndDefinition("end")
-                );
-        });
+        EndDefinition end = new EndDefinition("end");
+
+        ProcessDefinitionException exception = assertThrows(
+            ProcessDefinitionException.class, () -> processDefinitionBuilder.withNodes(end, end));
 
         assertThat(exception.getMessage(), is("The ref name \"end\" was duplicated"));
     }

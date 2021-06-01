@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 
 public class NettyBroadcastService extends ManageableSupport implements BroadcastService {
-    private final Logger logger = CmderLoggerFactory.getSystemLogger();
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final Address groupAddress;
     private final Host localHost;
     private final Map<String, Set<Consumer<byte[]>>> listeners = Maps.newConcurrentMap();
@@ -44,7 +44,7 @@ public class NettyBroadcastService extends ManageableSupport implements Broadcas
         this.localHost = localHost;
         this.groupAddress = groupAddress;
         iface = getIface();
-        group = new NioEventLoopGroup(0, Threads.namedThreads("netty-broadcast-event-nio-client-%d", logger));
+        group = new NioEventLoopGroup(0, Threads.namedThreads("netty-broadcast-event-nio-client-%d", LOGGER));
     }
 
     @Override
@@ -86,8 +86,10 @@ public class NettyBroadcastService extends ManageableSupport implements Broadcas
                 String.format("%s failed to join group %s on port %d",
                     localHost.ip(), groupAddress.host(), groupAddress.port()));
         }
-        logger.info("{} successfully joined multicast group {} on port {}",
-            localHost.ip(), groupAddress.host(), groupAddress.port());
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("{} successfully joined multicast group {} on port {}",
+                localHost.ip(), groupAddress.host(), groupAddress.port());
+        }
     }
 
     private void bootClient() {
@@ -140,7 +142,7 @@ public class NettyBroadcastService extends ManageableSupport implements Broadcas
             .leaveGroup(groupAddress.toInetSocketAddress(), iface)
             .syncUninterruptibly();
         group.shutdownGracefully().syncUninterruptibly();
-        logger.debug("Broadcaset service shutdown successfully.");
+        LOGGER.debug("Broadcaset service shutdown successfully.");
     }
 
     static class Message {

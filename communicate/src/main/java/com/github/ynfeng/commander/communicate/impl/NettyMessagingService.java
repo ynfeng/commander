@@ -2,6 +2,7 @@ package com.github.ynfeng.commander.communicate.impl;
 
 import static com.github.ynfeng.commander.support.Threads.namedThreads;
 
+import com.github.ynfeng.commander.communicate.CommunicateException;
 import com.github.ynfeng.commander.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.ManageableSupport;
@@ -37,7 +38,7 @@ import org.slf4j.Logger;
 
 public class NettyMessagingService extends ManageableSupport implements MessagingService {
     public static final String HANDSHAKE_FRAME_DECODER = "frameDecoder";
-    private final Logger logger = CmderLoggerFactory.getSystemLogger();
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final Address localAddress;
     private final String communicateId;
     private final Map<Channel, RemoteClientConnection> clientConnections = Maps.newConcurrentMap();
@@ -55,7 +56,7 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
         this.communicateId = communicateId;
         initEventLoopGroup();
         timeoutExecutor = Executors.newScheduledThreadPool(
-            4, namedThreads("netty-messaging-timeout-%d", logger));
+            4, namedThreads("netty-messaging-timeout-%d", LOGGER));
     }
 
     private void initEventLoopGroup() {
@@ -68,9 +69,9 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
 
     private void initNioEventLoopGroup() {
         clientGroup = new NioEventLoopGroup(0,
-            namedThreads("netty-messaging-event-nio-client-%d", logger));
+            namedThreads("netty-messaging-event-nio-client-%d", LOGGER));
         serverGroup = new NioEventLoopGroup(0,
-            namedThreads("netty-messaging-event-nio-server-%d", logger));
+            namedThreads("netty-messaging-event-nio-server-%d", LOGGER));
         serverChannelClass = NioServerSocketChannel.class;
         clientChannelClass = NioSocketChannel.class;
     }
@@ -78,15 +79,17 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
     private void initEpollEventLoopGroup() {
         try {
             clientGroup = new EpollEventLoopGroup(0,
-                namedThreads("netty-messaging-event-epoll-client-%d", logger));
+                namedThreads("netty-messaging-event-epoll-client-%d", LOGGER));
             serverGroup = new EpollEventLoopGroup(0,
-                namedThreads("netty-messaging-event-epoll-server-%d", logger));
+                namedThreads("netty-messaging-event-epoll-server-%d", LOGGER));
             serverChannelClass = EpollServerSocketChannel.class;
             clientChannelClass = EpollSocketChannel.class;
         } catch (Exception e) {
-            logger.debug("Failed to initialize native (epoll) transport. "
-                + "Reason: {}. Proceeding with nio.", e.getMessage());
-            throw e;
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("Failed to initialize native (epoll) transport. "
+                    + "Reason: {}. Proceeding with nio.", e.getMessage());
+            }
+            throw new CommunicateException(e);
         }
     }
 
@@ -257,7 +260,9 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
                 String.format("Failed to bind TCP server to port %s:%d",
                     localAddress.host(), localAddress.port()));
         }
-        logger.info("TCP server listening for connections on {}:{}", localAddress.host(), localAddress.port());
+        if (LOGGER.isInfoEnabled()) {
+            LOGGER.info("TCP server listening for connections on {}:{}", localAddress.host(), localAddress.port());
+        }
         serverChannel = channelFuture.channel();
     }
 

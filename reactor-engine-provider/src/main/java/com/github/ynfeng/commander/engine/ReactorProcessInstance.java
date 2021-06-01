@@ -45,6 +45,7 @@ public class ReactorProcessInstance implements ProcessInstance {
 
     @Override
     public void start() {
+        //no op
     }
 
     @Override
@@ -57,7 +58,9 @@ public class ReactorProcessInstance implements ProcessInstance {
 
     @Override
     public void nodeComplete(NodeDefinition nodeDefinition) {
-        LOGGER.debug("node completed process[{}] node[{}]", processId, nodeDefinition.refName());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("node completed process[{}] node[{}]", processId, nodeDefinition.refName());
+        }
         removeRunningNode(nodeDefinition);
         addExecutedNode(nodeDefinition);
         notifyNodeComplete(nodeDefinition);

@@ -10,7 +10,11 @@ import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class CandidateTest {
 
@@ -54,67 +58,34 @@ class CandidateTest {
         assertThat(raftContext.calledBecomeFollower(), is(false));
     }
 
-    @Test
-    void should_decline_vote_when_receive_lower_term_vote_request() {
+    @ParameterizedTest
+    @MethodSource("correctlyVoteTestArguments")
+    void should_vote_correctly(int term, String candidateId, boolean isVoted) {
         RaftContextMock raftContext = new RaftContextMock();
         raftContext.setCurrentTerm(Term.create(1));
         raftContext.setLocalMemberId(MemberId.create("server2"));
         Candidate candidate = new Candidate(raftContext);
 
         VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(0))
-            .candidateId(MemberId.create("server1"))
+            .term(Term.create(term))
+            .candidateId(MemberId.create(candidateId))
             .lastLogIndex(0)
             .lastLogTerm(Term.create(0))
             .build();
 
         RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
 
-        assertThat(response.isVoted(), is(false));
+        assertThat(response.isVoted(), is(isVoted));
         assertThat(response.voterId(), is(MemberId.create("server2")));
         assertThat(response.term(), is(Term.create(1)));
     }
 
-    @Test
-    void should_decline_vote_when_already_vote_to_other_in_same_term() {
-        RaftContextMock raftContext = new RaftContextMock();
-        raftContext.setCurrentTerm(Term.create(1));
-        raftContext.setLocalMemberId(MemberId.create("server2"));
-        Candidate candidate = new Candidate(raftContext);
-
-        VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(1))
-            .candidateId(MemberId.create("server1"))
-            .lastLogIndex(0)
-            .lastLogTerm(Term.create(0))
-            .build();
-
-        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
-
-        assertThat(response.isVoted(), is(false));
-        assertThat(response.voterId(), is(MemberId.create("server2")));
-        assertThat(response.term(), is(Term.create(1)));
-    }
-
-    @Test
-    void should_vote_when_receive_already_voted_member_vote_request() {
-        RaftContextMock raftContext = new RaftContextMock();
-        raftContext.setCurrentTerm(Term.create(1));
-        raftContext.setLocalMemberId(MemberId.create("server2"));
-        Candidate candidate = new Candidate(raftContext);
-
-        VoteRequest voteRequest = VoteRequest.builder()
-            .term(Term.create(1))
-            .candidateId(MemberId.create("server2"))
-            .lastLogIndex(0)
-            .lastLogTerm(Term.create(0))
-            .build();
-
-        RequestVoteResponse response = candidate.handleRequestVote(voteRequest);
-
-        assertThat(response.isVoted(), is(true));
-        assertThat(response.voterId(), is(MemberId.create("server2")));
-        assertThat(response.term(), is(Term.create(1)));
+    static Stream<Arguments> correctlyVoteTestArguments() {
+        return Stream.of(
+            Arguments.of(1, "server1", false),
+            Arguments.of(2, "server3", true),
+            Arguments.of(0, "server3", false),
+            Arguments.of(1, "server2", true));
     }
 
     @Test
