@@ -8,7 +8,6 @@ import com.github.ynfeng.commander.serializer.SerializationTypes;
 import com.github.ynfeng.commander.serializer.Serializer;
 import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.Threads;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -18,9 +17,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
 
 public class MulticastDiscoveryProtocol extends ManageableSupport implements ClusterMemberDiscoveryProtocol {
-    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
+    private final Logger logger = CmderLoggerFactory.getSystemLogger();
     private final MulticastDiscoveryProtocolConfig config;
     private final NettyBroadcastService broadcastService;
     private final Map<ClusterMemberDiscoveryMessage.Type, Set<Consumer<ClusterMember>>> listeners

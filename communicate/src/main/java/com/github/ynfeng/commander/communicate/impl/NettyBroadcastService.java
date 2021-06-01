@@ -7,7 +7,6 @@ import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
 import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.Threads;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -26,9 +25,10 @@ import java.net.SocketException;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
 
 public class NettyBroadcastService extends ManageableSupport implements BroadcastService {
-    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
+    private final Logger logger = CmderLoggerFactory.getSystemLogger();
     private final Address groupAddress;
     private final Host localHost;
     private final Map<String, Set<Consumer<byte[]>>> listeners = Maps.newConcurrentMap();

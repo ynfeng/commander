@@ -1,14 +1,14 @@
 package com.github.ynfeng.commander.communicate.impl;
 
-import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import java.util.Optional;
+import org.slf4j.Logger;
 
 public abstract class AbstractHandshakeHanderAdapter extends ChannelInboundHandlerAdapter {
-    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
+    private final Logger logger = CmderLoggerFactory.getSystemLogger();
 
     protected void writeProtocolVersion(String communicateId,
                                         ChannelHandlerContext ctx,

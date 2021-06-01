@@ -3,12 +3,12 @@ package com.github.ynfeng.commander.engine.executor;
 import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.definition.ServiceDefinition;
 import com.github.ynfeng.commander.engine.ProcessInstance;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
 
 public class ServiceNodeExecutor implements NodeExecutor {
-    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
+    private final Logger logger = CmderLoggerFactory.getSystemLogger();
 
     @Override
     public void execute(ProcessInstance processInstance, NodeDefinition nodeDefinition) {

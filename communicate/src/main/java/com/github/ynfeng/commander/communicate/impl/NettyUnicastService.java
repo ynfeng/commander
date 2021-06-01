@@ -7,7 +7,6 @@ import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.Host;
 import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.Threads;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -25,9 +24,10 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import org.slf4j.Logger;
 
 public class NettyUnicastService extends ManageableSupport implements UnicastService {
-    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
+    private final Logger logger = CmderLoggerFactory.getSystemLogger();
     private final Map<String, Set<BiConsumer<Address, byte[]>>> listeners = Maps.newConcurrentMap();
     private final NioEventLoopGroup group;
     private final int port;

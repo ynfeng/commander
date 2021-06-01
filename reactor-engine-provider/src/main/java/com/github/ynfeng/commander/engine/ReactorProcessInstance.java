@@ -4,14 +4,14 @@ import com.github.ynfeng.commander.definition.NodeDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.engine.executor.NodeExecutingVariable;
 import com.github.ynfeng.commander.engine.executor.NodeExecutors;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.slf4j.Logger;
 import reactor.core.publisher.Sinks;
 
 public class ReactorProcessInstance implements ProcessInstance {
-    private static final CmderLogger LOGGER = CmderLoggerFactory.getSystemLogger();
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final Sinks.Many<EngineCommand> commandSinks;
     private final Variables input = new Variables();
     private final ProcessInstanceRuntimeContext context = new ProcessInstanceRuntimeContext();

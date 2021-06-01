@@ -4,16 +4,16 @@ import com.github.ynfeng.commander.definition.ProcessDefinition;
 import com.github.ynfeng.commander.definition.ProcessDefinitionRepository;
 import com.github.ynfeng.commander.engine.executor.NodeExecutors;
 import com.github.ynfeng.commander.support.ManageableSupport;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import java.util.Optional;
+import org.slf4j.Logger;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 public class ReactorProcessEngine extends ManageableSupport implements ProcessEngine {
-    private static final CmderLogger LOGGER = CmderLoggerFactory.getSystemLogger();
+    private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final ProcessIdGenerator processIdGenerator;
     private final ProcessDefinitionRepository definitionRepository;
     private final NodeExecutors nodeExecutors;

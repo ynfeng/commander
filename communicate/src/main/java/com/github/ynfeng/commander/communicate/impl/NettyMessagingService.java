@@ -6,7 +6,6 @@ import com.github.ynfeng.commander.communicate.MessagingService;
 import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.OS;
-import com.github.ynfeng.commander.support.logger.CmderLogger;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.collect.Maps;
 import io.netty.bootstrap.Bootstrap;
@@ -34,10 +33,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import org.slf4j.Logger;
 
 public class NettyMessagingService extends ManageableSupport implements MessagingService {
     public static final String HANDSHAKE_FRAME_DECODER = "frameDecoder";
-    private final CmderLogger logger = CmderLoggerFactory.getSystemLogger();
+    private final Logger logger = CmderLoggerFactory.getSystemLogger();
     private final Address localAddress;
     private final String communicateId;
     private final Map<Channel, RemoteClientConnection> clientConnections = Maps.newConcurrentMap();
