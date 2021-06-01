@@ -6,7 +6,6 @@ import static org.hamcrest.CoreMatchers.is;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 
 class ElectionTimerTest {
 
