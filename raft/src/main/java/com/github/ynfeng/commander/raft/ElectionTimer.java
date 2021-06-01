@@ -13,9 +13,7 @@ public class ElectionTimer extends ManageableSupport {
     private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1,
         new ThreadFactoryBuilder()
-            .setUncaughtExceptionHandler((t, e) -> {
-                LOGGER.error("election timer error.", e);
-            })
+            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("election timer error.", e))
             .setNameFormat("election-timer-thread-%d")
             .build());
     private final Runnable timeoutAction;

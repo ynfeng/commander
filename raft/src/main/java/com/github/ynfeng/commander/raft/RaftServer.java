@@ -14,44 +14,55 @@ import com.github.ynfeng.commander.support.Address;
 import com.github.ynfeng.commander.support.ManageableSupport;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
 import com.google.common.base.Preconditions;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 
 public class RaftServer extends ManageableSupport implements RaftMember, RaftContext {
     private static final Logger LOGGER = CmderLoggerFactory.getSystemLogger();
     private final RaftConfig raftConfig;
     private Address localAddress;
-    private final AtomicReference<RaftRole> role = new AtomicReference<>();
-    private final AtomicReference<MemberId> leader = new AtomicReference<>();
+    private RaftRole role;
+    private MemberId leader;
     private MemberId localMemberId;
     private RaftGroup raftGroup;
     private final ElectionTimer electionTimer;
     private RaftMemberDiscovery raftMemberDiscovery;
     private RemoteMemberCommunicator remoteMemberCommunicator;
-    private final AtomicReference<Term> currentTerm = new AtomicReference<>();
+    private Term currentTerm;
     private final VoteTracker voteTracker = new VoteTracker();
+    private final ExecutorService serverExecutor;
 
     private RaftServer(RaftConfig raftConfig) {
         this.raftConfig = raftConfig;
-        currentTerm.set(Term.create(0));
+        currentTerm = Term.create(0);
         electionTimer = new ElectionTimer(raftConfig.electionTimeout(), this::becomeCandidate);
+        serverExecutor = Executors.newSingleThreadExecutor(new ThreadFactoryBuilder()
+            .setUncaughtExceptionHandler((t, e) -> LOGGER.error("raft server error.", e))
+            .setNameFormat("raft-server-thread-%d")
+            .build());
+        role = new Follower(this);
     }
 
     @Override
     public void becomeCandidate() {
-        electionTimer.reset();
-        voteTracker().reset();
-        changeRole(new Candidate(this));
+        serverExecutor.execute(() -> {
+            electionTimer.reset();
+            voteTracker().reset();
+            changeRole(new Candidate(this));
+        });
     }
 
-    private void changeRole(RaftRole role) {
-        if (this.role.get() != null) {
-            this.role.get().destory();
+    private void changeRole(RaftRole newRole) {
+        if (role != null) {
+            role.destory();
         }
-        this.role.set(role);
-        this.role.get().prepare();
+        role = newRole;
+        role.prepare();
     }
 
     public static Builder builder() {
@@ -68,19 +79,30 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
     }
 
     private EmptyResponse handleLeaderHeartbeat(LeaderHeartbeat heartbeat) {
-        role.get().handleHeartBeat(heartbeat);
-        return new EmptyResponse();
+        try {
+            return serverExecutor.submit(() -> {
+                role.handleHeartBeat(heartbeat);
+                return new EmptyResponse();
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RaftServerException(e);
+        }
     }
 
     private RequestVoteResponse handleRequestVote(VoteRequest voteRequest) {
-        return role.get().handleRequestVote(voteRequest);
+        try {
+            return serverExecutor.submit(
+                () -> role.handleRequestVote(voteRequest)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RaftServerException(e);
+        }
     }
 
     @Override
     protected void doShutdown() {
         electionTimer.shutdown();
         raftMemberDiscovery.shutdown();
-        role.get().destory();
+        role.destory();
     }
 
     @Override
@@ -110,7 +132,7 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public Term currentTerm() {
-        return currentTerm.get();
+        return currentTerm;
     }
 
     @Override
@@ -120,8 +142,10 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public void becomeLeader() {
-        LOGGER.info("{} become leader at term {}.", localMemberId.id(), currentTerm().value());
-        changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval()));
+        serverExecutor.execute(() -> {
+            LOGGER.info("{} become leader at term {}.", localMemberId.id(), currentTerm().value());
+            changeRole(new Leader(this, raftConfig.leaderHeartbeatInterval()));
+        });
     }
 
     @Override
@@ -146,11 +170,13 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public void becomeFollower(Term term, MemberId leaderId) {
-        LOGGER.info("{} become follower at term {} current leader is {}.",
-            localMemberId.id(), term.value(), leaderId.id());
-        leader.set(leaderId);
-        currentTerm.set(term);
-        changeRole(new Follower(this));
+        serverExecutor.execute(() -> {
+            LOGGER.info("{} become follower at term {} current leader is {}.",
+                localMemberId.id(), term.value(), leaderId.id());
+            leader = leaderId;
+            currentTerm = term;
+            changeRole(new Follower(this));
+        });
     }
 
     @Override
@@ -170,20 +196,20 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
 
     @Override
     public void nextTerm() {
-        currentTerm.set(currentTerm.get().nextTerm());
+        currentTerm = currentTerm.nextTerm();
     }
 
     @Override
     public MemberId currentLeader() {
-        return leader.get();
+        return leader;
     }
 
     @Override
     public boolean isLeader() {
-        if (role.get() == null) {
+        if (role == null) {
             return false;
         }
-        return role.get() instanceof Leader;
+        return role instanceof Leader;
     }
 
     @Override

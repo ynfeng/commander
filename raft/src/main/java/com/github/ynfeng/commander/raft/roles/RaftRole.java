@@ -5,6 +5,7 @@ import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 
 public interface RaftRole {
+
     void prepare();
 
     void destory();

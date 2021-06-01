@@ -3,7 +3,6 @@ package com.github.ynfeng.commander.fixture;
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.RaftContext;
 import com.github.ynfeng.commander.raft.RemoteMember;
-import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.Term;
 import com.github.ynfeng.commander.raft.VoteTracker;
 import com.github.ynfeng.commander.raft.protocol.Request;
