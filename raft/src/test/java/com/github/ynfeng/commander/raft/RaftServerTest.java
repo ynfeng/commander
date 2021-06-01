@@ -70,7 +70,7 @@ class RaftServerTest {
     }
 
     @Test
-    @RepeatedTest(5)
+    @RepeatedTest(3)
     void should_elected_leader_given_5_members() throws InterruptedException {
         RaftGroup raftGroup = RaftGroup.create()
             .addMemberId(MemberId.create("server1"))
