@@ -69,7 +69,6 @@ class RaftServerTest {
         raftServer3.shutdown();
     }
 
-    @Test
     @RepeatedTest(3)
     void should_elected_leader_given_5_members() throws InterruptedException {
         RaftGroup raftGroup = RaftGroup.create()

@@ -84,7 +84,11 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
                 role.handleHeartBeat(heartbeat);
                 return new EmptyResponse();
             }).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.warn("raft server thread has interrupted");
+            throw new RaftServerException(e);
+        } catch (ExecutionException e) {
             throw new RaftServerException(e);
         }
     }
@@ -93,7 +97,11 @@ public class RaftServer extends ManageableSupport implements RaftMember, RaftCon
         try {
             return serverExecutor.submit(
                 () -> role.handleRequestVote(voteRequest)).get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.warn("raft server thread has interrupted");
+            throw new RaftServerException(e);
+        } catch (ExecutionException e) {
             throw new RaftServerException(e);
         }
     }
