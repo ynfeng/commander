@@ -15,8 +15,8 @@ public class NettyRemoteMemberCommunicator extends ManageableSupport implements 
     private final MessagingService messagingService;
     private final ProtocolSerializer serializer = new ProtocolSerializer();
 
-    public NettyRemoteMemberCommunicator(Address localAddress) {
-        messagingService = new NettyMessagingService("test", localAddress);
+    public NettyRemoteMemberCommunicator(String clusterId, Address localAddress) {
+        messagingService = new NettyMessagingService(clusterId, localAddress);
     }
 
     @Override
@@ -28,6 +28,7 @@ public class NettyRemoteMemberCommunicator extends ManageableSupport implements 
             .thenApplyAsync(serializer::decode);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Request> void registerHandler(Class<T> requestType, Function<T, ? extends Response> action) {
         messagingService.registerHandler(requestType.getSimpleName(),

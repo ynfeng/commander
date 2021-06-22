@@ -21,26 +21,31 @@ class NettyRemoteMemberCommunicatorTest {
     private static final RemoteMember REMOTE_MEMBER_PEER_1 = RemoteMember.create(MEMBER_PEER_1, ADDRESS_8111);
 
     @Test
-    void should_send_and_receive() throws ExecutionException, InterruptedException {
-        RemoteMemberCommunicator peer1 = new NettyRemoteMemberCommunicator(ADDRESS_8111);
+    void should_send_and_receive() throws Exception {
+        RemoteMemberCommunicator peer1 = new NettyRemoteMemberCommunicator("cluster1", ADDRESS_8111);
         peer1.registerHandler(VoteRequest.class, voteRequest -> {
             return RequestVoteResponse.voted(Term.create(1), MEMBER_PEER_1);
         });
 
-        RemoteMemberCommunicator peer2 = new NettyRemoteMemberCommunicator(ADDRESS_8112);
+        RemoteMemberCommunicator peer2 = new NettyRemoteMemberCommunicator("cluster1", ADDRESS_8112);
 
         peer1.start();
         peer2.start();
 
-        CompletableFuture<RequestVoteResponse> responseFuture = peer2.send(REMOTE_MEMBER_PEER_1, VoteRequest.builder()
-            .term(Term.create(100))
-            .candidateId(MEMBER_PEER_2)
-            .lastLogIndex(200)
-            .lastLogTerm(Term.create(101))
-            .build());
+        try {
+            CompletableFuture<RequestVoteResponse> responseFuture = peer2.send(REMOTE_MEMBER_PEER_1, VoteRequest.builder()
+                .term(Term.create(100))
+                .candidateId(MEMBER_PEER_2)
+                .lastLogIndex(200)
+                .lastLogTerm(Term.create(101))
+                .build());
 
-        RequestVoteResponse voteResponse = responseFuture.get();
-        assertThat(voteResponse.isVoted(), is(true));
-        assertThat(voteResponse.voterId(), is(MEMBER_PEER_1));
+            RequestVoteResponse voteResponse = responseFuture.get();
+            assertThat(voteResponse.isVoted(), is(true));
+            assertThat(voteResponse.voterId(), is(MEMBER_PEER_1));
+        } finally {
+            peer1.shutdown();
+            peer2.shutdown();
+        }
     }
 }
