@@ -1,6 +1,8 @@
 project.dependencies {
     implementation(
             project(':support'),
+            project(':serializer'),
+            project(':communicate'),
             project(':testtools')
     )
 }

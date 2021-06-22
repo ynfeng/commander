@@ -1,7 +1,10 @@
 package com.github.ynfeng.commander.raft;
 
 public class Term {
-    private final int curTerm;
+    private int curTerm;
+
+    private Term() {
+    }
 
     private Term(int curTerm) {
         this.curTerm = curTerm;

@@ -2,7 +2,7 @@ package com.github.ynfeng.commander.fixture;
 
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.RemoteMember;
-import com.github.ynfeng.commander.raft.RemoteMemberCommunicator;
+import com.github.ynfeng.commander.raft.communicator.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.Request;
 import com.github.ynfeng.commander.raft.protocol.Response;
 import com.github.ynfeng.commander.support.logger.CmderLoggerFactory;
@@ -52,5 +52,20 @@ public class RemoteMemberCommunicatorHub implements RemoteMemberCommunicator {
 
     public void reset() {
         communicators.clear();
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void shutdown() {
+
+    }
+
+    @Override
+    public boolean isStarted() {
+        return false;
     }
 }

@@ -1,5 +1,6 @@
 package com.github.ynfeng.commander.raft;
 
+import com.github.ynfeng.commander.raft.communicator.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.EmptyResponse;
 import com.github.ynfeng.commander.raft.protocol.LeaderHeartbeat;
 import com.github.ynfeng.commander.raft.protocol.Request;

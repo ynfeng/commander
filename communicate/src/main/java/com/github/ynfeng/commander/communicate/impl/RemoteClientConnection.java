@@ -99,7 +99,9 @@ public class RemoteClientConnection implements ClientConnection {
 
         public void complete(byte[] payload) {
             future.complete(payload);
-            timeoutFuture.cancel(false);
+            if (timeoutFuture != null) {
+                timeoutFuture.cancel(false);
+            }
         }
     }
 }

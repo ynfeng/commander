@@ -1,7 +1,10 @@
 package com.github.ynfeng.commander.raft;
 
 public class MemberId {
-    private final String id;
+    private String id;
+
+    private MemberId() {
+    }
 
     private MemberId(String id) {
         this.id = id;

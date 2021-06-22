@@ -99,10 +99,11 @@ public class NettyMessagingService extends ManageableSupport implements Messagin
                                                     Message message,
                                                     Duration timeout,
                                                     boolean keepAlive) {
-        return obtainChannel(address, keepAlive).thenCompose(channel ->
-            doSend(message, keepAlive,
-                () -> getOrCreateRemoteClientConnection(address, channel),
-                (conn, protocolMessage) -> conn.sendAndReceive(protocolMessage, timeout)));
+        return obtainChannel(address, keepAlive)
+            .thenCompose(channel ->
+                doSend(message, keepAlive,
+                    () -> getOrCreateRemoteClientConnection(address, channel),
+                    (conn, protocolMessage) -> conn.sendAndReceive(protocolMessage, timeout)));
     }
 
     @Override

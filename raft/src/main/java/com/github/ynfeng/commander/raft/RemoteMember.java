@@ -26,4 +26,8 @@ public class RemoteMember {
             ", address=" + address +
             '}';
     }
+
+    public Address address() {
+        return address;
+    }
 }

@@ -31,7 +31,7 @@ public class VoteRequest implements Request {
 
     public static class Builder {
         private Term term;
-        private MemberId cadidateId;
+        private MemberId candidateId;
         private Long lastLogIndex;
         private Term lastLogTerm;
 
@@ -44,7 +44,7 @@ public class VoteRequest implements Request {
         }
 
         public Builder candidateId(MemberId candidateId) {
-            this.cadidateId = candidateId;
+            this.candidateId = candidateId;
             return this;
         }
 
@@ -61,7 +61,7 @@ public class VoteRequest implements Request {
         public VoteRequest build() {
             VoteRequest voteRequest = new VoteRequest();
             voteRequest.term = term;
-            voteRequest.candidateId = cadidateId;
+            voteRequest.candidateId = candidateId;
             voteRequest.lastLogIndex = lastLogIndex;
             voteRequest.lastLogTerm = lastLogTerm;
             return voteRequest;
