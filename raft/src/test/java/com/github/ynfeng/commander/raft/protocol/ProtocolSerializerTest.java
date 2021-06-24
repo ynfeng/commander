@@ -1,8 +1,8 @@
 package com.github.ynfeng.commander.raft.protocol;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
 
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.Term;

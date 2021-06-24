@@ -9,6 +9,7 @@ import com.github.ynfeng.commander.fixture.FakeRemoteMemberCommunicator;
 import com.github.ynfeng.commander.fixture.RaftMemberDiscoveryStub;
 import com.github.ynfeng.commander.fixture.RemoteMemberCommunicatorHub;
 import com.github.ynfeng.commander.fixture.RemoteMemberCommunicatorSpy;
+import com.github.ynfeng.commander.fixture.RemoteMembers;
 import com.github.ynfeng.commander.support.Address;
 import com.google.common.collect.ImmutableMap;
 import java.util.concurrent.TimeUnit;
@@ -17,12 +18,6 @@ import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 class RaftServerTest {
-    private static final RemoteMember REMOTE_MEMBER1 = RemoteMember.create(MemberId.create("server1"), Address.of("127.0.0.1", 8081));
-    private static final RemoteMember REMOTE_MEMBER2 = RemoteMember.create(MemberId.create("server2"), Address.of("127.0.0.1", 8082));
-    private static final RemoteMember REMOTE_MEMBER3 = RemoteMember.create(MemberId.create("server3"), Address.of("127.0.0.1", 8083));
-    private static final RemoteMember REMOTE_MEMBER4 = RemoteMember.create(MemberId.create("server4"), Address.of("127.0.0.1", 8084));
-    private static final RemoteMember REMOTE_MEMBER5 = RemoteMember.create(MemberId.create("server5"), Address.of("127.0.0.1", 8085));
-    private static final RemoteMember[] REMOTE_MEMBERS = new RemoteMember[] {REMOTE_MEMBER1, REMOTE_MEMBER2, REMOTE_MEMBER3, REMOTE_MEMBER4, REMOTE_MEMBER5};
     private final RemoteMemberCommunicatorHub communicatorHub = new RemoteMemberCommunicatorHub();
     private final RemoteMemberCommunicatorSpy spy = new RemoteMemberCommunicatorSpy();
 
@@ -38,7 +33,7 @@ class RaftServerTest {
             .addMemberId(MemberId.create("server2"))
             .addMemberId(MemberId.create("server3"));
         FakeRemoteMemberCommunicator communicator = new FakeRemoteMemberCommunicator(communicatorHub, MemberId.create("server1"), spy);
-        RaftServer raftServer = createDefaultRaftServer(communicator, raftGroup, REMOTE_MEMBER2, REMOTE_MEMBER3);
+        RaftServer raftServer = createDefaultRaftServer(communicator, raftGroup, RemoteMembers.REMOTE_MEMBER2, RemoteMembers.REMOTE_MEMBER3);
 
         raftServer.start();
 
@@ -104,7 +99,7 @@ class RaftServerTest {
             .addMemberId(MemberId.create("server2"))
             .addMemberId(MemberId.create("server3"));
         FakeRemoteMemberCommunicator communicator = new FakeRemoteMemberCommunicator(communicatorHub, MemberId.create("server1"), spy);
-        RaftServer raftServer = createDefaultRaftServer(communicator, raftGroup, REMOTE_MEMBER2, REMOTE_MEMBER3);
+        RaftServer raftServer = createDefaultRaftServer(communicator, raftGroup, RemoteMembers.REMOTE_MEMBER2, RemoteMembers.REMOTE_MEMBER3);
 
         raftServer.start();
 
@@ -112,22 +107,8 @@ class RaftServerTest {
             .until(raftServer::currentTerm, is(Term.create(1)));
     }
 
-    private static RemoteMember[] getRemoteMembers(int currentMemberIdx, int size) {
-        RemoteMember[] result = new RemoteMember[size - 1];
-        int resultIdx = 0;
-        int i = 0;
-        while (resultIdx < result.length) {
-            if (currentMemberIdx == i) {
-                i++;
-                continue;
-            }
-            result[resultIdx++] = REMOTE_MEMBERS[i++];
-        }
-        return result;
-    }
-
     private static RaftServer createRaftServer(FakeRemoteMemberCommunicator communicator, RaftGroup raftGroup, int serverIdx, int size) {
-        return createDefaultRaftServer(communicator, raftGroup, getRemoteMembers(serverIdx, size));
+        return createDefaultRaftServer(communicator, raftGroup, RemoteMembers.getRemoteMembers(serverIdx, size));
     }
 
     private FakeRemoteMemberCommunicator createFakeRemoteMemberCommunicator(MemberId memberId) {

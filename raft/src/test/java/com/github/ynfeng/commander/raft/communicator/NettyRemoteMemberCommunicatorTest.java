@@ -3,14 +3,19 @@ package com.github.ynfeng.commander.raft.communicator;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.ynfeng.commander.fixture.RaftMemberDiscoveryStub;
+import com.github.ynfeng.commander.fixture.RemoteMembers;
 import com.github.ynfeng.commander.raft.MemberId;
+import com.github.ynfeng.commander.raft.RaftConfig;
+import com.github.ynfeng.commander.raft.RaftGroup;
+import com.github.ynfeng.commander.raft.RaftServer;
 import com.github.ynfeng.commander.raft.RemoteMember;
 import com.github.ynfeng.commander.raft.Term;
 import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import com.github.ynfeng.commander.support.Address;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class NettyRemoteMemberCommunicatorTest {
@@ -47,5 +52,68 @@ class NettyRemoteMemberCommunicatorTest {
             peer1.shutdown();
             peer2.shutdown();
         }
+    }
+
+    @Test
+    @Disabled
+    void should_elected_leader() {
+        RaftGroup raftGroup = RaftGroup.create()
+            .addMemberId(MemberId.create("server1"))
+            .addMemberId(MemberId.create("server2"))
+            .addMemberId(MemberId.create("server3"))
+            .addMemberId(MemberId.create("server4"))
+            .addMemberId(MemberId.create("server5"));
+
+        RaftServer raftServer1 = createRaftServer(MemberId.create("server1"), Address.of("127.0.0.1", 8111), raftGroup, 0, 5);
+        RaftServer raftServer2 = createRaftServer(MemberId.create("server2"), Address.of("127.0.0.1", 8112), raftGroup, 1, 5);
+        RaftServer raftServer3 = createRaftServer(MemberId.create("server3"), Address.of("127.0.0.1", 8113), raftGroup, 2, 5);
+        RaftServer raftServer4 = createRaftServer(MemberId.create("server4"), Address.of("127.0.0.1", 8114), raftGroup, 3, 5);
+        RaftServer raftServer5 = createRaftServer(MemberId.create("server5"), Address.of("127.0.0.1", 8115), raftGroup, 4, 5);
+
+        raftServer1.start();
+        raftServer2.start();
+        raftServer3.start();
+        raftServer4.start();
+        raftServer5.start();
+
+        try {
+            Thread.sleep(60 * 1000);
+        } catch (InterruptedException e) {
+        }
+    }
+
+    private static RaftServer createRaftServer(MemberId localMemberId,
+                                               Address localAddress,
+                                               RaftGroup raftGroup,
+                                               int currentIdex,
+                                               int size) {
+        RemoteMemberCommunicator remoteMemberCommunicator = createNettyRemoteMemberCommunicator("cluster1", localAddress);
+        return createRaftServer(remoteMemberCommunicator, localMemberId, localAddress, raftGroup, currentIdex, size);
+    }
+
+    private static RemoteMemberCommunicator createNettyRemoteMemberCommunicator(String clusterId, Address localAddress) {
+        return new NettyRemoteMemberCommunicator(clusterId, localAddress);
+    }
+
+    private static RaftServer createRaftServer(RemoteMemberCommunicator communicator,
+                                               MemberId localMemberId,
+                                               Address localAddress,
+                                               RaftGroup raftGroup,
+                                               int currentIndex,
+                                               int size) {
+        RaftMemberDiscoveryStub raftMemberDiscovery = new RaftMemberDiscoveryStub();
+        raftMemberDiscovery.addRemoteMember(RemoteMembers.getRemoteMembers(currentIndex, size));
+        return RaftServer.builder()
+            .localAddress(localAddress)
+            .localMemberId(localMemberId)
+            .raftConfig(RaftConfig.builder()
+                .electionTimeout(1000)
+                .leaderHeartbeatInterval(100)
+                .serverThreadPoolSize(3)
+                .build())
+            .raftMemberDiscovery(raftMemberDiscovery)
+            .remoteMemberCommunicator(communicator)
+            .raftGroup(raftGroup)
+            .build();
     }
 }

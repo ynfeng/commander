@@ -16,6 +16,7 @@ public class ProtocolSerializer {
             .add(Term.class)
             .add(Address.class)
             .add(MemberId.class)
+            .add(LeaderHeartbeat.class)
             .build());
 
     public byte[] encode(Object obj) {
