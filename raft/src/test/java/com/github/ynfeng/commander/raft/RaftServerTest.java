@@ -14,7 +14,6 @@ import com.github.ynfeng.commander.support.Address;
 import com.google.common.collect.ImmutableMap;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 class RaftServerTest {
@@ -64,7 +63,7 @@ class RaftServerTest {
         raftServer3.shutdown();
     }
 
-    @RepeatedTest(3)
+    @Test
     void should_elected_leader_given_5_members() throws InterruptedException {
         RaftGroup raftGroup = RaftGroup.create()
             .addMemberId(MemberId.create("server1"))

@@ -1,9 +1,12 @@
 package com.github.ynfeng.commander.raft.communicator;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.ynfeng.commander.fixture.NettyRemoteMemberCommunicatorProxy;
 import com.github.ynfeng.commander.fixture.RaftMemberDiscoveryStub;
+import com.github.ynfeng.commander.fixture.RemoteMemberCommunicatorSpy;
 import com.github.ynfeng.commander.fixture.RemoteMembers;
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.RaftConfig;
@@ -15,7 +18,7 @@ import com.github.ynfeng.commander.raft.protocol.RequestVoteResponse;
 import com.github.ynfeng.commander.raft.protocol.VoteRequest;
 import com.github.ynfeng.commander.support.Address;
 import java.util.concurrent.CompletableFuture;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class NettyRemoteMemberCommunicatorTest {
@@ -24,6 +27,12 @@ class NettyRemoteMemberCommunicatorTest {
     private static final Address ADDRESS_8111 = Address.of("127.0.0.1", 8111);
     private static final Address ADDRESS_8112 = Address.of("127.0.0.1", 8112);
     private static final RemoteMember REMOTE_MEMBER_PEER_1 = RemoteMember.create(MEMBER_PEER_1, ADDRESS_8111);
+    private final RemoteMemberCommunicatorSpy communicatorSpy = new RemoteMemberCommunicatorSpy();
+
+    @BeforeEach
+    void setup() {
+        communicatorSpy.reset();
+    }
 
     @Test
     void should_send_and_receive() throws Exception {
@@ -55,8 +64,7 @@ class NettyRemoteMemberCommunicatorTest {
     }
 
     @Test
-    @Disabled
-    void should_elected_leader() {
+    void should_elected_leader() throws InterruptedException {
         RaftGroup raftGroup = RaftGroup.create()
             .addMemberId(MemberId.create("server1"))
             .addMemberId(MemberId.create("server2"))
@@ -76,23 +84,22 @@ class NettyRemoteMemberCommunicatorTest {
         raftServer4.start();
         raftServer5.start();
 
-        try {
-            Thread.sleep(60 * 1000);
-        } catch (InterruptedException e) {
-        }
+        MemberId memberId = communicatorSpy.expectLeader();
+        assertThat(memberId, notNullValue());
     }
 
-    private static RaftServer createRaftServer(MemberId localMemberId,
-                                               Address localAddress,
-                                               RaftGroup raftGroup,
-                                               int currentIdex,
-                                               int size) {
+    private RaftServer createRaftServer(MemberId localMemberId,
+                                        Address localAddress,
+                                        RaftGroup raftGroup,
+                                        int currentIdex,
+                                        int size) {
         RemoteMemberCommunicator remoteMemberCommunicator = createNettyRemoteMemberCommunicator("cluster1", localAddress);
         return createRaftServer(remoteMemberCommunicator, localMemberId, localAddress, raftGroup, currentIdex, size);
     }
 
-    private static RemoteMemberCommunicator createNettyRemoteMemberCommunicator(String clusterId, Address localAddress) {
-        return new NettyRemoteMemberCommunicator(clusterId, localAddress);
+    private RemoteMemberCommunicator createNettyRemoteMemberCommunicator(String clusterId, Address localAddress) {
+        NettyRemoteMemberCommunicator communicator = new NettyRemoteMemberCommunicator(clusterId, localAddress);
+        return new NettyRemoteMemberCommunicatorProxy(communicatorSpy, communicator);
     }
 
     private static RaftServer createRaftServer(RemoteMemberCommunicator communicator,

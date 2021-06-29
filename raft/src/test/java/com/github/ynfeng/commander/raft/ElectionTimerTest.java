@@ -9,7 +9,7 @@ import org.junit.jupiter.api.RepeatedTest;
 
 class ElectionTimerTest {
 
-    @RepeatedTest(10)
+    @RepeatedTest(3)
     void should_timeout() {
         AtomicBoolean timeout = new AtomicBoolean(false);
 
