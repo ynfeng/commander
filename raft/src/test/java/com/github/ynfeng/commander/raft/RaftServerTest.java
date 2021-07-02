@@ -39,6 +39,8 @@ class RaftServerTest {
         await()
             .atMost(1, TimeUnit.SECONDS)
             .until(raftServer::isStarted, is(true));
+
+        raftServer.shutdown();
     }
 
     @Test
@@ -104,6 +106,8 @@ class RaftServerTest {
 
         await()
             .until(raftServer::currentTerm, is(Term.create(1)));
+
+        raftServer.shutdown();
     }
 
     private static RaftServer createRaftServer(FakeRemoteMemberCommunicator communicator, RaftGroup raftGroup, int serverIdx, int size) {

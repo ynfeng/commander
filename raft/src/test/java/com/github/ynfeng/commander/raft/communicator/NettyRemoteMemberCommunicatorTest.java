@@ -86,6 +86,12 @@ class NettyRemoteMemberCommunicatorTest {
 
         MemberId memberId = communicatorSpy.expectLeader();
         assertThat(memberId, notNullValue());
+
+        raftServer1.shutdown();
+        raftServer2.shutdown();
+        raftServer3.shutdown();
+        raftServer4.shutdown();
+        raftServer5.shutdown();
     }
 
     private RaftServer createRaftServer(MemberId localMemberId,
