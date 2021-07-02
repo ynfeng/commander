@@ -2,23 +2,17 @@ package com.github.ynfeng.commander.fixture;
 
 import com.github.ynfeng.commander.raft.MemberId;
 import com.github.ynfeng.commander.raft.RemoteMember;
-import com.github.ynfeng.commander.raft.Term;
 import com.github.ynfeng.commander.raft.communicator.RemoteMemberCommunicator;
 import com.github.ynfeng.commander.raft.protocol.Request;
 import com.github.ynfeng.commander.raft.protocol.Response;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 public class FakeRemoteMemberCommunicator implements RemoteMemberCommunicator {
     private final RemoteMemberCommunicatorHub hub;
     private final Map<Class<? extends Request>, Function<? extends Request, ? extends Response>> handlers = Maps.newHashMap();
-    private final Object watitLock = new Object();
-    private final AtomicInteger leaderHeartbeatTimes = new AtomicInteger();
-    private final AtomicReference<LeaderHeartbeatRecord> lastLeaderHeartBeatHolder = new AtomicReference<>(new LeaderHeartbeatRecord(Term.create(0), MemberId.create("none")));
     private final MemberId memberId;
     private final RemoteMemberCommunicatorSpy spy;
 
