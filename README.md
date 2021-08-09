@@ -28,5 +28,6 @@ A microservice orchestration engine.
 * [ ] Command line cluster controller
 
 ## Powered by
-
-<img src="docs/images/jetbrains-variant-logo-200x166.png?raw=true" height="200" width="166.8">
+<a href="https://www.jetbrains.com/">
+<img src="docs/images/jetbrains-variant-logo-200x166.png?raw=true" height="200" width="166">
+</a>
