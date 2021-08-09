@@ -29,4 +29,4 @@ A microservice orchestration engine.
 
 ## Powered by
 
-<img src="docs/images/jetbrains-variant-logo.png?raw=true" height="200" width="166.8">
+<img src="docs/images/jetbrains-variant-logo-200x166.png?raw=true" height="200" width="166.8">
