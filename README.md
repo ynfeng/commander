@@ -27,4 +27,6 @@ A microservice orchestration engine.
 * [ ] Flow DSL
 * [ ] Command line cluster controller
 
+## Powered by
 
+<img src="docs/images/jetbrains-variant-logo.png?raw=true">
